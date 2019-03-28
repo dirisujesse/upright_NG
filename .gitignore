@@ -15,7 +15,7 @@
 *.iws
 .idea/
 
-assets/
+# assets/
 
 # Visual Studio Code related
 .vscode/
