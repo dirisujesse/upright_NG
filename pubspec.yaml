@@ -1,0 +1,90 @@
+name: uprightng
+description: A new Flutter project.
+
+# The following defines the version and build number for your application.
+# A version number is three numbers separated by dots, like 1.2.43
+# followed by an optional build number separated by a +.
+# Both the version and the builder number may be overridden in flutter
+# build by specifying --build-name and --build-number, respectively.
+# In Android, build-name is used as versionName while build-number used as versionCode.
+# Read more about Android versioning at https://developer.android.com/studio/publish/versioning
+# In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
+# Read more about iOS versioning at
+# https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
+version: 1.0.0+1
+
+environment:
+  sdk: ">=2.1.0 <3.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  audio_recorder: ^0.0.6
+  dots_indicator: ^0.0.4
+  flutter_webview_plugin: ^0.3.1
+  http: ^0.12.0+1
+  image_picker: ^0.5.0+9
+  json_annotation: ^2.0.0
+  line_icons: ^0.2.0
+  location: ^2.3.0
+  path_provider: ^0.4.1
+  scoped_model: ^1.0.1
+  sembast: ^1.15.1
+  simple_share: ^0.0.1+4
+  url_launcher: ^5.0.2
+  video_player: ^0.10.0+2
+  cupertino_icons: ^0.1.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_launcher_icons: ^0.7.0
+  build_runner: ^1.2.8
+  json_serializable: ^2.0.3
+
+flutter_icons:
+  image_path_android: "assets/images/logo.jpg"
+  image_path_ios: "assets/images/logo.jpg"
+  android: true
+  ios: true
+#  adaptive_icon_background: "assets/images/christmas-background.png" # only available for Android 8.0 devices and above
+#  adaptive_icon_foreground: "assets/images/icon-foreground-432x432.png" # only available for Android 8.0 devices and above
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/images/asset1.png
+    - assets/images/asset2.png
+    - assets/images/firslogo.png
+    - assets/images/img-placeholder.png
+    - assets/images/leaksnglogo.png
+    - assets/images/logo.jpg
+    - assets/images/pledge_lg.png
+    - assets/images/pledge_md.png
+    - assets/images/pledge_white_lg.png
+    - assets/images/pledge_white_md.png
+    - assets/images/pledge_white.png
+    - assets/images/pledge.png
+    - assets/images/repselflogo.png
+    - assets/images/tourguide01.jpg
+    - assets/images/tourguide02.jpg
+    - assets/images/tourguide03.jpg
+    - assets/images/user.png
+    - assets/images/voicesagainstcorruption_logo.png
+    - assets/images/waveform.png
+    - assets/images/well_done.png
+
+  fonts:
+    - family: PlayfairDisplay
+      fonts:
+        - asset: assets/fonts/PlayfairDisplay-Regular.ttf
+          weight: 400
+    - family: OpenSans
+      fonts:
+        - asset: assets/fonts/OpenSans-Regular.ttf
+          weight: 300
+    - family: CrimsonText
+      fonts:
+        - asset: assets/fonts/CrimsonText-Regular.ttf
+          weight: 300
