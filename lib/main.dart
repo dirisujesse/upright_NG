@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 
+import 'components/colors.dart';
+
 import 'pages/splash.dart';
 import 'pages/onboarding.dart';
+import 'pages/profile.dart';
 import 'pages/auth.dart';
 import 'pages/feeds.dart';
 import 'pages/about.dart';
@@ -23,11 +26,12 @@ class MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Upright Nigeria',
+      title: 'Upright_NG',
       theme: ThemeData(
         brightness: Brightness.light,
-        accentColor: Colors.yellowAccent,
-        primarySwatch: Colors.teal,
+        accentColor: army,
+        primarySwatch: white,
+        fontFamily: 'OpenSans'
       ),
       home: SplashWidget(),
       routes: {
@@ -39,6 +43,7 @@ class MyAppState extends State<MyApp> {
         '/welcome': (BuildContext context) => OnboardingPage(),
         '/suggestions': (BuildContext context) => SuggestionPage(),
         '/topconts': (BuildContext context) => TopcontributorsPage(),
+        '/profile': (BuildContext context) => ProfilePage(),
       },
       onUnknownRoute: (RouteSettings settings) {
         return MaterialPageRoute(builder: (BuildContext context) => HomePage());

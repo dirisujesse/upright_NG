@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:line_icons/line_icons.dart';
 import '../components/text_style.dart';
 
-PreferredSizeWidget AppBarDefault({@required title}) {
+PreferredSizeWidget AppBarDefault({@required String title}) {
   return AppBar(
     leading: Builder(
       builder: (BuildContext context) {
         return IconButton(
           icon: Icon(
-            LineIcons.navicon,
+            Icons.menu,
             color: Color(0xFF25333D),
             size: 30.0,
           ),
@@ -18,7 +17,7 @@ PreferredSizeWidget AppBarDefault({@required title}) {
       },
     ),
     title: Text(
-      title,
+      title.toUpperCase(),
       style: AppTextStyle.appHeader,
     ),
     backgroundColor: Color(0xFFFFFFFF),
@@ -27,12 +26,12 @@ PreferredSizeWidget AppBarDefault({@required title}) {
     actions: <Widget>[
       IconButton(
         icon: Icon(
-          LineIcons.edit,
+          Icons.search,
           color: Color(0xFF25333D),
           size: 30.0,
         ),
         onPressed: () {},
-      )
+      ),
     ],
   );
 }

@@ -8,6 +8,12 @@ class SuggestionPage extends StatefulWidget {
 
 class _SuggestionPageState extends State<SuggestionPage> {
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
+  final formBrdr = OutlineInputBorder(
+    borderSide: BorderSide(color: Colors.black),
+  );
+  final formActiveBrdr = OutlineInputBorder(
+    borderSide: BorderSide(color: Colors.black, width: 2.0),
+  );
   TextEditingController nameCtrl, emailCntrl, titleCtrl, contentCtrl;
   double scrnSiaz;
   double scrnHaiyt;
@@ -24,12 +30,7 @@ class _SuggestionPageState extends State<SuggestionPage> {
     scrnHaiyt = MediaQuery.of(context).size.height;
     pagePad = scrnSiaz > 550 ? scrnSiaz * 0.085 : scrnSiaz * 0.035;
     topPadding = scrnSiaz > 550 ? scrnSiaz * 0.010 : scrnSiaz * 0.15;
-    final formBrdr = OutlineInputBorder(
-      borderSide: BorderSide(color: Colors.black),
-    );
-    final formActiveBrdr = OutlineInputBorder(
-      borderSide: BorderSide(color: Colors.black, width: 2.0),
-    );
+
     return Scaffold(
       drawer: AppDrawer(),
       appBar: AppBarDefault(title: "Suggestions"),

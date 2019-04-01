@@ -7,7 +7,6 @@ class AppTextStyle {
     color: Color(0xFF25333D)
   );
   static final appText = TextStyle(
-    fontFamily: 'OpenSans',
     fontSize: 14.0,
     color: Color(0xFF25333D)
   );

@@ -8,8 +8,15 @@ class AppDrawer extends StatelessWidget {
     return Drawer(
       child: SingleChildScrollView(
         child: Column(
+          // crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             AppBar(
+              actions: <Widget>[
+                IconButton(
+                  icon: Icon(Icons.arrow_forward_ios, color: Colors.black,),
+                  onPressed: () => Navigator.pushNamed(context, '/profile'),
+                )
+              ],
               leading: Padding(
                 padding: EdgeInsets.all(2.0),
                 child: CircleAvatar(
@@ -27,18 +34,29 @@ class AppDrawer extends StatelessWidget {
                   ),
                   Text(
                     'dirisujesse@gmail.com',
-                    style: AppTextStyle.appText,
+                    style: TextStyle(fontSize: 14.0),
                   ),
                 ],
               ),
               backgroundColor: Color(0xFFFFFFFF),
               elevation: 0.5,
             ),
+            // ButtonBar(
+            //   alignment: MainAxisAlignment.start,
+            //   children: <Widget>[
+            //     FlatButton(
+            //       color: Color(0xFF3D8B37),
+            //       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.0)),
+            //       child: Text("View Profile", style: TextStyle(color: Colors.white),),
+            //       onPressed: () =>
+            //           Navigator.pushNamed(context, '/profile'),
+            //     ),
+            //   ],
+            // ),
             ListTile(
               leading: Icon(LineIcons.home),
               title: Text(
                 'HOME',
-                style: AppTextStyle.appText,
               ),
               onTap: () => Navigator.pushReplacementNamed(context, '/home'),
             ),
@@ -46,7 +64,6 @@ class AppDrawer extends StatelessWidget {
               leading: Icon(LineIcons.bullhorn),
               title: Text(
                 'ABOUT UPRIGHT_NG',
-                style: AppTextStyle.appText,
               ),
               onTap: () => Navigator.pushNamed(context, '/about'),
             ),
@@ -54,7 +71,6 @@ class AppDrawer extends StatelessWidget {
               leading: Icon(LineIcons.user_secret),
               title: Text(
                 'ANONYMOUS REPORTING',
-                style: AppTextStyle.appText,
               ),
               onTap: () => Navigator.pushNamed(context, '/home'),
             ),
@@ -62,7 +78,6 @@ class AppDrawer extends StatelessWidget {
               leading: Icon(LineIcons.chrome),
               title: Text(
                 'AFFILIATE REPORTING',
-                style: AppTextStyle.appText,
               ),
               onTap: () => Navigator.pushNamed(context, '/report'),
             ),
@@ -70,7 +85,6 @@ class AppDrawer extends StatelessWidget {
               leading: Icon(LineIcons.bar_chart),
               title: Text(
                 'TOP CONTRIBUTORS',
-                style: AppTextStyle.appText,
               ),
               onTap: () => Navigator.pushNamed(context, '/topconts'),
             ),
@@ -78,7 +92,6 @@ class AppDrawer extends StatelessWidget {
               leading: Icon(LineIcons.gavel),
               title: Text(
                 'TERMS AND CONDITIONS',
-                style: AppTextStyle.appText,
               ),
               onTap: () => Navigator.pushNamed(context, '/tncs'),
             ),
@@ -86,7 +99,6 @@ class AppDrawer extends StatelessWidget {
               leading: Icon(LineIcons.comments),
               title: Text(
                 'MAKE A SUGGESTION',
-                style: AppTextStyle.appText,
               ),
               onTap: () => Navigator.pushNamed(context, '/suggestions'),
             ),
@@ -96,8 +108,7 @@ class AppDrawer extends StatelessWidget {
             ListTile(
               leading: Icon(LineIcons.sign_out),
               title: Text(
-                'Logout',
-                style: AppTextStyle.appText,
+                'LOGOUT',
               ),
               onTap: () => Navigator.pushReplacementNamed(context, '/login'),
             ),

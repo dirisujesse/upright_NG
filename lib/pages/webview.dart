@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import '../components/text_style.dart';
-// import '../components/text_style.dart';
 
 import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
 
@@ -15,9 +14,10 @@ class WebPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return new WebviewScaffold(
       url: url,
-      appBar: new AppBar(
+      appBar: AppBar(
         title: Text(
           title,
+          style: AppTextStyle.appHeader,
         ),
         elevation: 0.5,
         centerTitle: true,
