@@ -9,7 +9,7 @@ class AboutPage extends StatelessWidget {
     return Scaffold(
       drawer: AppDrawer(),
       backgroundColor: Colors.white,
-      appBar: AppBarDefault(title: 'ABOUT',),
+      appBar: appBarDefault(title: 'ABOUT', context: context),
       body: SingleChildScrollView(
         child: Column(
           children: <Widget>[

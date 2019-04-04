@@ -5,7 +5,7 @@ import 'package:path_provider/path_provider.dart' as fs;
 import 'package:sembast/sembast.dart';
 import 'package:sembast/sembast_io.dart';
 
-class Store {
+class LocalStorage {
   static String _dbPath;
   static DatabaseFactory dbFactory = databaseFactoryIo;
 
@@ -16,8 +16,8 @@ class Store {
 
   static Future<Database> get _db async {
     final String tmpPath = await _fsPath;
-    Store._dbPath = join(tmpPath, "upright.db");
-    Database db = await dbFactory.openDatabase(Store._dbPath);
+    LocalStorage._dbPath = join(tmpPath, "upright.db");
+    Database db = await dbFactory.openDatabase(LocalStorage._dbPath);
     return db;
   }
 

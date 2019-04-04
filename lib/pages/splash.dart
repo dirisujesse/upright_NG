@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
-import '../services/storage_service.dart';
-// import 'dart:async';
+import 'package:states_rebuilder/states_rebuilder.dart';
+
+import '../stores/user.dart';
+
+final userData = UserBloc();
 
 class SplashWidget extends StatefulWidget {
   @override
@@ -11,24 +14,11 @@ class SplashWidget extends StatefulWidget {
 
 class _SplashPage extends State<SplashWidget> {
   @override
-  void initState() {
-    Store.getItem("isPrevUser").then((prevUser) {
-      if (prevUser) {
-        Navigator.pushReplacementNamed(context, "/home");
-      } else {
-        Navigator.pushReplacementNamed(context, "/welcome");
-      }
-    }).catchError((err) {
-      print(err);
-      Navigator.pushReplacementNamed(context, "/welcome");
-    });
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
+      body: StateBuilder(
+        initState: (state) => userData.onAppInitCallBack(state, context),
+        builder: (_) => Container(
         decoration: BoxDecoration(
           color: Colors.white,
           image: DecorationImage(
@@ -36,6 +26,7 @@ class _SplashPage extends State<SplashWidget> {
           ),
         ),
       ),
+      )
     );
   }
 }

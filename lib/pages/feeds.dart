@@ -3,7 +3,7 @@ import 'package:line_icons/line_icons.dart';
 import 'package:dots_indicator/dots_indicator.dart';
 
 import '../components/app_drawer.dart';
-
+import '../components/upright_search.dart';
 class HomePage extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
@@ -97,57 +97,61 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
-              Stack(
-                alignment: AlignmentDirectional.center,
-                children: <Widget>[
-                  Container(
-                    height: 250,
-                    width: MediaQuery.of(context).size.width,
-                    foregroundDecoration: BoxDecoration(
-                      color: Color.fromRGBO(0, 0, 0, 0.5),
-                      borderRadius: bRadius,
+              GestureDetector(
+                onTap: () =>
+                    Navigator.pushNamed(context, '/post/1/Bird Dies in Berlin'),
+                child: Stack(
+                  alignment: AlignmentDirectional.center,
+                  children: <Widget>[
+                    Container(
+                      height: 250,
+                      width: MediaQuery.of(context).size.width,
+                      foregroundDecoration: BoxDecoration(
+                        color: Color.fromRGBO(0, 0, 0, 0.5),
+                        borderRadius: bRadius,
+                      ),
+                      child: FadeInImage(
+                        placeholder: AssetImage("assets/images/logo.jpg"),
+                        fit: BoxFit.cover,
+                        image: NetworkImage(
+                          "https://www.tennisworldusa.org/imgb/60080/naomi-osaka-i-m-the-most-awkward-in-tennis.jpg",
+                        ),
+                      ),
                     ),
-                    child: FadeInImage(
-                      placeholder: AssetImage("assets/images/logo.jpg"),
-                      fit: BoxFit.scaleDown,
-                      image: NetworkImage(
-                        "https://www.tennisworldusa.org/imgb/60080/naomi-osaka-i-m-the-most-awkward-in-tennis.jpg",
-                      ),
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: <Widget>[
+                        Text(
+                          "Bird Dies in Berlin",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 20.0,
+                            fontFamily: 'PlayfairDisplay',
+                          ),
+                        ),
+                        Text(
+                          "Unfortunately a bird today passed away at the Berlin zoo...",
+                          maxLines: 3,
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 16.0,
+                          ),
+                        ),
+                        Text(
+                          DateTime.now().toIso8601String(),
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 16.0,
+                          ),
+                        ),
+                      ],
                     ),
-                  ),
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: <Widget>[
-                      Text(
-                        "Bird Dies in Berlin",
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 20.0,
-                          fontFamily: 'PlayfairDisplay',
-                        ),
-                      ),
-                      Text(
-                        "Unfortunately a bird today passed away at the Berlin zoo...",
-                        maxLines: 3,
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 16.0,
-                        ),
-                      ),
-                      Text(
-                        DateTime.now().toIso8601String(),
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 16.0,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
+                  ],
+                ),
               ),
               Padding(
                 padding: EdgeInsets.symmetric(
@@ -278,7 +282,12 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                         color: Colors.white,
                         size: 30.0,
                       ),
-                      onPressed: () {},
+                      onPressed: () {
+                        showSearch(
+                          context: context,
+                          delegate: UprightSearchDelegate()
+                        );
+                      },
                     ),
                   ],
                   expandedHeight: MediaQuery.of(context).size.height * 0.7,

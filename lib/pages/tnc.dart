@@ -398,7 +398,7 @@ class TnCPage extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.white,
       drawer: AppDrawer(),
-      appBar: AppBarDefault(title: "Terms and Condtions"),
+      appBar: appBarDefault(title: "Terms and Condtions", context: context),
       body: ListView.builder(
         itemCount: items.length,
         itemBuilder: (BuildContext context, int index) {

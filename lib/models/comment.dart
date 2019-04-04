@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:scoped_model/scoped_model.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 import 'user.dart';
@@ -33,9 +32,4 @@ class Comment {
 
   factory Comment.fromJson(Map<String, dynamic> json) => _$CommentFromJson(json);
   Map<String, dynamic> toJson() => _$CommentToJson(this);
-}
-
-
-mixin CommentsModel on Model {
-  List<Comment> comments;
 }

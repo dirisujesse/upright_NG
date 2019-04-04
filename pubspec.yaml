@@ -28,9 +28,9 @@ dependencies:
   line_icons: ^0.2.0
   location: ^2.3.0
   path_provider: ^0.4.1
-  scoped_model: ^1.0.1
   sembast: ^1.15.1
   simple_share: ^0.0.1+4
+  states_rebuilder: ^0.1.4
   url_launcher: ^5.0.2
   video_player: ^0.10.0+2
   cupertino_icons: ^0.1.2
@@ -83,8 +83,4 @@ flutter:
     - family: OpenSans
       fonts:
         - asset: assets/fonts/OpenSans-Regular.ttf
-          weight: 300
-    - family: CrimsonText
-      fonts:
-        - asset: assets/fonts/CrimsonText-Regular.ttf
           weight: 300

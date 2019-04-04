@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:scoped_model/scoped_model.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 import 'user.dart';
@@ -19,7 +18,7 @@ class Post {
   bool hasVideo;
   int upvotes;
   int downvotes;
-  DateTime time;
+  String time;
   double long;
   double lat;
   String loc;
@@ -50,8 +49,4 @@ class Post {
 
   factory Post.fromJson(Map<String, dynamic> json) => _$PostFromJson(json);
   Map<String, dynamic> toJson() => _$PostToJson(this);
-}
-
-mixin PostsModel on Model {
-  List<Post> posts;
 }

@@ -31,7 +31,7 @@ class OnboardingPageState extends State<OnboardingPage> {
   }
 
   void attachUser() {
-    Store.setItem("isPrevUser", true)
+    LocalStorage.setItem("isPrevUser", true)
         .then((val) => Navigator.pushReplacementNamed(context, "/home"))
         .catchError((val) => Navigator.pushReplacementNamed(context, "/home"));
   }
@@ -43,7 +43,6 @@ class OnboardingPageState extends State<OnboardingPage> {
         PageView(
           controller: cntrl,
           onPageChanged: (val) => setState(() => activ = val),
-          // pageSnapping: false,
           children: <Widget>[
             Scaffold(
               body: Container(

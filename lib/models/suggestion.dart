@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:scoped_model/scoped_model.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 // import '../services/storage_service.dart';
@@ -23,8 +22,4 @@ class Suggestion {
 
   factory Suggestion.fromJson(Map<String, dynamic> json) => _$SuggestionFromJson(json);
   Map<String, dynamic> toJson() => _$SuggestionToJson(this);
-}
-
-mixin SuggestionModel on Model {
-  Suggestion suggestion;
 }

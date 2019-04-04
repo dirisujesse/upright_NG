@@ -19,8 +19,7 @@ Post _$PostFromJson(Map<String, dynamic> json) {
       hasVideo: json['hasVideo'] as bool,
       upvotes: json['upvotes'] as int,
       downvotes: json['downvotes'] as int,
-      time:
-          json['time'] == null ? null : DateTime.parse(json['time'] as String),
+      time: json['time'] as String,
       long: (json['long'] as num)?.toDouble(),
       lat: (json['lat'] as num)?.toDouble(),
       loc: json['loc'] as String,
@@ -28,7 +27,7 @@ Post _$PostFromJson(Map<String, dynamic> json) {
           ?.map((e) =>
               e == null ? null : Comment.fromJson(e as Map<String, dynamic>))
           ?.toList(),
-      fromTwitter: json['from_twitter'] as bool,
+      fromTwitter: json['fromTwitter'] as bool,
       subject: json['subject'] as List,
       image: json['image'] as String);
 }
@@ -43,12 +42,12 @@ Map<String, dynamic> _$PostToJson(Post instance) => <String, dynamic>{
       'hasVideo': instance.hasVideo,
       'upvotes': instance.upvotes,
       'downvotes': instance.downvotes,
-      'time': instance.time?.toIso8601String(),
+      'time': instance.time,
       'long': instance.long,
       'lat': instance.lat,
       'loc': instance.loc,
       'comments': instance.comments,
-      'from_twitter': instance.fromTwitter,
+      'fromTwitter': instance.fromTwitter,
       'subject': instance.subject,
       'image': instance.image
     };

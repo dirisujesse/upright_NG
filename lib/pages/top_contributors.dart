@@ -1,49 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
-import "dart:async";
 import 'package:line_icons/line_icons.dart';
+import 'package:states_rebuilder/states_rebuilder.dart';
+
 import '../components/app_drawer.dart';
 import '../components/text_style.dart';
 import '../components/app_bar_default.dart';
-import '../services/http_service.dart';
+import '../models/user.dart';
+import '../stores/user.dart';
+
+final usrBloc = UserBloc();
 
 class TopcontributorsPage extends StatefulWidget {
   _TopcontributorsPageState createState() => _TopcontributorsPageState();
 }
 
 class _TopcontributorsPageState extends State<TopcontributorsPage> {
-  bool isLoading = true;
-  String msg = "Loading top users..";
-  List<dynamic> topConts = [];
-
-  Future<void> getTopConts() {
-    setState(() {
-      isLoading = true;
-      msg = "Loading top users..";
-    });
-    HttpService.getTopUsers().then((val) {
-      setState(() {
-        topConts = val;
-        isLoading = false;
-        msg = "";
-      });
-    }).catchError((err) {
-      print(err);
-      setState(() {
-        isLoading = false;
-        msg =
-            "Failed to load top users check that you are connected to the internet";
-      });
-    });
-    return Future.value(null);
-  }
-
-  void initState() {
-    getTopConts();
-    super.initState();
-  }
-
-  Widget tile(Map<String, dynamic> data) {
+  Widget tile(User data) {
     return Container(
       margin: EdgeInsets.only(bottom: 5.0),
       decoration: BoxDecoration(
@@ -56,10 +29,10 @@ class _TopcontributorsPageState extends State<TopcontributorsPage> {
         // contentPadding: EdgeInsets.all(15.0),
         enabled: false,
         leading: CircleAvatar(
-          backgroundImage: NetworkImage(data["avatar"]),
+          backgroundImage: NetworkImage(data.avatar),
         ),
         title: Text(
-          data["name"],
+          data.name,
           style: AppTextStyle.appHeader,
         ),
         subtitle: Row(
@@ -91,8 +64,8 @@ class _TopcontributorsPageState extends State<TopcontributorsPage> {
     );
   }
 
-  dynamic get body {
-    if (isLoading) {
+  dynamic body(UserBloc data) {
+    if (data.isLoadingTopUsrs) {
       return Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -102,7 +75,7 @@ class _TopcontributorsPageState extends State<TopcontributorsPage> {
                 ? CupertinoActivityIndicator()
                 : CircularProgressIndicator(),
             Text(
-              msg,
+              data.msgTopUsrs,
               style: AppTextStyle.appText,
               textAlign: TextAlign.center,
             )
@@ -110,14 +83,14 @@ class _TopcontributorsPageState extends State<TopcontributorsPage> {
         ),
       );
     }
-    
-    if (!isLoading && topConts.length < 1) {
+
+    if (!data.isLoadingTopUsrs && data.topConts.length < 1) {
       return Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
-            msg.length > 0
+            data.msgTopUsrs.length > 0
                 ? Icon(
                     LineIcons.exclamation_circle,
                     size: 100.0,
@@ -127,7 +100,9 @@ class _TopcontributorsPageState extends State<TopcontributorsPage> {
                     size: 100.0,
                   ),
             Text(
-              msg.length > 0 ? msg : "Ooops Contributors list is empty",
+              data.msgTopUsrs.length > 0
+                  ? data.msgTopUsrs
+                  : "Ooops Contributors list is empty",
               style: AppTextStyle.appText,
               textAlign: TextAlign.center,
             )
@@ -136,11 +111,11 @@ class _TopcontributorsPageState extends State<TopcontributorsPage> {
       );
     }
 
-    if (topConts.length > 1) {
+    if (data.topConts.length > 1) {
       return ListView.builder(
-        itemCount: topConts.length,
+        itemCount: data.topConts.length,
         itemBuilder: (BuildContext context, int index) {
-          return tile(topConts[index]);
+          return tile(User.fromJson(data.topConts[index]));
         },
       );
     }
@@ -151,8 +126,13 @@ class _TopcontributorsPageState extends State<TopcontributorsPage> {
     return Scaffold(
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
-            border: Border(top: BorderSide(color: Color(0xFFCCCCCC)))),
-        height: MediaQuery.of(context).size.height * 0.08,
+          border: Border(
+            top: BorderSide(
+              color: Color(0xFFCCCCCC),
+            ),
+          ),
+        ),
+        height: 40,
         child: Center(
           child: Text(
             "PULL PAGE TO REFRESH",
@@ -161,11 +141,16 @@ class _TopcontributorsPageState extends State<TopcontributorsPage> {
         ),
       ),
       drawer: AppDrawer(),
-      appBar: AppBarDefault(title: "Top Contributors"),
+      appBar: appBarDefault(title: "Top Contributors", context: context),
       backgroundColor: Colors.white,
-      body: RefreshIndicator(
-        onRefresh: () => getTopConts(),
-        child:  body,
+      body: StateBuilder(
+        initState: (state) => usrBloc.getTopConts(state),
+        builder: (_) => RefreshIndicator(
+              onRefresh: () {
+                return usrBloc.getTopConts(this);
+              },
+              child: body(usrBloc),
+            ),
       ),
     );
   }

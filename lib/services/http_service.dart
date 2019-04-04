@@ -163,7 +163,7 @@ class HttpService {
   static Future<dynamic> searchPost(String title) async {
     try {
       var req = await http.get(
-        '$url/post/?where={"title": {"contains": "$title"}}&sort=upvotes%20DESC&limit=10',
+        '$url/post/?where={"title": {"contains": "$title"}}&sort=upvotes%20DESC&limit=10&populate=author',
         headers: {"Content-Type": "application/json"},
       );
       if (req.statusCode > 201) {

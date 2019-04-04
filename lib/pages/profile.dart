@@ -1,18 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 
+import '../components/form_style.dart';
+
 class ProfilePage extends StatefulWidget {
   _ProfilePageState createState() => _ProfilePageState();
 }
 
 class _ProfilePageState extends State<ProfilePage> {
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
-  final formBrdr = OutlineInputBorder(
-    borderSide: BorderSide(color: Colors.black),
-  );
-  final formActiveBrdr = OutlineInputBorder(
-    borderSide: BorderSide(color: Colors.black, width: 2.0),
-  );
   bool isEdit = false;
   List<Widget> grids(Map<String, dynamic> user) {
     return [
@@ -273,7 +269,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     child: CircleAvatar(
                       radius: 80,
                       backgroundImage: NetworkImage(
-                          'https://www.themealdb.com/images/ingredients/chocolate .png'),
+                          'https://www.themealdb.com/images/ingredients/chocolate.png'),
                     ),
                   ),
                 ),

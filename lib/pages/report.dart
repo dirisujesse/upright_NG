@@ -101,7 +101,7 @@ class ReportPage extends StatelessWidget {
     return Scaffold(
         backgroundColor: Colors.white,
         drawer: AppDrawer(),
-        appBar: AppBarDefault(title: 'Affiliate Reporting'),
+        appBar: appBarDefault(title: 'Affiliate Reporting', context: context),
         body: Stack(
           fit: StackFit.expand,
           alignment: Alignment.center,

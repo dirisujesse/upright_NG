@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+
 import '../components/app_drawer.dart';
 import '../components/app_bar_default.dart';
+import '../components/form_style.dart';
 
 class SuggestionPage extends StatefulWidget {
   _SuggestionPageState createState() => _SuggestionPageState();
@@ -8,12 +10,6 @@ class SuggestionPage extends StatefulWidget {
 
 class _SuggestionPageState extends State<SuggestionPage> {
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
-  final formBrdr = OutlineInputBorder(
-    borderSide: BorderSide(color: Colors.black),
-  );
-  final formActiveBrdr = OutlineInputBorder(
-    borderSide: BorderSide(color: Colors.black, width: 2.0),
-  );
   TextEditingController nameCtrl, emailCntrl, titleCtrl, contentCtrl;
   double scrnSiaz;
   double scrnHaiyt;
@@ -33,7 +29,7 @@ class _SuggestionPageState extends State<SuggestionPage> {
 
     return Scaffold(
       drawer: AppDrawer(),
-      appBar: AppBarDefault(title: "Suggestions"),
+      appBar: appBarDefault(title: "Suggestions", context: context),
       backgroundColor: Colors.white,
       body: GestureDetector(
         onTap: () {

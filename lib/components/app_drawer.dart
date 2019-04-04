@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:line_icons/line_icons.dart';
-import '../components/text_style.dart';
+import 'package:states_rebuilder/states_rebuilder.dart';
+
+import 'text_style.dart';
+import '../stores/user.dart';
+
+final usrBloc = UserBloc();
 
 class AppDrawer extends StatelessWidget {
   @override
@@ -13,46 +18,46 @@ class AppDrawer extends StatelessWidget {
             AppBar(
               actions: <Widget>[
                 IconButton(
-                  icon: Icon(Icons.arrow_forward_ios, color: Colors.black,),
+                  icon: Icon(
+                    Icons.arrow_forward_ios,
+                    color: Colors.black,
+                  ),
                   onPressed: () => Navigator.pushNamed(context, '/profile'),
                 )
               ],
               leading: Padding(
                 padding: EdgeInsets.all(2.0),
-                child: CircleAvatar(
-                  backgroundImage: AssetImage('assets/images/user.png'),
+                child: StateBuilder(
+                  stateID: "authState",
+                  blocs: [usrBloc],
+                  builder: (_) => CircleAvatar(
+                        backgroundImage:
+                            NetworkImage(usrBloc.activeUser.avatar),
+                      ),
                 ),
               ),
               automaticallyImplyLeading: false,
-              title: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: <Widget>[
-                  Text(
-                    'Dirisu Jesse',
-                    style: AppTextStyle.appHeader,
-                  ),
-                  Text(
-                    'dirisujesse@gmail.com',
-                    style: TextStyle(fontSize: 14.0),
-                  ),
-                ],
+              title: StateBuilder(
+                stateID: "authState",
+                blocs: [usrBloc],
+                builder: (_) => Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: <Widget>[
+                        Text(
+                          usrBloc.activeUser.name,
+                          style: AppTextStyle.appHeader,
+                        ),
+                        Text(
+                          usrBloc.activeUser.username,
+                          style: TextStyle(fontSize: 14.0),
+                        ),
+                      ],
+                    ),
               ),
               backgroundColor: Color(0xFFFFFFFF),
               elevation: 0.5,
             ),
-            // ButtonBar(
-            //   alignment: MainAxisAlignment.start,
-            //   children: <Widget>[
-            //     FlatButton(
-            //       color: Color(0xFF3D8B37),
-            //       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.0)),
-            //       child: Text("View Profile", style: TextStyle(color: Colors.white),),
-            //       onPressed: () =>
-            //           Navigator.pushNamed(context, '/profile'),
-            //     ),
-            //   ],
-            // ),
             ListTile(
               leading: Icon(LineIcons.home),
               title: Text(
@@ -105,12 +110,19 @@ class AppDrawer extends StatelessWidget {
             SizedBox(
               height: 20.0,
             ),
-            ListTile(
-              leading: Icon(LineIcons.sign_out),
-              title: Text(
-                'LOGOUT',
-              ),
-              onTap: () => Navigator.pushReplacementNamed(context, '/login'),
+            StateBuilder(
+              stateID: "authState",
+              blocs: [usrBloc],
+              builder: (_) => ListTile(
+                    leading: Icon(
+                      usrBloc.isLoggedIn ? LineIcons.sign_out : LineIcons.sign_in,
+                    ),
+                    title: Text(
+                      usrBloc.isLoggedIn ? 'LOGOUT' : 'LOGIN',
+                    ),
+                    onTap: () =>
+                        Navigator.pushReplacementNamed(context, '/login'),
+                  ),
             ),
           ],
         ),

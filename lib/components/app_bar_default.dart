@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import '../components/text_style.dart';
+import 'text_style.dart';
+import 'upright_search.dart';
 
-PreferredSizeWidget AppBarDefault({@required String title}) {
+PreferredSizeWidget appBarDefault({@required String title, @required BuildContext context}) {
   return AppBar(
     leading: Builder(
       builder: (BuildContext context) {
@@ -30,7 +31,12 @@ PreferredSizeWidget AppBarDefault({@required String title}) {
           color: Color(0xFF25333D),
           size: 30.0,
         ),
-        onPressed: () {},
+        onPressed: () {
+          showSearch(
+            context: context,
+            delegate: UprightSearchDelegate()
+          );
+        },
       ),
     ],
   );
