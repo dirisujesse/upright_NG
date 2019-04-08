@@ -21,13 +21,13 @@ class LocalStorage {
     return db;
   }
 
-  static Future<String> removeItem(String key) async {
+  static Future<bool> removeItem(String key) async {
     final db = await _db;
     try {
       await db.delete(key);
-      return "success";
+      return true;
     } catch (e) {
-      return "failed";
+      return false;
     }
   }
 

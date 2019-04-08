@@ -3,8 +3,7 @@ import 'dart:async';
 
 import 'package:http/http.dart' as http;
 
-const url =
-    "https://www.uprightapi.cloud"; //"https://reportapp-dirisu.herokuapp.com"
+const url = "https://www.uprightapi.cloud";
 
 class HttpService {
   static Future<dynamic> login(String username) async {
@@ -78,6 +77,23 @@ class HttpService {
     try {
       var req = await http.get(
         "$url/post?featured=false&limit=50&sort=createdAt%20DESC",
+        headers: {"Content-Type": "application/json"},
+      );
+      if (req.statusCode > 201) {
+        throw req.statusCode;
+      }
+      var res = json.decode(req.body);
+      return res;
+    } catch (e) {
+      print(e);
+      return 404;
+    }
+  }
+
+  static Future<dynamic> getPostRange(int skip, int limit) async {
+    try {
+      var req = await http.get(
+        "$url/post?featured=false&skip=$skip&limit=$limit&sort=createdAt%20DESC",
         headers: {"Content-Type": "application/json"},
       );
       if (req.statusCode > 201) {
@@ -199,7 +215,7 @@ class HttpService {
     try {
       var req = await http.post(
         '$url/suggestions',
-        headers: {"Content-Type": "application/json"},
+        // headers: {"Content-Type": "application/json"},
         body: body,
       );
       if (req.statusCode > 201) {
@@ -236,7 +252,7 @@ class HttpService {
     try {
       var req = await http.post(
         '$url/comments/addcomment',
-        headers: {"Content-Type": "application/json"},
+        // headers: {"Content-Type": "application/json"},
         body: body,
       );
       if (req.statusCode > 201) {
@@ -251,6 +267,7 @@ class HttpService {
   }
 
   static Future<dynamic> getComments(String postId) async {
+    print(postId);
     try {
       var req = await http.get(
         '$url/comments/getcomments/?post=$postId',
@@ -288,7 +305,7 @@ class HttpService {
     try {
       var req = await http.put(
         '$url/user/updateprofile',
-        headers: {"Content-Type": "application/json"},
+        // headers: {"Content-Type": "application/json"},
         body: body,
       );
       if (req.statusCode > 201) {

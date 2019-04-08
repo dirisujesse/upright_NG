@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
-import 'text_style.dart';
 import 'upright_search.dart';
 
-PreferredSizeWidget appBarDefault({@required String title, @required BuildContext context}) {
+PreferredSizeWidget appBarDefault(
+    {@required String title, @required BuildContext context, Color bgCol = Colors.white, Color txtCol = Colors.black,}) {
   return AppBar(
     leading: Builder(
       builder: (BuildContext context) {
         return IconButton(
           icon: Icon(
             Icons.menu,
-            color: Color(0xFF25333D),
+            color: txtCol,
             size: 30.0,
           ),
           onPressed: () => Scaffold.of(context).openDrawer(),
@@ -19,23 +19,24 @@ PreferredSizeWidget appBarDefault({@required String title, @required BuildContex
     ),
     title: Text(
       title.toUpperCase(),
-      style: AppTextStyle.appHeader,
+      style: TextStyle(
+        color: txtCol,
+        fontFamily: 'PlayFairDisplay',
+        fontSize: 18.0,
+      ),
     ),
-    backgroundColor: Color(0xFFFFFFFF),
+    backgroundColor: bgCol,
     elevation: 0.5,
     centerTitle: true,
     actions: <Widget>[
       IconButton(
         icon: Icon(
           Icons.search,
-          color: Color(0xFF25333D),
+          color: txtCol,
           size: 30.0,
         ),
         onPressed: () {
-          showSearch(
-            context: context,
-            delegate: UprightSearchDelegate()
-          );
+          showSearch(context: context, delegate: UprightSearchDelegate());
         },
       ),
     ],

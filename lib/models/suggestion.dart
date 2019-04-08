@@ -13,7 +13,7 @@ class Suggestion {
   String suggestion;
 
   Suggestion({
-    @required this.id,
+    this.id,
     @required this.contributor,
     @required this.email,
     @required this.subject,

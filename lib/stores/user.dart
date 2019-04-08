@@ -8,9 +8,10 @@ import '../models/user.dart';
 import '../services/http_service.dart';
 
 class UserBloc extends StatesRebuilder {
+  static UserBloc instance;
   var activeUser = User(
     name: "Anonymous User",
-    id: "2383992922",
+    id: "5b3a2ddbdfecff00149ab29c",
     email: "anonymous.user@mail.com",
     username: "anonymous.user",
     avatar: 'https://www.gravatar.com/avatar',
@@ -20,27 +21,18 @@ class UserBloc extends StatesRebuilder {
   bool loginFail = false;
   bool isLogin = true;
   bool isLoading = false;
+  bool isLoadingStat = false;
+  bool isUpdating = false;
   bool isLoadingTopUsrs = false;
+  bool loadingTopUsrsFail = false;
+  Map<String, dynamic> usrStat;
   String msgTopUsrs = "Loading top users...";
 
-  UserBloc() {
-    // LocalStorage.getItem("activeUser").then((val) {
-    //   if (val != false) {
-    //     isLoggedIn = true;
-    //     activeUser = User.fromJson(val);
-    //     rebuildStates(ids: ["authState"]);
-    //     setActiveUser(val);
-    //     Navigator.pushReplacementNamed(context, "/home");
-    //   }
-    // }).catchError((err) {
-    //   print(err);
-    //   Navigator.pushReplacementNamed(context, "/home");
-    // });
-  }
-
-  setLogin() {
-    isLogin = !isLogin;
-    rebuildStates(ids: ["authState"]);
+  static UserBloc getInstance() {
+    if (instance == null) {
+      instance = UserBloc();
+    }
+    return instance;
   }
 
   onAppInitCallBack(State state, context) {
@@ -76,16 +68,62 @@ class UserBloc extends StatesRebuilder {
     });
   }
 
+  Future<bool> updateUser(State state, Map<String, dynamic> data) {
+    isUpdating = true;
+    rebuildStates(states: [state], ids: ["profState"]);
+    return Future.value(
+      HttpService.updateProfile(data).then((val) {
+        if (!(val is int)) {
+          val = val is Map<String, dynamic> ? val : val[0];
+          setActiveUser(val);
+          isUpdating = false;
+          rebuildStates(states: [state], ids: ["authState", "profState"]);
+          return Future.value(true);
+        } else {
+          isUpdating = false;
+          rebuildStates(states: [state], ids: ["profState"]);
+          return Future.value(false);
+        }
+      }).catchError((err) {
+        isUpdating = false;
+        rebuildStates(states: [state], ids: ["profState"]);
+        return Future.value(false);
+      }),
+    );
+  }
+
+  Future<bool> getUserStat(State state) {
+    isLoadingStat = true;
+    rebuildStates(states: [state], ids: ["profState"]);
+    return Future.value(
+      HttpService.getStats(activeUser.id).then((val) {
+        if (!(val is int) && val is Map<String, dynamic>) {
+          print(val);
+          usrStat = val;
+          isLoadingStat = false;
+          rebuildStates(states: [state], ids: ["profState"]);
+          return Future.value(true);
+        } else {
+          isLoadingStat = false;
+          rebuildStates(states: [state], ids: ["profState"]);
+          return Future.value(false);
+        }
+      }).catchError((err) {
+        isLoadingStat = true;
+        rebuildStates(states: [state], ids: ["profState"]);
+        return Future.value(false);
+      }),
+    );
+  }
+
   Future<bool> login(String username) {
     isLoading = true;
-    isLoggedIn = false;
     loginFail = false;
     rebuildStates(ids: ["authState"]);
     return Future.value(
       HttpService.login(username).then((val) {
         if (!(val is int) && val is Map<String, dynamic>) {
           setActiveUser(val);
-          print(val);
           isLoading = false;
           isLoggedIn = true;
           loginFail = false;
@@ -108,12 +146,11 @@ class UserBloc extends StatesRebuilder {
 
   Future<bool> signUp(String username, String name) {
     isLoading = true;
-    isLoggedIn = false;
+    // isLoggedIn = false;
     loginFail = false;
     rebuildStates(ids: ["authState"]);
     return Future.value(
       HttpService.signup(username, name).then((val) {
-        print(val);
         if (!(val is int) && val is Map<dynamic, dynamic>) {
           setActiveUser(val);
           isLoading = false;
@@ -139,17 +176,30 @@ class UserBloc extends StatesRebuilder {
   Future<dynamic> getTopConts(State state) {
     isLoadingTopUsrs = true;
     msgTopUsrs = "Loading top users..";
+    loadingTopUsrsFail = false;
+    topConts = [];
     rebuildStates(states: [state]);
     return Future.value(
       HttpService.getTopUsers().then((val) {
-        if (!(val is int) && val.length > 0) {
-          topConts = val;
-          msgTopUsrs = "";
-          isLoadingTopUsrs = false;
-          rebuildStates(states: [state]);
-          return Future.value(true);
+        if (!(val is int)) {
+          if (val.length > 0) {
+            topConts = val;
+            msgTopUsrs = "";
+            isLoadingTopUsrs = false;
+            loadingTopUsrsFail = false;
+            rebuildStates(states: [state]);
+            return Future.value(true);
+          } else {
+            msgTopUsrs = "";
+            isLoadingTopUsrs = false;
+            loadingTopUsrsFail = false;
+            rebuildStates(states: [state]);
+            return Future.value(true);
+          }
         } else {
-          msgTopUsrs = "";
+          msgTopUsrs =
+              "Failed to load top users check that you are connected to the internet";
+          loadingTopUsrsFail = true;
           isLoadingTopUsrs = false;
           rebuildStates(states: [state]);
           return Future.value(false);
@@ -157,6 +207,7 @@ class UserBloc extends StatesRebuilder {
       }).catchError((err) {
         print(err);
         isLoadingTopUsrs = false;
+        loadingTopUsrsFail = true;
         msgTopUsrs =
             "Failed to load top users check that you are connected to the internet";
         rebuildStates(states: [state]);

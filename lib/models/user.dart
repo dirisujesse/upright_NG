@@ -36,7 +36,7 @@ class User {
       this.comments,
       this.email});
 
-  Future<String> logOut() async {
+  Future<bool> logOut() async {
     final status = await LocalStorage.removeItem("userData");
     return status;
   }

@@ -3,7 +3,7 @@ import 'package:states_rebuilder/states_rebuilder.dart';
 
 import '../stores/user.dart';
 
-final userData = UserBloc();
+final userData = UserBloc.getInstance();
 
 class SplashWidget extends StatefulWidget {
   @override

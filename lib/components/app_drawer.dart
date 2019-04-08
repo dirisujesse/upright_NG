@@ -5,7 +5,7 @@ import 'package:states_rebuilder/states_rebuilder.dart';
 import 'text_style.dart';
 import '../stores/user.dart';
 
-final usrBloc = UserBloc();
+final usrBloc = UserBloc.getInstance();
 
 class AppDrawer extends StatelessWidget {
   @override
@@ -13,7 +13,6 @@ class AppDrawer extends StatelessWidget {
     return Drawer(
       child: SingleChildScrollView(
         child: Column(
-          // crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             AppBar(
               actions: <Widget>[
@@ -33,6 +32,7 @@ class AppDrawer extends StatelessWidget {
                   builder: (_) => CircleAvatar(
                         backgroundImage:
                             NetworkImage(usrBloc.activeUser.avatar),
+                        backgroundColor: Theme.of(context).accentColor,
                       ),
                 ),
               ),
@@ -77,7 +77,7 @@ class AppDrawer extends StatelessWidget {
               title: Text(
                 'ANONYMOUS REPORTING',
               ),
-              onTap: () => Navigator.pushNamed(context, '/home'),
+              onTap: () => Navigator.pushNamed(context, '/post/add/anon'),
             ),
             ListTile(
               leading: Icon(LineIcons.chrome),

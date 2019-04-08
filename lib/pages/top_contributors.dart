@@ -9,7 +9,7 @@ import '../components/app_bar_default.dart';
 import '../models/user.dart';
 import '../stores/user.dart';
 
-final usrBloc = UserBloc();
+final usrBloc = UserBloc.getInstance();
 
 class TopcontributorsPage extends StatefulWidget {
   _TopcontributorsPageState createState() => _TopcontributorsPageState();
@@ -90,7 +90,7 @@ class _TopcontributorsPageState extends State<TopcontributorsPage> {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
-            data.msgTopUsrs.length > 0
+            data.loadingTopUsrsFail
                 ? Icon(
                     LineIcons.exclamation_circle,
                     size: 100.0,
@@ -100,7 +100,7 @@ class _TopcontributorsPageState extends State<TopcontributorsPage> {
                     size: 100.0,
                   ),
             Text(
-              data.msgTopUsrs.length > 0
+              data.loadingTopUsrsFail
                   ? data.msgTopUsrs
                   : "Ooops Contributors list is empty",
               style: AppTextStyle.appText,

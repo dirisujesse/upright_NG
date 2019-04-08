@@ -4,6 +4,10 @@ final formBrdr = OutlineInputBorder(
   borderSide: BorderSide(color: Colors.black),
 );
 
+final errBrdr = OutlineInputBorder(
+  borderSide: BorderSide(color: Colors.red),
+);
+
 final formActiveBrdr = OutlineInputBorder(
   borderSide: BorderSide(color: Colors.black, width: 2.0),
 );

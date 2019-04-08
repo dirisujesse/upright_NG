@@ -51,7 +51,8 @@ class ReportPage extends StatelessWidget {
             ),
             color: Colors.white,
           ),
-          child: Image.asset("assets/images/leaksnglogo.png", fit: BoxFit.contain),
+          child:
+              Image.asset("assets/images/leaksnglogo.png", fit: BoxFit.contain),
         ),
       ),
       GestureDetector(
@@ -70,7 +71,8 @@ class ReportPage extends StatelessWidget {
             ),
             color: Colors.white,
           ),
-          child: Image.asset("assets/images/repselflogo.png", fit: BoxFit.contain),
+          child:
+              Image.asset("assets/images/repselflogo.png", fit: BoxFit.contain),
         ),
       ),
       GestureDetector(
@@ -89,7 +91,8 @@ class ReportPage extends StatelessWidget {
             ),
             color: Colors.white,
           ),
-          child: Image.asset("assets/images/voicesagainstcorruption_logo.png", fit: BoxFit.contain),
+          child: Image.asset("assets/images/voicesagainstcorruption_logo.png",
+              fit: BoxFit.contain),
         ),
       ),
     ];
@@ -99,31 +102,22 @@ class ReportPage extends StatelessWidget {
   Widget build(BuildContext context) {
     var items = grids(context);
     return Scaffold(
-        backgroundColor: Colors.white,
-        drawer: AppDrawer(),
-        appBar: appBarDefault(title: 'Affiliate Reporting', context: context),
-        body: Stack(
-          fit: StackFit.expand,
-          alignment: Alignment.center,
-          children: [
-            GridView.builder(
-              padding: EdgeInsets.all(0),
-              itemCount: items.length,
-              gridDelegate:
-                  SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
-              itemBuilder: (context, index) => items[index],
-            ),
-          ],
-        )
-        // CustomScrollView(
-        //   primary: false,
-        //   slivers: <Widget>[
-        //     SliverGrid.count(
-        //       crossAxisSpacing: 1.0,
-        //       mainAxisSpacing: 2.0,
-        //       crossAxisCount: 2,
-        //       children:
-        // ),
-        );
+      backgroundColor: Colors.white,
+      drawer: AppDrawer(),
+      appBar: appBarDefault(title: 'Affiliate Reporting', context: context),
+      body: Stack(
+        fit: StackFit.expand,
+        alignment: Alignment.center,
+        children: [
+          GridView.builder(
+            padding: EdgeInsets.all(0),
+            itemCount: items.length,
+            gridDelegate:
+                SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
+            itemBuilder: (context, index) => items[index],
+          ),
+        ],
+      ),
+    );
   }
 }

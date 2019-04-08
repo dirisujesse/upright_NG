@@ -30,7 +30,7 @@ class AboutPage extends StatelessWidget {
                   ),
                   SizedBox(height: 10.0,),
                   Text(
-                    "There is a near universal concesus in Nigeria, among Nigerians and within the international community that corruption is endemic and all pervasive in the country. The scourge of corruption has assumed an existential threat to the country, becoming a major obstacle to human and natinal development.",
+                    "There is a near universal concensus in Nigeria, among Nigerians and within the international community that corruption is endemic and all pervasive in the country. The scourge of corruption has assumed an existential threat to the country, becoming a major obstacle to human and natinal development.",
                     style: AppTextStyle.appText,
                     textAlign: TextAlign.justify,
                   ),

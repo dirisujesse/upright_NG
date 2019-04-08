@@ -4,7 +4,7 @@ import 'package:states_rebuilder/states_rebuilder.dart';
 
 import '../stores/post.dart';
 
-final postBloc = PostBloc();
+final postBloc = PostBloc.getInstance();
 
 class UprightSearchDelegate extends SearchDelegate {
   @override
@@ -34,8 +34,10 @@ class UprightSearchDelegate extends SearchDelegate {
   @override
   Widget buildResults(BuildContext context) {
     if (query.length > 0) {
+      Future.delayed(Duration(milliseconds: 50), postBloc.searchPosts(query));
       return StateBuilder(
-        initState: (state) => postBloc.searchPosts(state, query),
+        stateID: "postSearchState",
+        blocs: [postBloc],
         builder: (_) {
           if (postBloc.isLoading) {
             return Center(
@@ -63,7 +65,7 @@ class UprightSearchDelegate extends SearchDelegate {
               itemBuilder: (BuildContext context, int index) {
                 return ListTile(
                   leading: CircleAvatar(
-                    backgroundImage: NetworkImage(results[index]["avatar"]),
+                    backgroundImage: results[index]["image"].endsWith(".mp4") || results[index]["image"].endsWith(".m4a") ? AssetImage("assets/images/logo.jpg") : NetworkImage(results[index]["image"]),
                     backgroundColor: Colors.teal,
                   ),
                   title: Text(
@@ -76,8 +78,11 @@ class UprightSearchDelegate extends SearchDelegate {
                   ),
                   trailing: IconButton(
                     icon: Icon(Icons.arrow_forward_ios),
-                    onPressed: () => Navigator.pushNamed(
-                        context, '/post/$index/${results[index]["title"]}'),
+                    onPressed: () {
+                      // query = "";
+                      Navigator.pushNamed(
+                        context, '/post/${results[index]["id"]}/${results[index]["title"]}');
+                    },
                   ),
                 );
               },

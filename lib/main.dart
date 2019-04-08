@@ -13,6 +13,7 @@ import 'pages/tnc.dart';
 import 'pages/suggestions.dart';
 import 'pages/top_contributors.dart';
 import 'pages/feed_detail.dart';
+import 'pages/post_create.dart';
 
 void main() => runApp(MyApp());
 
@@ -44,16 +45,19 @@ class MyApp extends StatelessWidget {
         '/suggestions': (BuildContext context) => SuggestionPage(),
         '/topconts': (BuildContext context) => TopcontributorsPage(),
         '/profile': (BuildContext context) => ProfilePage(),
+        '/post/add/anon': (BuildContext context) => PostCreatePage(isAnon: true,),
+        '/post/add/notanon': (BuildContext context) => PostCreatePage(),
       },
       onGenerateRoute: (RouteSettings settings) {
         final path = settings.name;
         if (path.startsWith('/post')) {
-          final postId = path.split('/')[2];
-          final postTitle = path.split('/')[3];
+          final pathArr = path.split('/');
+          final postId = pathArr[2];
+          final postTitle = pathArr[3];
           return MaterialPageRoute(builder: (BuildContext context) {
             return FeedPage(
               title: postTitle,
-              id: postId,
+              id: postId
             );
           });
         } else {
