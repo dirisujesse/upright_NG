@@ -120,8 +120,9 @@ class AppDrawer extends StatelessWidget {
                     title: Text(
                       usrBloc.isLoggedIn ? 'LOGOUT' : 'LOGIN',
                     ),
-                    onTap: () =>
-                        Navigator.pushReplacementNamed(context, '/login'),
+                    onTap: () {
+                      usrBloc.logout(context);
+                    }
                   ),
             ),
           ],

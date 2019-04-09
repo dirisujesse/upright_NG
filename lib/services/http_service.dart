@@ -196,9 +196,9 @@ class HttpService {
   static Future<dynamic> addPost(Map<String, dynamic> post) async {
     try {
       var req = await http.post(
-        '$url/post/createpost',
+        '$url/post/createPost',
         headers: {"Content-Type": "application/json"},
-        body: post,
+        body: json.encode(post),
       );
       if (req.statusCode > 201) {
         throw req.statusCode;
@@ -215,8 +215,8 @@ class HttpService {
     try {
       var req = await http.post(
         '$url/suggestions',
-        // headers: {"Content-Type": "application/json"},
-        body: body,
+        headers: {"Content-Type": "application/json"},
+        body: json.encode(body),
       );
       if (req.statusCode > 201) {
         throw req.statusCode;
@@ -252,8 +252,8 @@ class HttpService {
     try {
       var req = await http.post(
         '$url/comments/addcomment',
-        // headers: {"Content-Type": "application/json"},
-        body: body,
+        headers: {"Content-Type": "application/json"},
+        body: json.encode(body),
       );
       if (req.statusCode > 201) {
         throw req.statusCode;
@@ -305,8 +305,8 @@ class HttpService {
     try {
       var req = await http.put(
         '$url/user/updateprofile',
-        // headers: {"Content-Type": "application/json"},
-        body: body,
+        headers: {"Content-Type": "application/json"},
+        body: json.encode(body),
       );
       if (req.statusCode > 201) {
         throw req.statusCode;

@@ -36,9 +36,9 @@ class _FeedPageState extends State<FeedPage> {
     return Container(
       padding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
       margin: EdgeInsets.symmetric(horizontal: 1.0),
-      height: MediaQuery.of(context).size.height * 0.76,
+      height: MediaQuery.of(context).size.height * 0.83,
       decoration: BoxDecoration(
-        color: Color(0xCCE8C11C),
+        color: Color(0xCCCCCCCC),
         borderRadius: BorderRadius.only(
           topLeft: Radius.circular(10.0),
           topRight: Radius.circular(10.0),
@@ -103,10 +103,10 @@ class _FeedPageState extends State<FeedPage> {
                                 ),
                               ),
                               SizedBox(
-                                width: MediaQuery.of(context).size.width * 0.7,
+                                width: MediaQuery.of(context).size.width * 0.6,
                                 child: Text(
                                   comments[idx]["body"],
-                                  textAlign: TextAlign.justify,
+                                  textAlign: TextAlign.start,
                                   softWrap: true,
                                   style: TextStyle(
                                     fontSize: 14.0,
@@ -315,10 +315,10 @@ class _FeedPageState extends State<FeedPage> {
                                     url: post.image,
                                   )
                                 : FadeInImage(
-                                    height: 200.0,
+                                    // height: 200.0,
                                     placeholder:
                                         AssetImage("assets/images/logo.jpg"),
-                                    fit: BoxFit.cover,
+                                    fit: BoxFit.fill,
                                     image: NetworkImage(
                                       post.image,
                                     ),

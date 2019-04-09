@@ -35,14 +35,27 @@ class UserBloc extends StatesRebuilder {
     return instance;
   }
 
+  logout(BuildContext context) {
+    setActiveUser({
+      "name": "Anonymous User",
+      "id": "5b3a2ddbdfecff00149ab29c",
+      "email": "anonymous.user@mail.com",
+      "username": "anonymous.user",
+      "avatar": 'https://www.gravatar.com/avatar',
+    });
+    Future.delayed(Duration(milliseconds: 300), () => Navigator.pushReplacementNamed(context, '/login'));
+  }
+
   onAppInitCallBack(State state, context) {
     LocalStorage.getItem("isPrevUser").then((prevUser) {
       if (prevUser) {
         LocalStorage.getItem("activeUser").then((val) {
-          isLoggedIn = true;
-          activeUser = User.fromJson(val);
-          rebuildStates(ids: ["authState"], states: [state]);
-          setActiveUser(val);
+          if (val != null) {
+            final data = User.fromJson(val);
+            isLoggedIn = !(data.id == "5b3a2ddbdfecff00149ab29c");
+            activeUser = data;
+            rebuildStates(ids: ["authState"], states: [state]);
+          }
           Navigator.pushReplacementNamed(context, "/home");
         }).catchError((err) {
           print(err);
@@ -59,11 +72,14 @@ class UserBloc extends StatesRebuilder {
 
   setActiveUser(Map<String, dynamic> usrData) {
     LocalStorage.setItem("activeUser", usrData).then((val) {
-      isLoggedIn = true;
-      activeUser = User.fromJson(usrData);
+      final data = User.fromJson(usrData);
+      isLoggedIn = !(data.id == "5b3a2ddbdfecff00149ab29c");
+      activeUser = data;
       rebuildStates(ids: ["authState"]);
     }).catchError((err) {
-      activeUser = User.fromJson(usrData);
+      final data = User.fromJson(usrData);
+      isLoggedIn = !(data.id == "5b3a2ddbdfecff00149ab29c");
+      activeUser = data;
       rebuildStates(ids: ["authState"]);
     });
   }

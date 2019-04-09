@@ -11,6 +11,7 @@ class PostBloc extends StatesRebuilder {
   static PostBloc instance;
   List<dynamic> results = [];
   bool isLoading = false;
+  bool isSubmitingPost = false;
   bool isLoadingPost = false;
   bool isLoadingComments = false;
   bool isFail = false;
@@ -27,6 +28,35 @@ class PostBloc extends StatesRebuilder {
       instance = PostBloc();
     }
     return instance;
+  }
+
+  Future<bool> addPost(Map<String, dynamic> postData) {
+    isSubmitingPost = true;
+    rebuildStates(ids: ["postCreateState"]);
+    return Future.value(
+      HttpService.addPost(postData).then(
+        (val) {
+          if (!(val is int)) {
+            print(val);
+            isSubmitingPost = false;
+            rebuildStates(ids: ["postCreateState"]);
+            return Future.value(true);
+          } else {
+            print(val);
+            isSubmitingPost = false;
+            rebuildStates(ids: ["postCreateState"]);
+            return Future.value(false);
+          }
+        },
+      ).catchError(
+        (err) {
+          print(err + " ");
+          isSubmitingPost = false;
+          rebuildStates(ids: ["postCreateState"]);
+          return Future.value(false);
+        },
+      ),
+    );
   }
 
   loadComments(String postId) {
@@ -51,21 +81,19 @@ class PostBloc extends StatesRebuilder {
 
   vote([bool up = true]) {
     if (up) {
-      HttpService.upVote(true, post.id)
-        .then((val) {
-          if (!(val is int)) {
-            post.upvotes += 1;
-            rebuildStates(ids: ["postDetState"]);
-          }
-        }).catchError((onError) => print(onError));
+      HttpService.upVote(true, post.id).then((val) {
+        if (!(val is int)) {
+          post.upvotes += 1;
+          rebuildStates(ids: ["postDetState"]);
+        }
+      }).catchError((onError) => print(onError));
     } else {
-      HttpService.upVote(true, post.id, 'downVote')
-        .then((val) {
-          if (!(val is int)) {
-            post.downvotes += 1;
-            rebuildStates(ids: ["postDetState"]);
-          }
-        }).catchError((onError) => print(onError));
+      HttpService.upVote(true, post.id, 'downVote').then((val) {
+        if (!(val is int)) {
+          post.downvotes += 1;
+          rebuildStates(ids: ["postDetState"]);
+        }
+      }).catchError((onError) => print(onError));
     }
   }
 
@@ -160,8 +188,7 @@ class PostBloc extends StatesRebuilder {
     };
 
     return Future.value(
-      HttpService.addComment(data)
-      .then((val) {
+      HttpService.addComment(data).then((val) {
         if (!(val is int)) {
           if (comments != null) {
             comments.add(val);

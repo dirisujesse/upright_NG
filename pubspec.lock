@@ -29,13 +29,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.0.8"
-  audio_recorder:
-    dependency: "direct main"
-    description:
-      name: audio_recorder
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.0.6"
   boolean_selector:
     dependency: transitive
     description:
@@ -164,13 +157,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.0.4"
-  file:
-    dependency: transitive
-    description:
-      name: file
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "5.0.7"
   fixnum:
     dependency: transitive
     description:
@@ -190,6 +176,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.7.0"
+  flutter_sound:
+    dependency: "direct main"
+    description:
+      name: flutter_sound
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.3.7"
   flutter_test:
     dependency: "direct dev"
     description: flutter
@@ -258,13 +251,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.5.0+9"
-  intl:
-    dependency: transitive
-    description:
-      name: intl
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.15.7"
   io:
     dependency: transitive
     description:
@@ -384,6 +370,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.4.0"
+  percent_indicator:
+    dependency: "direct main"
+    description:
+      name: percent_indicator
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.14"
   petitparser:
     dependency: transitive
     description:

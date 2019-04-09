@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:line_icons/line_icons.dart';
 import 'package:video_player/video_player.dart';
 
 class VideoWidget extends StatefulWidget {
@@ -24,14 +23,19 @@ class _VideoWidgetState extends State<VideoWidget> {
     super.initState();
     if (widget.isUrl) {
       ctrl = VideoPlayerController.network(widget.url)
-        ..initialize().then((_) {
-          setState(() {});
-        });
+        ..initialize().then(
+          (_) {
+            setState(() {});
+          },
+        );
     } else {
+      print(widget.filePath.uri);
       ctrl = VideoPlayerController.file(widget.filePath)
-        ..initialize().then((_) {
-          setState(() {});
-        });
+        ..initialize().then(
+          (_) {
+            setState(() {});
+          },
+        );
     }
   }
 
@@ -42,76 +46,133 @@ class _VideoWidgetState extends State<VideoWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
+    return Stack(
+//      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: <Widget>[
         !ctrl.value.initialized
-            ? Center(
-                child: Theme.of(context).platform == TargetPlatform.iOS
-                    ? CupertinoActivityIndicator()
-                    : CircularProgressIndicator(),
+            ? Container(
+                height: 300,
+                decoration: BoxDecoration(
+                  image: DecorationImage(
+                      fit: BoxFit.cover,
+                      image: AssetImage("assets/images/waveform.png")),
+                ),
+                child: Center(
+                  child: Theme.of(context).platform == TargetPlatform.iOS
+                      ? CupertinoActivityIndicator()
+                      : CircularProgressIndicator(),
+                ),
               )
-            : widget.url.endsWith(".m4a")
+            : (widget.isUrl && widget.url.endsWith(".m4a")) ||
+                    !(ctrl.value.aspectRatio > 0.0)
                 ? Container(
-                    height: 200,
+                    height: 80,
                     decoration: BoxDecoration(
                       image: DecorationImage(
-                          fit: BoxFit.cover,
-                          image: AssetImage("assets/images/waveform.png")),
+                        fit: BoxFit.cover,
+                        image: AssetImage("assets/images/waveform.png"),
+                      ),
+                      color: Color(0xAAFFFFFF),
                     ),
-                    child: VideoPlayer(ctrl),
+                    // child: VideoPlayer(ctrl),
                   )
-                : AspectRatio(
-                    aspectRatio: ctrl.value.aspectRatio > 0.0
-                        ? ctrl.value.aspectRatio
-                        : 10.0,
-                    child: VideoPlayer(ctrl),
+                : Container(
+                    height: 300,
+                    width: MediaQuery.of(context).size.width,
+                    child: AspectRatio(
+                      aspectRatio: ctrl.value.aspectRatio,
+                      child: VideoPlayer(ctrl),
+                    ),
                   ),
-        Container(
-          height: 30.0,
-          color: Color(0xFFE8C11CAA),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: <Widget>[
-              IconButton(
-                icon: Icon(
-                  LineIcons.play,
-                  color: Colors.white,
-                  size: 30.0,
-                ),
-                onPressed: () {
-                  setState(() {
-                    ctrl.play();
-                  });
-                },
+        Positioned(
+            bottom: 10.0,
+            left: 0.0,
+            right: 0.0,
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 20.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      FloatingActionButton(
+                        heroTag: "volDec",
+                        child: Icon(Icons.loop),
+                        onPressed: () {
+                          if (!ctrl.value.isLooping) {
+                            setState(() {
+                              ctrl.setLooping(true);
+                            });
+                          } else {
+                            setState(() {
+                              ctrl.setLooping(false);
+                            });
+                          }
+                        },
+                        backgroundColor: ctrl.value.isLooping
+                            ? Color(0xAA0000AA)
+                            : Color(0xAA000000),
+                        mini: true,
+                        elevation: 0,
+                      ),
+                      SizedBox(
+                        width: 10.0,
+                      ),
+                      FloatingActionButton(
+                        heroTag: "volInc",
+                        child: Icon(Icons.mic_off),
+                        onPressed: () {
+                          if (ctrl.value.volume > 0.0) {
+                            setState(() {
+                              ctrl.setVolume(0.0);
+                            });
+                          } else {
+                            setState(() {
+                              ctrl.setVolume(20.0);
+                            });
+                          }
+                        },
+                        backgroundColor: Color(
+                            ctrl.value.volume > 0.0 ? 0xAA000000 : 0xAAFF0000),
+                        mini: true,
+                        elevation: 0,
+                      ),
+                    ],
+                  ),
+                  Row(
+                    children: <Widget>[
+                      FloatingActionButton(
+                        heroTag: "play",
+                        child: Icon(Icons.play_arrow),
+                        onPressed: () {
+                          setState(() {
+                            ctrl.seekTo(Duration(microseconds: 0));
+                            ctrl.play();
+                          });
+                        },
+                        backgroundColor: Color(0xAA000000),
+                        mini: true,
+                        elevation: 0,
+                      ),
+                      FloatingActionButton(
+                        heroTag: "pause",
+                        child: Icon(Icons.pause),
+                        onPressed: () {
+                          setState(() {
+                            ctrl.pause();
+                          });
+                        },
+                        backgroundColor: Color(0xAA000000),
+                        mini: true,
+                        elevation: 0,
+                      ),
+                    ],
+                  )
+                ],
               ),
-              IconButton(
-                icon: Icon(
-                  LineIcons.pause,
-                  color: Colors.white,
-                  size: 30.0,
-                ),
-                onPressed: () {
-                  setState(() {
-                    ctrl.pause();
-                  });
-                },
-              ),
-              IconButton(
-                icon: Icon(
-                  LineIcons.stop,
-                  color: Colors.white,
-                  size: 30.0,
-                ),
-                onPressed: () {
-                  setState(() {
-                    ctrl.pause();
-                  });
-                },
-              )
-            ],
-          ),
-        )
+            ))
       ],
     );
   }
