@@ -148,7 +148,9 @@ class _VideoWidgetState extends State<VideoWidget> {
                         child: Icon(Icons.play_arrow),
                         onPressed: () {
                           setState(() {
-                            ctrl.seekTo(Duration(microseconds: 0));
+                            if (ctrl.value.position.inMilliseconds >= ctrl.value.duration.inMilliseconds) {
+                              ctrl.seekTo(Duration(microseconds: 0));
+                            }
                             ctrl.play();
                           });
                         },

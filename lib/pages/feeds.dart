@@ -268,7 +268,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                           ),
                           onTap: () {
                             SimpleShare.share(
-                                msg: posts[idx]["body"],
+                                msg: '${posts[idx]["body"] ?? ""} ${posts[idx]["image"] ?? ""}',
                                 title: posts[idx]["title"]);
                           },
                         )

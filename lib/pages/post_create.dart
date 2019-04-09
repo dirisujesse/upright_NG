@@ -65,6 +65,13 @@ class PostCreatePageState extends State<PostCreatePage> {
     });
   }
 
+  resetForm() {
+    setState(() {
+      titleCtrl = TextEditingController(text: "");
+      contentCtrl = TextEditingController(text: "");
+    });
+  }
+
   reset() {
     setState(() {
       _image = null;
@@ -76,71 +83,74 @@ class PostCreatePageState extends State<PostCreatePage> {
       isRecording = false;
       showRecWidget = false;
       audioPath = null;
-      titleCtrl = TextEditingController(text: "");
-      contentCtrl = TextEditingController(text: "");
     });
   }
 
   Widget recordWidget(context) {
     if (showRecWidget) {
       return Container(
-      width: scrnSiaz,
-      color: txtCol,
-      height: 70.0,
-      padding: EdgeInsets.all(10.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: <Widget>[
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: <Widget>[
-              Text(
-                "00:00",
-                style: TextStyle(color: bCol),
-              ),
-              LinearPercentIndicator(
-                progressColor: Color(0xFFE8C11C),
-                percent: pos / 100,
-                backgroundColor: bCol,
-                width: MediaQuery.of(context).size.width * 0.6,
-                lineHeight: 10.0,
-              ),
-              Text(
-                "05:00",
-                style: TextStyle(color: bCol),
-              ),
-            ],
-          ),
-          IconButton(
-            icon: Icon(
-              isRecording ? Icons.stop : Icons.play_arrow,
-              color: bCol,
-              size: 30,
+        width: scrnSiaz,
+        color: txtCol,
+        height: 70.0,
+        padding: EdgeInsets.all(10.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: <Widget>[
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: <Widget>[
+                Text(
+                  "00:00",
+                  style: TextStyle(color: bCol),
+                ),
+                LinearPercentIndicator(
+                  progressColor: Color(0xFFE8C11C),
+                  percent: pos / 100,
+                  backgroundColor: bCol,
+                  width: MediaQuery.of(context).size.width * 0.6,
+                  lineHeight: 8.0,
+                ),
+                Text(
+                  "05:00",
+                  style: TextStyle(color: bCol),
+                ),
+              ],
             ),
-            onPressed: () {
-              if (isRecording) {
-                stopRecAudio();
-              } else {
-                recAudio();
-              }
-            },
-          )
-        ],
-      ),
-    );
+            FloatingActionButton(
+              heroTag: "recBtn",
+              backgroundColor: bCol,
+              child: Icon(
+                isRecording ? Icons.stop : Icons.mic,
+                color: txtCol,
+                size: 30,
+              ),
+              onPressed: () {
+                if (isRecording) {
+                  stopRecAudio();
+                } else {
+                  recAudio();
+                }
+              },
+            )
+          ],
+        ),
+      );
     } else {
-      return SizedBox(height: 0,);
+      return SizedBox(
+        height: 0,
+      );
     }
   }
 
   Future recAudio() async {
-    int progress = 0;
     if (isAud) {
       setState(() {
-        isAud = false;
+       isAud = false;
+       _audio = null; 
       });
     }
+    int progress = 0;
 
     await recorder.setSubscriptionDuration(1);
     final recordingPath = await fs.getApplicationDocumentsDirectory();
@@ -174,12 +184,12 @@ class PostCreatePageState extends State<PostCreatePage> {
         }
         setState(() {
           isRecording = false;
+          isVid = false;
+          isImg = false;
           _image = null;
           _video = null;
           _audio = File(audioPath);
-          isImg = false;
           isAud = true;
-          isVid = false;
           pos = 0;
         });
       }
@@ -187,11 +197,7 @@ class PostCreatePageState extends State<PostCreatePage> {
   }
 
   Future getImage([isGal = false]) async {
-    if (isImg) {
-      setState(() {
-        isImg = false;
-      });
-    }
+    reset();
 
     var image = await ImagePicker.pickImage(
             source: isGal ? ImageSource.gallery : ImageSource.camera) ??
@@ -199,35 +205,32 @@ class PostCreatePageState extends State<PostCreatePage> {
 
     if (image != null) {
       setState(() {
+        isAud = false;
+        isVid = false;
         _image = image;
         _video = null;
         _audio = null;
         isImg = true;
-        isAud = false;
         isRecording = false;
-        isVid = false;
       });
     }
   }
 
   Future getVideo([isGal = false]) async {
-    if (isVid) {
-      setState(() {
-        isVid = false;
-      });
-    }
+    reset();
+
     var vid = await ImagePicker.pickVideo(
             source: isGal ? ImageSource.gallery : ImageSource.camera) ??
         _video;
 
     if (vid != null) {
       setState(() {
-        _video = vid;
-        _image = null;
-        _audio = null;
         isImg = false;
         isAud = false;
+        _video = vid;
         isVid = true;
+        _image = null;
+        _audio = null;
         isRecording = false;
       });
     }
@@ -489,6 +492,7 @@ class PostCreatePageState extends State<PostCreatePage> {
                                           ),
                                         );
                                         reset();
+                                        resetForm();
                                       } else {
                                         Scaffold.of(context).showSnackBar(
                                           SnackBar(

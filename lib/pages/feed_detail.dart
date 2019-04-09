@@ -149,7 +149,7 @@ class _FeedPageState extends State<FeedPage> {
           color: Colors.black,
         ),
         onPressed: () {
-          SimpleShare.share(msg: postData.post.body, title: widget.title);
+          SimpleShare.share(msg: '${postData.post.body ?? ""} ${postData.post.image ?? ""}', title: widget.title);
         },
       ),
       bottomNavigationBar: Container(
