@@ -121,7 +121,7 @@ class _VideoWidgetState extends State<VideoWidget> {
                     ),
                     FloatingActionButton(
                       heroTag: "volInc",
-                      child: Icon(Icons.mic_off),
+                      child: Icon(Icons.volume_off),
                       onPressed: () {
                         if (ctrl.value.volume > 0.0) {
                           setState(() {

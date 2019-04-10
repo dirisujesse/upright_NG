@@ -10,6 +10,7 @@ import 'package:states_rebuilder/states_rebuilder.dart';
 import 'package:location/location.dart';
 import 'package:flutter_sound/flutter_sound.dart';
 import 'package:percent_indicator/percent_indicator.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 import '../components/form_style.dart';
 import '../components/app_drawer.dart';
@@ -32,6 +33,8 @@ class PostCreatePage extends StatefulWidget {
 }
 
 class PostCreatePageState extends State<PostCreatePage> {
+  TargetPlatform platform;
+  final PermissionHandler _permissionHandler = PermissionHandler();
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
   final FlutterSound recorder = FlutterSound();
   var _recorderObserver;
@@ -63,6 +66,7 @@ class PostCreatePageState extends State<PostCreatePage> {
     setState(() {
       showRecWidget = true;
     });
+    recAudio();
   }
 
   resetForm() {
@@ -144,32 +148,50 @@ class PostCreatePageState extends State<PostCreatePage> {
   }
 
   Future recAudio() async {
-    if (isAud) {
+    bool isPermitted;
+    PermissionStatus permitAud  = await _permissionHandler
+        .checkPermissionStatus(PermissionGroup.microphone);
+    PermissionStatus permitStorage = platform == TargetPlatform.android
+          ? await _permissionHandler
+              .checkPermissionStatus(PermissionGroup.storage)
+          : true;
+    isPermitted = (permitAud != null && permitStorage != null)
+          ? ((permitAud == PermissionStatus.granted) &&
+              (permitStorage == PermissionStatus.granted))
+          : false;
+    print("checking permissions");
+    if (isPermitted != null && isPermitted == true) {
+      if (isAud) {
+        setState(() {
+          isAud = false;
+          _audio = null;
+        });
+      }
+      int progress = 0;
+
+      await recorder.setSubscriptionDuration(1);
+      final recordingPath = await fs.getApplicationDocumentsDirectory();
+      audioPath = await recorder.startRecorder(
+          join(recordingPath.path, DateTime.now().toIso8601String()));
+
+      _recorderObserver = recorder.onRecorderStateChanged.listen((e) {});
+
+      interval = Timer.periodic(Duration(seconds: 1), (duration) {
+        progress += 1;
+        setState(() {
+          isRecording = true;
+          pos = ((progress / (60 * 5)) * 100);
+        });
+        if (pos >= 100.0) {
+          stopRecAudio();
+        }
+      });
+    } else {
+      await _permissionHandler.requestPermissions([PermissionGroup.microphone, PermissionGroup.storage]);
       setState(() {
-       isAud = false;
-       _audio = null; 
+        showRecWidget = false;
       });
     }
-    int progress = 0;
-
-    await recorder.setSubscriptionDuration(1);
-    final recordingPath = await fs.getApplicationDocumentsDirectory();
-    audioPath = await recorder.startRecorder(
-        join(recordingPath.path, DateTime.now().toIso8601String()));
-
-    _recorderObserver = recorder.onRecorderStateChanged.listen((e) {});
-
-    interval = Timer.periodic(Duration(seconds: 1), (duration) {
-      progress += 1;
-      setState(() {
-        isRecording = true;
-        pos = ((progress / (60 * 5)) * 100);
-      });
-      print(pos);
-      if (pos >= 100.0) {
-        stopRecAudio();
-      }
-    });
   }
 
   Future stopRecAudio() async {
@@ -197,47 +219,86 @@ class PostCreatePageState extends State<PostCreatePage> {
   }
 
   Future getImage([isGal = false]) async {
-    reset();
+    bool isPermitted = true;
+    if (!isGal) {
+      PermissionStatus permitStorage = platform == TargetPlatform.android
+          ? await _permissionHandler
+              .checkPermissionStatus(PermissionGroup.storage)
+          : true;
+      PermissionStatus permitCam = await _permissionHandler
+          .checkPermissionStatus(PermissionGroup.camera);
+      isPermitted = (permitCam != null && permitStorage != null)
+          ? ((permitCam == PermissionStatus.granted) &&
+              (permitCam == PermissionStatus.granted))
+          : false;
+      print("checking permissions");
+    }
+    if (isPermitted != null && isPermitted == true) {
+      reset();
 
-    var image = await ImagePicker.pickImage(
-            source: isGal ? ImageSource.gallery : ImageSource.camera) ??
-        _image;
+      var image = await ImagePicker.pickImage(
+              source: isGal ? ImageSource.gallery : ImageSource.camera) ??
+          _image;
 
-    if (image != null) {
-      setState(() {
-        isAud = false;
-        isVid = false;
-        _image = image;
-        _video = null;
-        _audio = null;
-        isImg = true;
-        isRecording = false;
-      });
+      if (image != null) {
+        setState(() {
+          isAud = false;
+          isVid = false;
+          _image = image;
+          _video = null;
+          _audio = null;
+          isImg = true;
+          isRecording = false;
+        });
+      }
+    } else {
+      await _permissionHandler.requestPermissions(
+          [PermissionGroup.camera, PermissionGroup.storage]);
     }
   }
 
   Future getVideo([isGal = false]) async {
-    reset();
+    bool isPermitted = true;
+    if (!isGal) {
+      PermissionStatus permitStorage = platform == TargetPlatform.android
+          ? await _permissionHandler
+              .checkPermissionStatus(PermissionGroup.storage)
+          : true;
+      PermissionStatus permitCam = await _permissionHandler
+          .checkPermissionStatus(PermissionGroup.camera);
+      isPermitted = (permitCam != null && permitStorage != null)
+          ? ((permitCam == PermissionStatus.granted) &&
+              (permitCam == PermissionStatus.granted))
+          : false;
+      print("checking permissions");
+    }
+    if (isPermitted != null && isPermitted == true) {
+      reset();
 
-    var vid = await ImagePicker.pickVideo(
-            source: isGal ? ImageSource.gallery : ImageSource.camera) ??
-        _video;
+      var vid = await ImagePicker.pickVideo(
+              source: isGal ? ImageSource.gallery : ImageSource.camera) ??
+          _video;
 
-    if (vid != null) {
-      setState(() {
-        isImg = false;
-        isAud = false;
-        _video = vid;
-        isVid = true;
-        _image = null;
-        _audio = null;
-        isRecording = false;
-      });
+      if (vid != null) {
+        setState(() {
+          isImg = false;
+          isAud = false;
+          _video = vid;
+          isVid = true;
+          _image = null;
+          _audio = null;
+          isRecording = false;
+        });
+      }
+    } else {
+      await _permissionHandler.requestPermissions(
+          [PermissionGroup.camera, PermissionGroup.storage]);
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    platform = Theme.of(context).platform;
     scrnSiaz = MediaQuery.of(context).size.width;
     scrnHaiyt = MediaQuery.of(context).size.height;
     pagePad = scrnSiaz > 550 ? scrnSiaz * 0.085 : scrnSiaz * 0.035;

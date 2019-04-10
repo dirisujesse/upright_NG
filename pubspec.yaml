@@ -11,7 +11,7 @@ description: Corruption Reporting.
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 7.1.0+1
+version: 7.1.1+1
 
 environment:
   sdk: ">=2.1.0 <3.0.0"
@@ -29,6 +29,7 @@ dependencies:
   location: ^2.3.0
   path_provider: ^0.4.1
   percent_indicator: "^1.0.14"
+  permission_handler: ^3.0.0
   sembast: ^1.15.1
   simple_share: ^0.0.1+4
   states_rebuilder: ^0.1.4
