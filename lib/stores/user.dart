@@ -16,6 +16,7 @@ class UserBloc extends StatesRebuilder {
     username: "anonymous.user",
     avatar: 'https://www.gravatar.com/avatar',
   );
+  StreamSubscription<dynamic> topContSub;
   List<dynamic> topConts = [];
   bool isLoggedIn = false;
   bool loginFail = false;
@@ -43,7 +44,8 @@ class UserBloc extends StatesRebuilder {
       "username": "anonymous.user",
       "avatar": 'https://www.gravatar.com/avatar',
     });
-    Future.delayed(Duration(milliseconds: 300), () => Navigator.pushReplacementNamed(context, '/login'));
+    Future.delayed(Duration(milliseconds: 300),
+        () => Navigator.pushReplacementNamed(context, '/login'));
   }
 
   onAppInitCallBack(State state, context) {
@@ -189,46 +191,46 @@ class UserBloc extends StatesRebuilder {
     );
   }
 
-  Future<dynamic> getTopConts(State state) {
+  getTopConts(State state) {
     isLoadingTopUsrs = true;
     msgTopUsrs = "Loading top users..";
     loadingTopUsrsFail = false;
     topConts = [];
     rebuildStates(states: [state]);
-    return Future.value(
-      HttpService.getTopUsers().then((val) {
-        if (!(val is int)) {
-          if (val.length > 0) {
-            topConts = val;
-            msgTopUsrs = "";
-            isLoadingTopUsrs = false;
-            loadingTopUsrsFail = false;
-            rebuildStates(states: [state]);
-            return Future.value(true);
-          } else {
-            msgTopUsrs = "";
-            isLoadingTopUsrs = false;
-            loadingTopUsrsFail = false;
-            rebuildStates(states: [state]);
-            return Future.value(true);
-          }
-        } else {
-          msgTopUsrs =
-              "Failed to load top users check that you are connected to the internet";
-          loadingTopUsrsFail = true;
+    topContSub = HttpService.getTopUsers().asStream().listen((val) {
+      if (!(val is int)) {
+        if (val.length > 0) {
+          topConts = val;
+          msgTopUsrs = "";
           isLoadingTopUsrs = false;
+          loadingTopUsrsFail = false;
           rebuildStates(states: [state]);
-          return Future.value(false);
+        } else {
+          msgTopUsrs = "";
+          isLoadingTopUsrs = false;
+          loadingTopUsrsFail = false;
+          rebuildStates(states: [state]);
         }
-      }).catchError((err) {
-        print(err);
-        isLoadingTopUsrs = false;
-        loadingTopUsrsFail = true;
+      } else {
         msgTopUsrs =
             "Failed to load top users check that you are connected to the internet";
+        loadingTopUsrsFail = true;
+        isLoadingTopUsrs = false;
         rebuildStates(states: [state]);
-        return Future.value(false);
-      }),
-    );
+      }
+    }, onError: (err) {
+      print(err);
+      isLoadingTopUsrs = false;
+      loadingTopUsrsFail = true;
+      msgTopUsrs =
+          "Failed to load top users check that you are connected to the internet";
+      rebuildStates(states: [state]);
+    });
+  }
+
+  disposeTopConts() {
+    if (topContSub != null) {
+      topContSub.cancel();
+    }
   }
 }

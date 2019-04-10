@@ -7,6 +7,10 @@ import './user.dart';
 import '../services/http_service.dart';
 
 class PostBloc extends StatesRebuilder {
+  StreamSubscription<dynamic> feedsPageInitSub;
+  StreamSubscription<dynamic> recFeedsFetchSub;
+  StreamSubscription<dynamic> feedPageInitSub;
+  StreamSubscription<dynamic> commentsSub;
   final usrData = UserBloc.getInstance();
   static PostBloc instance;
   List<dynamic> results = [];
@@ -64,19 +68,22 @@ class PostBloc extends StatesRebuilder {
     comments = [];
     showComments = true;
     rebuildStates(ids: ["postComState", "postComState1"]);
-    HttpService.getComments(postId).then((val) {
-      if (!(val is int)) {
+    commentsSub = HttpService.getComments(postId).asStream().listen(
+      (val) {
+        if (!(val is int)) {
+          isLoadingComments = false;
+          comments = val;
+          rebuildStates(ids: ["postComState", "postComState1"]);
+        } else {
+          isLoadingComments = false;
+          rebuildStates(ids: ["postComState", "postComState1"]);
+        }
+      },
+      onError: (err) {
         isLoadingComments = false;
-        comments = val;
         rebuildStates(ids: ["postComState", "postComState1"]);
-      } else {
-        isLoadingComments = false;
-        rebuildStates(ids: ["postComState", "postComState1"]);
-      }
-    }).catchError((err) {
-      isLoadingComments = false;
-      rebuildStates(ids: ["postComState", "postComState1"]);
-    });
+      },
+    );
   }
 
   vote([bool up = true]) {
@@ -130,54 +137,66 @@ class PostBloc extends StatesRebuilder {
     isLoadingComments = false;
     comments = null;
     rebuildStates(states: [state], ids: ["postDetState"]);
-    HttpService.getPost(id).then((val) {
-      if (!(val is int)) {
-        isLoadingPost = false;
-        post = Post.fromJson(val);
-        rebuildStates(states: [state], ids: ["postDetState"]);
-      } else {
+    feedPageInitSub = HttpService.getPost(id).asStream().listen(
+      (val) {
+        if (!(val is int)) {
+          isLoadingPost = false;
+          post = Post.fromJson(val);
+          rebuildStates(states: [state], ids: ["postDetState"]);
+        } else {
+          getCached(state, id);
+        }
+      },
+      onError: (err) {
         getCached(state, id);
-      }
-    }).catchError((err) {
-      getCached(state, id);
-    });
+      },
+    );
   }
 
   loadNew(State state) {
-    print("object");
-    HttpService.getPostRange(posts.length, posts.length + 20).then((val) {
-      if (!(val is int)) {
-        posts.addAll(val);
-        rebuildStates(states: [state]);
-      }
-    }).catchError((err) => "");
+    recFeedsFetchSub = HttpService.getPostRange(posts.length, posts.length + 20)
+        .asStream()
+        .listen(
+      (val) {
+        if (!(val is int)) {
+          if (val.length > 0) {
+            posts.addAll(val);
+            rebuildStates(states: [state]);
+          }
+        }
+      },
+      onError: (err) => "",
+    );
   }
 
-  Future<dynamic> getFeed(State state) {
+  getFeed(State state) {
     isLoading = true;
     rebuildStates(states: [state]);
-    return Future.wait([
+    feedsPageInitSub = Future.wait([
       HttpService.getPosts(),
       HttpService.getFeaturedPosts(),
       HttpService.getTrendingPosts()
-    ]).then((val) {
-      if (val.length > 0) {
-        isLoading = false;
-        failed = false;
-        posts = val[0] is int ? [] : val[0];
-        fposts = val[1] is int ? [] : val[1];
-        tposts = val[2] is int ? [] : val[2];
-        rebuildStates(states: [state]);
-      } else {
+    ]).asStream().listen(
+      (val) {
+        if (val.length > 0) {
+          isLoading = false;
+          failed = false;
+          posts = val[0] is int ? [] : val[0];
+          fposts = val[1] is int ? [] : val[1];
+          tposts = val[2] is int ? [] : val[2];
+          rebuildStates(states: [state]);
+        } else {
+          isLoading = false;
+          failed = true;
+          rebuildStates(states: [state]);
+        }
+      },
+      onError: (error) {
         isLoading = false;
         failed = true;
         rebuildStates(states: [state]);
-      }
-    }).catchError((error) {
-      isLoading = false;
-      failed = true;
-      rebuildStates(states: [state]);
-    });
+      },
+    );
   }
 
   Future<bool> addComment(String body) {
@@ -223,5 +242,23 @@ class PostBloc extends StatesRebuilder {
       isFail = true;
       rebuildStates(ids: ["postSearchState"]);
     });
+  }
+
+  disposeFeeds() {
+    if (feedsPageInitSub != null) {
+      feedsPageInitSub.cancel();
+    }
+    if (recFeedsFetchSub != null) {
+      recFeedsFetchSub.cancel();
+    }
+  }
+
+  disposeFeed() {
+    if (feedPageInitSub != null) {
+      feedPageInitSub.cancel();
+    }
+    if (commentsSub != null) {
+      commentsSub.cancel();
+    }
   }
 }

@@ -36,6 +36,12 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     super.initState();
   }
 
+  @override
+  void dispose() {
+    postData.disposeFeeds();
+    super.dispose();
+  }
+
   Widget carousel(List<dynamic> posts, context) {
     if (posts != null && posts.length > 0) {
       return Stack(
@@ -335,7 +341,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           );
         },
       ),
-      drawer: AppDrawer(),
+      drawer: AppDrawer(isHome: true,),
       body: Builder(
         builder: (BuildContext context) {
           return StateBuilder(

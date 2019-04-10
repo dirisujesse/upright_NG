@@ -16,6 +16,12 @@ class TopcontributorsPage extends StatefulWidget {
 }
 
 class _TopcontributorsPageState extends State<TopcontributorsPage> {
+  @override
+  void dispose() {
+    usrBloc.disposeTopConts();
+    super.dispose();
+  }
+
   Widget tile(User data) {
     return Container(
       margin: EdgeInsets.only(bottom: 5.0),
@@ -147,7 +153,8 @@ class _TopcontributorsPageState extends State<TopcontributorsPage> {
         initState: (state) => usrBloc.getTopConts(state),
         builder: (_) => RefreshIndicator(
               onRefresh: () {
-                return usrBloc.getTopConts(this);
+                usrBloc.getTopConts(this);
+                return Future.value(null);
               },
               child: body(usrBloc),
             ),

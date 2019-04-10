@@ -8,6 +8,10 @@ import '../stores/user.dart';
 final usrBloc = UserBloc.getInstance();
 
 class AppDrawer extends StatelessWidget {
+  final isHome;
+
+  AppDrawer({this.isHome = false});
+
   @override
   Widget build(BuildContext context) {
     return Drawer(
@@ -63,7 +67,11 @@ class AppDrawer extends StatelessWidget {
               title: Text(
                 'HOME',
               ),
-              onTap: () => Navigator.pushReplacementNamed(context, '/home'),
+              onTap: () {
+                if (!isHome) {
+                  Navigator.pushReplacementNamed(context, '/home');
+                } 
+              },
             ),
             ListTile(
               leading: Icon(LineIcons.bullhorn),

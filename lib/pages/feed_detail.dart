@@ -32,6 +32,12 @@ class _FeedPageState extends State<FeedPage> {
     comntCtrl = TextEditingController(text: "");
   }
 
+  @override
+  void dispose() {
+    postData.disposeFeed();
+    super.dispose();
+  }
+
   Widget commentsList(BuildContext context) {
     return Container(
       padding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
@@ -295,7 +301,7 @@ class _FeedPageState extends State<FeedPage> {
                                     textAlign: TextAlign.center,
                                     style: TextStyle(
                                       color: Color(0xFF25333D),
-                                      fontSize: 14.0,
+                                      fontSize: 12.0,
                                     ),
                                   ),
                             Text(
@@ -309,13 +315,12 @@ class _FeedPageState extends State<FeedPage> {
                             SizedBox(
                               height: 15.0,
                             ),
-                            post.image.endsWith("m4a") ||
-                                    post.image.endsWith("mp4")
+                            post.image.endsWith(".m4a") ||
+                                    post.image.endsWith(".mp4")
                                 ? VideoWidget(
                                     url: post.image,
                                   )
                                 : FadeInImage(
-                                    // height: 200.0,
                                     placeholder:
                                         AssetImage("assets/images/logo.jpg"),
                                     fit: BoxFit.fill,

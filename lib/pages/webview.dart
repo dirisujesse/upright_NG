@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
-import '../components/text_style.dart';
-
 import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
+
+import '../components/text_style.dart';
 
 class WebPage extends StatelessWidget {
   final String url;
@@ -12,7 +12,7 @@ class WebPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return new WebviewScaffold(
+    return WebviewScaffold(
       url: url,
       appBar: AppBar(
         title: Text(

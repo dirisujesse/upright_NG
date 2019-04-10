@@ -47,7 +47,6 @@ class _VideoWidgetState extends State<VideoWidget> {
   @override
   Widget build(BuildContext context) {
     return Stack(
-//      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: <Widget>[
         !ctrl.value.initialized
             ? Container(
@@ -85,96 +84,98 @@ class _VideoWidgetState extends State<VideoWidget> {
                     ),
                   ),
         Positioned(
-            bottom: 10.0,
-            left: 0.0,
-            right: 0.0,
-            child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 20.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    mainAxisSize: MainAxisSize.min,
-                    children: <Widget>[
-                      FloatingActionButton(
-                        heroTag: "volDec",
-                        child: Icon(Icons.loop),
-                        onPressed: () {
-                          if (!ctrl.value.isLooping) {
-                            setState(() {
-                              ctrl.setLooping(true);
-                            });
-                          } else {
-                            setState(() {
-                              ctrl.setLooping(false);
-                            });
-                          }
-                        },
-                        backgroundColor: ctrl.value.isLooping
-                            ? Color(0xAA0000AA)
-                            : Color(0xAA000000),
-                        mini: true,
-                        elevation: 0,
-                      ),
-                      SizedBox(
-                        width: 10.0,
-                      ),
-                      FloatingActionButton(
-                        heroTag: "volInc",
-                        child: Icon(Icons.mic_off),
-                        onPressed: () {
-                          if (ctrl.value.volume > 0.0) {
-                            setState(() {
-                              ctrl.setVolume(0.0);
-                            });
-                          } else {
-                            setState(() {
-                              ctrl.setVolume(20.0);
-                            });
-                          }
-                        },
-                        backgroundColor: Color(
-                            ctrl.value.volume > 0.0 ? 0xAA000000 : 0xAAFF0000),
-                        mini: true,
-                        elevation: 0,
-                      ),
-                    ],
-                  ),
-                  Row(
-                    children: <Widget>[
-                      FloatingActionButton(
-                        heroTag: "play",
-                        child: Icon(Icons.play_arrow),
-                        onPressed: () {
+          bottom: 10.0,
+          left: 0.0,
+          right: 0.0,
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 20.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    FloatingActionButton(
+                      heroTag: "volDec",
+                      child: Icon(Icons.loop),
+                      onPressed: () {
+                        if (!ctrl.value.isLooping) {
                           setState(() {
-                            if (ctrl.value.position.inMilliseconds >= ctrl.value.duration.inMilliseconds) {
-                              ctrl.seekTo(Duration(microseconds: 0));
-                            }
-                            ctrl.play();
+                            ctrl.setLooping(true);
                           });
-                        },
-                        backgroundColor: Color(0xAA000000),
-                        mini: true,
-                        elevation: 0,
-                      ),
-                      FloatingActionButton(
-                        heroTag: "pause",
-                        child: Icon(Icons.pause),
-                        onPressed: () {
+                        } else {
                           setState(() {
-                            ctrl.pause();
+                            ctrl.setLooping(false);
                           });
-                        },
-                        backgroundColor: Color(0xAA000000),
-                        mini: true,
-                        elevation: 0,
-                      ),
-                    ],
-                  )
-                ],
-              ),
-            ))
+                        }
+                      },
+                      backgroundColor: ctrl.value.isLooping
+                          ? Color(0xAA0000AA)
+                          : Color(0xAA000000),
+                      mini: true,
+                      elevation: 0,
+                    ),
+                    SizedBox(
+                      width: 10.0,
+                    ),
+                    FloatingActionButton(
+                      heroTag: "volInc",
+                      child: Icon(Icons.mic_off),
+                      onPressed: () {
+                        if (ctrl.value.volume > 0.0) {
+                          setState(() {
+                            ctrl.setVolume(0.0);
+                          });
+                        } else {
+                          setState(() {
+                            ctrl.setVolume(20.0);
+                          });
+                        }
+                      },
+                      backgroundColor: Color(
+                          ctrl.value.volume > 0.0 ? 0xAA000000 : 0xAAFF0000),
+                      mini: true,
+                      elevation: 0,
+                    ),
+                  ],
+                ),
+                Row(
+                  children: <Widget>[
+                    FloatingActionButton(
+                      heroTag: "play",
+                      child: Icon(Icons.play_arrow),
+                      onPressed: () {
+                        setState(() {
+                          if (ctrl.value.position.inMilliseconds >=
+                              ctrl.value.duration.inMilliseconds) {
+                            ctrl.seekTo(Duration(microseconds: 0));
+                          }
+                          ctrl.play();
+                        });
+                      },
+                      backgroundColor: Color(0xAA000000),
+                      mini: true,
+                      elevation: 0,
+                    ),
+                    FloatingActionButton(
+                      heroTag: "pause",
+                      child: Icon(Icons.pause),
+                      onPressed: () {
+                        setState(() {
+                          ctrl.pause();
+                        });
+                      },
+                      backgroundColor: Color(0xAA000000),
+                      mini: true,
+                      elevation: 0,
+                    ),
+                  ],
+                )
+              ],
+            ),
+          ),
+        ),
       ],
     );
   }
