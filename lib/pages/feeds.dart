@@ -137,52 +137,100 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     if (posts != null && posts.length > 0) {
       return LazyLoadScrollView(
         onEndOfPage: () => isRecent ? postData.loadNew(this) : print("ok"),
-        scrollOffset: 200,
-        child: ListView.builder(
+        child: CustomScrollView(
           physics: AlwaysScrollableScrollPhysics(),
-          itemCount: posts.length,
-          itemBuilder: (context, idx) {
-            return Card(
-              margin: EdgeInsets.symmetric(vertical: 15.0, horizontal: 15.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: <Widget>[
-                  GestureDetector(
-                    onTap: () => Navigator.pushNamed(context,
-                        '/post/${posts[idx]["id"]}/${posts[idx]["title"]}'),
-                    child: Stack(
-                      alignment: AlignmentDirectional.center,
+          shrinkWrap: true,
+          slivers: <Widget>[
+            SliverList(
+              delegate: SliverChildBuilderDelegate(
+                (context, idx) {
+                  return Card(
+                    margin:
+                        EdgeInsets.symmetric(vertical: 15.0, horizontal: 15.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: <Widget>[
-                        Container(
-                          height: 250,
-                          width: MediaQuery.of(context).size.width,
-                          foregroundDecoration: BoxDecoration(
-                            color: Color.fromRGBO(0, 0, 0, 0.5),
-                            borderRadius: bRadius,
-                          ),
-                          child: FadeInImage(
-                            placeholder: AssetImage("assets/images/logo.jpg"),
-                            fit: BoxFit.cover,
-                            image: posts[idx]["image"].endsWith(".m4a")
-                                ? AssetImage("assets/images/waveform.png")
-                                : posts[idx]["image"].endsWith(".mp4")
-                                    ? AssetImage("assets/images/vid.jpg")
-                                    : NetworkImage(posts[idx]["image"]),
+                        GestureDetector(
+                          onTap: () => Navigator.pushNamed(context,
+                              '/post/${posts[idx]["id"]}/${posts[idx]["title"]}'),
+                          child: Stack(
+                            alignment: AlignmentDirectional.center,
+                            children: <Widget>[
+                              Container(
+                                height: 250,
+                                width: MediaQuery.of(context).size.width,
+                                foregroundDecoration: BoxDecoration(
+                                  color: Color.fromRGBO(0, 0, 0, 0.5),
+                                  borderRadius: bRadius,
+                                ),
+                                child: FadeInImage(
+                                  placeholder:
+                                      AssetImage("assets/images/logo.jpg"),
+                                  fit: BoxFit.cover,
+                                  image: posts[idx]["image"].endsWith(".m4a")
+                                      ? AssetImage("assets/images/waveform.png")
+                                      : posts[idx]["image"].endsWith(".mp4")
+                                          ? AssetImage("assets/images/vid.jpg")
+                                          : NetworkImage(posts[idx]["image"]),
+                                ),
+                              ),
+                              Padding(
+                                padding: EdgeInsets.all(10.0),
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: <Widget>[
+                                    Text(
+                                      posts[idx]["title"],
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 22.0,
+                                        fontFamily: 'PlayfairDisplay',
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      height: 5.0,
+                                    ),
+                                    Text(
+                                      posts[idx]["body"],
+                                      maxLines: 3,
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 16.0,
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      height: 5.0,
+                                    ),
+                                    Text(
+                                      posts[idx]["time"],
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 16.0,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              )
+                            ],
                           ),
                         ),
                         Padding(
-                          padding: EdgeInsets.all(10.0),
+                          padding: EdgeInsets.symmetric(
+                            vertical: 15.0,
+                            horizontal: 15.0,
+                          ),
                           child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: <Widget>[
                               Text(
                                 posts[idx]["title"],
-                                textAlign: TextAlign.center,
+                                textAlign: TextAlign.start,
                                 style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 22.0,
-                                  fontFamily: 'PlayfairDisplay',
+                                  fontSize: 18.0,
                                 ),
                               ),
                               SizedBox(
@@ -191,105 +239,67 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                               Text(
                                 posts[idx]["body"],
                                 maxLines: 3,
-                                textAlign: TextAlign.center,
+                                textAlign: TextAlign.justify,
                                 style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 16.0,
-                                ),
-                              ),
-                              SizedBox(
-                                height: 5.0,
-                              ),
-                              Text(
-                                posts[idx]["time"],
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 16.0,
+                                  fontSize: 13.0,
                                 ),
                               ),
                             ],
+                          ),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.symmetric(
+                              vertical: 15.0, horizontal: 15.0),
+                          child: SizedBox(
+                            height: 20.0,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: <Widget>[
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceEvenly,
+                                  children: <Widget>[
+                                    Row(
+                                      children: <Widget>[
+                                        Icon(LineIcons.frown_o),
+                                        Text(
+                                            posts[idx]["downvotes"].toString()),
+                                      ],
+                                    ),
+                                    SizedBox(
+                                      width: 10.0,
+                                    ),
+                                    Row(
+                                      children: <Widget>[
+                                        Icon(LineIcons.heart_o),
+                                        Text(posts[idx]["upvotes"].toString()),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                                GestureDetector(
+                                  child: Icon(
+                                    Icons.share,
+                                  ),
+                                  onTap: () {
+                                    SimpleShare.share(
+                                        msg:
+                                            '${posts[idx]["body"] ?? ""} ${posts[idx]["image"] ?? ""}',
+                                        title: posts[idx]["title"]);
+                                  },
+                                )
+                              ],
+                            ),
                           ),
                         )
                       ],
                     ),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.symmetric(
-                      vertical: 15.0,
-                      horizontal: 15.0,
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        Text(
-                          posts[idx]["title"],
-                          textAlign: TextAlign.start,
-                          style: TextStyle(
-                            fontSize: 18.0,
-                          ),
-                        ),
-                        SizedBox(
-                          height: 5.0,
-                        ),
-                        Text(
-                          posts[idx]["body"],
-                          maxLines: 3,
-                          textAlign: TextAlign.justify,
-                          style: TextStyle(
-                            fontSize: 13.0,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Padding(
-                    padding:
-                        EdgeInsets.symmetric(vertical: 15.0, horizontal: 15.0),
-                    child: SizedBox(
-                      height: 20.0,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: <Widget>[
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: <Widget>[
-                              Row(
-                                children: <Widget>[
-                                  Icon(LineIcons.frown_o),
-                                  Text(posts[idx]["downvotes"].toString()),
-                                ],
-                              ),
-                              SizedBox(
-                                width: 10.0,
-                              ),
-                              Row(
-                                children: <Widget>[
-                                  Icon(LineIcons.heart_o),
-                                  Text(posts[idx]["upvotes"].toString()),
-                                ],
-                              ),
-                            ],
-                          ),
-                          GestureDetector(
-                            child: Icon(
-                              Icons.share,
-                            ),
-                            onTap: () {
-                              SimpleShare.share(
-                                  msg:
-                                      '${posts[idx]["body"] ?? ""} ${posts[idx]["image"] ?? ""}',
-                                  title: posts[idx]["title"]);
-                            },
-                          )
-                        ],
-                      ),
-                    ),
-                  )
-                ],
+                  );
+                },
+                childCount: posts.length,
               ),
-            );
-          },
+            )
+          ],
         ),
       );
     } else {
@@ -312,6 +322,161 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     }
   }
 
+  // ListView.builder(
+  //         physics: AlwaysScrollableScrollPhysics(),
+  //         shrinkWrap: true,
+  //         itemCount: posts.length,
+  //         itemBuilder: (context, idx) {
+  //           return Card(
+  //             margin: EdgeInsets.symmetric(vertical: 15.0, horizontal: 15.0),
+  //             child: Column(
+  //               crossAxisAlignment: CrossAxisAlignment.stretch,
+  //               children: <Widget>[
+  //                 GestureDetector(
+  //                   onTap: () => Navigator.pushNamed(context,
+  //                       '/post/${posts[idx]["id"]}/${posts[idx]["title"]}'),
+  //                   child: Stack(
+  //                     alignment: AlignmentDirectional.center,
+  //                     children: <Widget>[
+  //                       Container(
+  //                         height: 250,
+  //                         width: MediaQuery.of(context).size.width,
+  //                         foregroundDecoration: BoxDecoration(
+  //                           color: Color.fromRGBO(0, 0, 0, 0.5),
+  //                           borderRadius: bRadius,
+  //                         ),
+  //                         child: FadeInImage(
+  //                           placeholder: AssetImage("assets/images/logo.jpg"),
+  //                           fit: BoxFit.cover,
+  //                           image: posts[idx]["image"].endsWith(".m4a")
+  //                               ? AssetImage("assets/images/waveform.png")
+  //                               : posts[idx]["image"].endsWith(".mp4")
+  //                                   ? AssetImage("assets/images/vid.jpg")
+  //                                   : NetworkImage(posts[idx]["image"]),
+  //                         ),
+  //                       ),
+  //                       Padding(
+  //                         padding: EdgeInsets.all(10.0),
+  //                         child: Column(
+  //                           mainAxisAlignment: MainAxisAlignment.center,
+  //                           crossAxisAlignment: CrossAxisAlignment.center,
+  //                           children: <Widget>[
+  //                             Text(
+  //                               posts[idx]["title"],
+  //                               textAlign: TextAlign.center,
+  //                               style: TextStyle(
+  //                                 color: Colors.white,
+  //                                 fontSize: 22.0,
+  //                                 fontFamily: 'PlayfairDisplay',
+  //                               ),
+  //                             ),
+  //                             SizedBox(
+  //                               height: 5.0,
+  //                             ),
+  //                             Text(
+  //                               posts[idx]["body"],
+  //                               maxLines: 3,
+  //                               textAlign: TextAlign.center,
+  //                               style: TextStyle(
+  //                                 color: Colors.white,
+  //                                 fontSize: 16.0,
+  //                               ),
+  //                             ),
+  //                             SizedBox(
+  //                               height: 5.0,
+  //                             ),
+  //                             Text(
+  //                               posts[idx]["time"],
+  //                               textAlign: TextAlign.center,
+  //                               style: TextStyle(
+  //                                 color: Colors.white,
+  //                                 fontSize: 16.0,
+  //                               ),
+  //                             ),
+  //                           ],
+  //                         ),
+  //                       )
+  //                     ],
+  //                   ),
+  //                 ),
+  //                 Padding(
+  //                   padding: EdgeInsets.symmetric(
+  //                     vertical: 15.0,
+  //                     horizontal: 15.0,
+  //                   ),
+  //                   child: Column(
+  //                     crossAxisAlignment: CrossAxisAlignment.start,
+  //                     children: <Widget>[
+  //                       Text(
+  //                         posts[idx]["title"],
+  //                         textAlign: TextAlign.start,
+  //                         style: TextStyle(
+  //                           fontSize: 18.0,
+  //                         ),
+  //                       ),
+  //                       SizedBox(
+  //                         height: 5.0,
+  //                       ),
+  //                       Text(
+  //                         posts[idx]["body"],
+  //                         maxLines: 3,
+  //                         textAlign: TextAlign.justify,
+  //                         style: TextStyle(
+  //                           fontSize: 13.0,
+  //                         ),
+  //                       ),
+  //                     ],
+  //                   ),
+  //                 ),
+  //                 Padding(
+  //                   padding:
+  //                       EdgeInsets.symmetric(vertical: 15.0, horizontal: 15.0),
+  //                   child: SizedBox(
+  //                     height: 20.0,
+  //                     child: Row(
+  //                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  //                       children: <Widget>[
+  //                         Row(
+  //                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+  //                           children: <Widget>[
+  //                             Row(
+  //                               children: <Widget>[
+  //                                 Icon(LineIcons.frown_o),
+  //                                 Text(posts[idx]["downvotes"].toString()),
+  //                               ],
+  //                             ),
+  //                             SizedBox(
+  //                               width: 10.0,
+  //                             ),
+  //                             Row(
+  //                               children: <Widget>[
+  //                                 Icon(LineIcons.heart_o),
+  //                                 Text(posts[idx]["upvotes"].toString()),
+  //                               ],
+  //                             ),
+  //                           ],
+  //                         ),
+  //                         GestureDetector(
+  //                           child: Icon(
+  //                             Icons.share,
+  //                           ),
+  //                           onTap: () {
+  //                             SimpleShare.share(
+  //                                 msg:
+  //                                     '${posts[idx]["body"] ?? ""} ${posts[idx]["image"] ?? ""}',
+  //                                 title: posts[idx]["title"]);
+  //                           },
+  //                         )
+  //                       ],
+  //                     ),
+  //                   ),
+  //                 )
+  //               ],
+  //             ),
+  //           );
+  //         },
+  //       ),
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -332,7 +497,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                 heroTag: "refresh",
               ),
               SizedBox(
-                height: 5.0,
+                height: 10.0,
               ),
               FloatingActionButton(
                 child: Icon(Icons.add),
