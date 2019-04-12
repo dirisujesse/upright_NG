@@ -4,7 +4,7 @@ import 'package:line_icons/line_icons.dart';
 import 'package:dots_indicator/dots_indicator.dart';
 import 'package:states_rebuilder/states_rebuilder.dart';
 import 'package:simple_share/simple_share.dart';
-import 'package:lazy_load_scrollview/lazy_load_scrollview.dart';
+// import 'package:lazy_load_scrollview/lazy_load_scrollview.dart';
 
 import '../components/app_drawer.dart';
 import '../components/upright_search.dart';
@@ -28,10 +28,12 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   String title = "";
   GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
   ScrollController scrlCntrl;
+  ScrollController recScrlCntrl;
   TabController tabCntrl;
 
   void initState() {
     scrlCntrl = ScrollController();
+    recScrlCntrl = ScrollController();
     tabCntrl = TabController(length: 2, vsync: this);
     super.initState();
   }
@@ -39,6 +41,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   @override
   void dispose() {
     postData.disposeFeeds();
+    scrlCntrl.dispose();
+    recScrlCntrl.dispose();
     super.dispose();
   }
 
@@ -134,10 +138,24 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   }
 
   Widget recent(List<dynamic> posts, context, [isRecent = true]) {
+    if (isRecent) {
+      recScrlCntrl.addListener(() {
+        double pos = recScrlCntrl.offset;
+        if (pos > MediaQuery.of(context).size.height * 0.3) {
+          scrlCntrl.animateTo(scrlCntrl.position.maxScrollExtent, duration: Duration(milliseconds: 500), curve: Curves.linear);
+        } else {
+          scrlCntrl.animateTo(scrlCntrl.position.minScrollExtent, duration: Duration(milliseconds: 500), curve: Curves.linear);
+        }
+
+        if ((recScrlCntrl.position.maxScrollExtent - pos) <= 100 && !postData.isFetching) {
+          print("fetching");
+          postData.loadNew(this);
+        }
+      });
+    }
     if (posts != null && posts.length > 0) {
-      return LazyLoadScrollView(
-        onEndOfPage: () => isRecent ? postData.loadNew(this) : print("ok"),
-        child: CustomScrollView(
+      return  CustomScrollView(
+          controller: isRecent ? recScrlCntrl : null,
           physics: AlwaysScrollableScrollPhysics(),
           shrinkWrap: true,
           slivers: <Widget>[
@@ -300,8 +318,11 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
               ),
             )
           ],
-        ),
-      );
+        );
+      // LazyLoadScrollView(
+      //   onEndOfPage: () => isRecent ? postData.loadNew(this) : print("ok"),
+      //   child:
+      // );
     } else {
       return Center(
         child: Column(
@@ -321,161 +342,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       );
     }
   }
-
-  // ListView.builder(
-  //         physics: AlwaysScrollableScrollPhysics(),
-  //         shrinkWrap: true,
-  //         itemCount: posts.length,
-  //         itemBuilder: (context, idx) {
-  //           return Card(
-  //             margin: EdgeInsets.symmetric(vertical: 15.0, horizontal: 15.0),
-  //             child: Column(
-  //               crossAxisAlignment: CrossAxisAlignment.stretch,
-  //               children: <Widget>[
-  //                 GestureDetector(
-  //                   onTap: () => Navigator.pushNamed(context,
-  //                       '/post/${posts[idx]["id"]}/${posts[idx]["title"]}'),
-  //                   child: Stack(
-  //                     alignment: AlignmentDirectional.center,
-  //                     children: <Widget>[
-  //                       Container(
-  //                         height: 250,
-  //                         width: MediaQuery.of(context).size.width,
-  //                         foregroundDecoration: BoxDecoration(
-  //                           color: Color.fromRGBO(0, 0, 0, 0.5),
-  //                           borderRadius: bRadius,
-  //                         ),
-  //                         child: FadeInImage(
-  //                           placeholder: AssetImage("assets/images/logo.jpg"),
-  //                           fit: BoxFit.cover,
-  //                           image: posts[idx]["image"].endsWith(".m4a")
-  //                               ? AssetImage("assets/images/waveform.png")
-  //                               : posts[idx]["image"].endsWith(".mp4")
-  //                                   ? AssetImage("assets/images/vid.jpg")
-  //                                   : NetworkImage(posts[idx]["image"]),
-  //                         ),
-  //                       ),
-  //                       Padding(
-  //                         padding: EdgeInsets.all(10.0),
-  //                         child: Column(
-  //                           mainAxisAlignment: MainAxisAlignment.center,
-  //                           crossAxisAlignment: CrossAxisAlignment.center,
-  //                           children: <Widget>[
-  //                             Text(
-  //                               posts[idx]["title"],
-  //                               textAlign: TextAlign.center,
-  //                               style: TextStyle(
-  //                                 color: Colors.white,
-  //                                 fontSize: 22.0,
-  //                                 fontFamily: 'PlayfairDisplay',
-  //                               ),
-  //                             ),
-  //                             SizedBox(
-  //                               height: 5.0,
-  //                             ),
-  //                             Text(
-  //                               posts[idx]["body"],
-  //                               maxLines: 3,
-  //                               textAlign: TextAlign.center,
-  //                               style: TextStyle(
-  //                                 color: Colors.white,
-  //                                 fontSize: 16.0,
-  //                               ),
-  //                             ),
-  //                             SizedBox(
-  //                               height: 5.0,
-  //                             ),
-  //                             Text(
-  //                               posts[idx]["time"],
-  //                               textAlign: TextAlign.center,
-  //                               style: TextStyle(
-  //                                 color: Colors.white,
-  //                                 fontSize: 16.0,
-  //                               ),
-  //                             ),
-  //                           ],
-  //                         ),
-  //                       )
-  //                     ],
-  //                   ),
-  //                 ),
-  //                 Padding(
-  //                   padding: EdgeInsets.symmetric(
-  //                     vertical: 15.0,
-  //                     horizontal: 15.0,
-  //                   ),
-  //                   child: Column(
-  //                     crossAxisAlignment: CrossAxisAlignment.start,
-  //                     children: <Widget>[
-  //                       Text(
-  //                         posts[idx]["title"],
-  //                         textAlign: TextAlign.start,
-  //                         style: TextStyle(
-  //                           fontSize: 18.0,
-  //                         ),
-  //                       ),
-  //                       SizedBox(
-  //                         height: 5.0,
-  //                       ),
-  //                       Text(
-  //                         posts[idx]["body"],
-  //                         maxLines: 3,
-  //                         textAlign: TextAlign.justify,
-  //                         style: TextStyle(
-  //                           fontSize: 13.0,
-  //                         ),
-  //                       ),
-  //                     ],
-  //                   ),
-  //                 ),
-  //                 Padding(
-  //                   padding:
-  //                       EdgeInsets.symmetric(vertical: 15.0, horizontal: 15.0),
-  //                   child: SizedBox(
-  //                     height: 20.0,
-  //                     child: Row(
-  //                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-  //                       children: <Widget>[
-  //                         Row(
-  //                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-  //                           children: <Widget>[
-  //                             Row(
-  //                               children: <Widget>[
-  //                                 Icon(LineIcons.frown_o),
-  //                                 Text(posts[idx]["downvotes"].toString()),
-  //                               ],
-  //                             ),
-  //                             SizedBox(
-  //                               width: 10.0,
-  //                             ),
-  //                             Row(
-  //                               children: <Widget>[
-  //                                 Icon(LineIcons.heart_o),
-  //                                 Text(posts[idx]["upvotes"].toString()),
-  //                               ],
-  //                             ),
-  //                           ],
-  //                         ),
-  //                         GestureDetector(
-  //                           child: Icon(
-  //                             Icons.share,
-  //                           ),
-  //                           onTap: () {
-  //                             SimpleShare.share(
-  //                                 msg:
-  //                                     '${posts[idx]["body"] ?? ""} ${posts[idx]["image"] ?? ""}',
-  //                                 title: posts[idx]["title"]);
-  //                           },
-  //                         )
-  //                       ],
-  //                     ),
-  //                   ),
-  //                 )
-  //               ],
-  //             ),
-  //           );
-  //         },
-  //       ),
 
   @override
   Widget build(BuildContext context) {

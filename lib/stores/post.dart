@@ -20,6 +20,7 @@ class PostBloc extends StatesRebuilder {
   bool isLoadingComments = false;
   bool isFail = false;
   bool failed = false;
+  bool isFetching = false;
   bool showComments = false;
   List<dynamic> comments;
   Post post;
@@ -154,6 +155,8 @@ class PostBloc extends StatesRebuilder {
   }
 
   loadNew(State state) {
+    isFetching = true;
+    rebuildStates(states: [state]);
     recFeedsFetchSub = HttpService.getPostRange(posts.length, posts.length + 20)
         .asStream()
         .listen(
@@ -164,8 +167,13 @@ class PostBloc extends StatesRebuilder {
             rebuildStates(states: [state]);
           }
         }
+        isFetching = false;
+        rebuildStates(states: [state]);
       },
-      onError: (err) => "",
+      onError: (err) {
+        isFetching = false;
+        rebuildStates(states: [state]);
+      },
     );
   }
 
