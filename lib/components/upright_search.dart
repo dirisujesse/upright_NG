@@ -62,6 +62,7 @@ class UprightSearchDelegate extends SearchDelegate {
             final results = postBloc.results;
             return ListView.builder(
               itemCount: results.length,
+              physics: AlwaysScrollableScrollPhysics(),
               itemBuilder: (BuildContext context, int index) {
                 return ListTile(
                   leading: CircleAvatar(
