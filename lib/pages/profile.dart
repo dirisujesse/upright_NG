@@ -20,10 +20,12 @@ class _ProfilePageState extends State<ProfilePage> {
   TextEditingController cityCtrl;
   TextEditingController stateCtrl;
   TextEditingController countryCtrl;
-  bool isEdit = false;
 
   void initState() {
     super.initState();
+    if (usrData.isEdit) {
+      usrData.toggleEdit(this);
+    }
     final user = usrData.activeUser;
     nameCtrl = TextEditingController(text: user.name ?? "");
     mailCtrl = TextEditingController(text: user.email ?? "");
@@ -31,6 +33,7 @@ class _ProfilePageState extends State<ProfilePage> {
     stateCtrl = TextEditingController(text: user.state ?? "");
     countryCtrl = TextEditingController(text: user.country ?? "");
   }
+
 
   Widget grids(BuildContext context) {
     if (usrData.isLoadingStat) {
@@ -279,7 +282,8 @@ class _ProfilePageState extends State<ProfilePage> {
                             if (val) {
                               Scaffold.of(context).showSnackBar(
                                 SnackBar(
-                                  backgroundColor: Theme.of(context).accentColor,
+                                  backgroundColor:
+                                      Theme.of(context).accentColor,
                                   content: Text(
                                     "Your Profile has been updated",
                                   ),
@@ -365,8 +369,8 @@ class _ProfilePageState extends State<ProfilePage> {
             return CircularProgressIndicator();
           }
           return FloatingActionButton(
-            child: Icon(isEdit ? Icons.close : Icons.edit),
-            onPressed: () => setState(() => isEdit = !isEdit),
+            child: Icon(usrData.isEdit ? Icons.close : Icons.edit),
+            onPressed: () => usrData.toggleEdit(this),
           );
         },
       ),
@@ -414,8 +418,9 @@ class _ProfilePageState extends State<ProfilePage> {
                 ),
               ),
               Builder(
-                builder: (context) =>
-                    isEdit ? form(context, usrData.activeUser) : grids(context),
+                builder: (context) => usrData.isEdit
+                    ? form(context, usrData.activeUser)
+                    : grids(context),
               ),
             ],
           );

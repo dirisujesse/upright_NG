@@ -154,9 +154,9 @@ class PostBloc extends StatesRebuilder {
     );
   }
 
-  loadNew(State state) {
+  loadNew() {
     isFetching = true;
-    rebuildStates(states: [state]);
+    rebuildStates(ids: ["recPostState"]);
     recFeedsFetchSub = HttpService.getPostRange(posts.length, posts.length + 20)
         .asStream()
         .listen(
@@ -164,15 +164,16 @@ class PostBloc extends StatesRebuilder {
         if (!(val is int)) {
           if (val.length > 0) {
             posts.addAll(val);
-            rebuildStates(states: [state]);
+            rebuildStates(ids: ["recPostState"]);
           }
         }
         isFetching = false;
-        rebuildStates(states: [state]);
+        rebuildStates(ids: ["recPostState"]);
       },
       onError: (err) {
+        print(err);
         isFetching = false;
-        rebuildStates(states: [state]);
+        rebuildStates(ids: ["recPostState"]);
       },
     );
   }

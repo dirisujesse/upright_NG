@@ -8,6 +8,9 @@ import '../models/user.dart';
 import '../services/http_service.dart';
 
 class UserBloc extends StatesRebuilder {
+  TextEditingController logUsrName = TextEditingController(text: "");
+  final TextEditingController signUsrName = TextEditingController(text: "");
+  final TextEditingController signName = TextEditingController(text: "");
   static UserBloc instance;
   var activeUser = User(
     name: "Anonymous User",
@@ -20,6 +23,7 @@ class UserBloc extends StatesRebuilder {
   List<dynamic> topConts = [];
   bool isLoggedIn = false;
   bool loginFail = false;
+  bool isEdit = false;
   bool isLogin = true;
   bool isLoading = false;
   bool isLoadingStat = false;
@@ -34,6 +38,11 @@ class UserBloc extends StatesRebuilder {
       instance = UserBloc();
     }
     return instance;
+  }
+
+  toggleEdit(State state) {
+    isEdit = !isEdit;
+    rebuildStates(ids: ["profState"], states: [state]);
   }
 
   logout(BuildContext context) {
@@ -145,6 +154,7 @@ class UserBloc extends StatesRebuilder {
           isLoading = false;
           isLoggedIn = true;
           loginFail = false;
+          logUsrName.clear();
           rebuildStates(ids: ["authState"]);
           return Future.value(true);
         } else {
@@ -174,6 +184,8 @@ class UserBloc extends StatesRebuilder {
           isLoading = false;
           isLoggedIn = true;
           loginFail = false;
+          signName.clear();
+          signUsrName.clear();
           rebuildStates(ids: ["authState"]);
           return Future.value(true);
         } else {

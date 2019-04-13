@@ -17,13 +17,6 @@ import 'pages/post_create.dart';
 
 void main() => runApp(MyApp());
 
-// class MyApp extends StatefulWidget {
-//   @override
-//   State<StatefulWidget> createState() {
-//     return MyAppState();
-//   }
-// }
-
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -36,15 +29,15 @@ class MyApp extends StatelessWidget {
           fontFamily: 'OpenSans'),
       home: SplashWidget(),
       routes: {
+        '/welcome': (BuildContext context) => OnboardingPage(),
+        '/profile': (BuildContext context) => ProfilePage(),
+        '/login': (BuildContext context) => AuthPage(),
         '/home': (BuildContext context) => HomePage(),
         '/tncs': (BuildContext context) => TnCPage(),
-        '/login': (BuildContext context) => AuthPage(),
         '/about': (BuildContext context) => AboutPage(),
         '/report': (BuildContext context) => ReportPage(),
-        '/welcome': (BuildContext context) => OnboardingPage(),
         '/suggestions': (BuildContext context) => SuggestionPage(),
         '/topconts': (BuildContext context) => TopcontributorsPage(),
-        '/profile': (BuildContext context) => ProfilePage(),
         '/post/add/anon': (BuildContext context) => PostCreatePage(isAnon: true,),
         '/post/add/notanon': (BuildContext context) => PostCreatePage(),
       },
@@ -55,10 +48,7 @@ class MyApp extends StatelessWidget {
           final postId = pathArr[2];
           final postTitle = pathArr[3];
           return MaterialPageRoute(builder: (BuildContext context) {
-            return FeedPage(
-              title: postTitle,
-              id: postId
-            );
+            return FeedPage(title: postTitle, id: postId);
           });
         } else {
           return MaterialPageRoute(

@@ -1,21 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:dots_indicator/dots_indicator.dart';
+import 'package:flutter/foundation.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:simple_share/simple_share.dart';
+
 import '../services/storage_service.dart';
 
-class OnboardingPage extends StatefulWidget {
-  @override
-  State<StatefulWidget> createState() {
-    return OnboardingPageState();
-  }
-}
+import '../components/dots.dart';
 
-class OnboardingPageState extends State<OnboardingPage> {
-  PageController cntrl = PageController();
-  int activ = 0;
+class OnboardingPage extends StatelessWidget {
+  final PageController cntrl = PageController();
+  final activ = ValueNotifier(0);
 
-  void sharePledge() {
+  void sharePledge(BuildContext context) {
     var content =
         "I just took #TheUprightPledge to be #Upright4Nigeria. Join other upright citizens by downloading the Upright mobile app at https://play.google.com/store/apps/details?id=com.ccsi.upright";
     SimpleShare.share(
@@ -23,14 +19,14 @@ class OnboardingPageState extends State<OnboardingPage> {
       msg: content,
     ).then((val) {
       print(val);
-      attachUser();
+      attachUser(context);
     }).catchError((err) {
       print(err);
-      attachUser();
+      attachUser(context);
     });
   }
 
-  void attachUser() {
+  void attachUser(BuildContext context) {
     LocalStorage.setItem("isPrevUser", true)
         .then((val) => Navigator.pushReplacementNamed(context, "/home"))
         .catchError((val) => Navigator.pushReplacementNamed(context, "/home"));
@@ -38,14 +34,16 @@ class OnboardingPageState extends State<OnboardingPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: <Widget>[
-        PageView(
-          controller: cntrl,
-          onPageChanged: (val) => setState(() => activ = val),
-          children: <Widget>[
-            Scaffold(
-              body: Container(
+    return Scaffold(
+      body: Stack(
+        children: <Widget>[
+          PageView(
+            onPageChanged: (val) {
+              activ.value = val;
+              // setState(() => activ = val);
+            },
+            children: <Widget>[
+              Container(
                 height: MediaQuery.of(context).size.height,
                 width: MediaQuery.of(context).size.width,
                 padding: EdgeInsets.only(top: 10.0),
@@ -107,9 +105,7 @@ class OnboardingPageState extends State<OnboardingPage> {
                 // ),
                 // ),
               ),
-            ),
-            Scaffold(
-              body: Container(
+              Container(
                 height: MediaQuery.of(context).size.height,
                 width: MediaQuery.of(context).size.width,
                 padding: EdgeInsets.only(top: 30.0),
@@ -157,9 +153,7 @@ class OnboardingPageState extends State<OnboardingPage> {
                 ),
                 // ),
               ),
-            ),
-            Scaffold(
-              body: Container(
+              Container(
                 // transform: new Matrix4.rotationY(0.4),
                 height: MediaQuery.of(context).size.height,
                 width: MediaQuery.of(context).size.width,
@@ -197,29 +191,29 @@ class OnboardingPageState extends State<OnboardingPage> {
                         "Share Pledge",
                         style: TextStyle(color: Colors.white),
                       ),
-                      onPressed: () => sharePledge(),
+                      onPressed: () => sharePledge(context),
                     ),
                   ],
                 ),
                 // ),
               ),
-            ),
-          ],
-        ),
-        Positioned(
-          bottom: 12.0,
-          left: 0.0,
-          right: 0.0,
-          child: Center(
-            child: DotsIndicator(
-              numberOfDot: 3,
-              position: activ,
-              dotColor: Color(0xFF2F333D),
-              dotActiveColor: Color(0xFFFFFFFF),
+            ],
+          ),
+          Positioned(
+            bottom: 12.0,
+            left: 0.0,
+            right: 0.0,
+            child: Center(
+              child: ValueListenableBuilder(
+                valueListenable: activ,
+                builder: (context, val, child) {
+                  return Dots(activ);
+                },
+              ),
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

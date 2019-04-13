@@ -7,8 +7,8 @@ class AboutPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: AppDrawer(),
       backgroundColor: Colors.white,
+      drawer: AppDrawer(),
       appBar: appBarDefault(title: 'ABOUT', context: context),
       body: SingleChildScrollView(
         child: Column(
