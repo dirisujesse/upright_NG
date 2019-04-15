@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:states_rebuilder/states_rebuilder.dart';
 import 'package:simple_share/simple_share.dart';
 import 'package:lazy_load_scrollview/lazy_load_scrollview.dart';
 
+import '../components/app_activity_indicator.dart';
 import '../components/app_drawer.dart';
 import '../components/upright_search.dart';
 import '../stores/post.dart';
@@ -146,10 +146,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                             ),
                             child: Center(
                               child: postData.isLoading
-                                  ? Theme.of(context).platform ==
-                                          TargetPlatform.iOS
-                                      ? CupertinoActivityIndicator()
-                                      : CircularProgressIndicator()
+                                  ? const AppSpinner()
                                   : postData.failed
                                       ? Column(
                                           children: <Widget>[
@@ -180,10 +177,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                   children: <Widget>[
                     postData.isLoading
                         ? Center(
-                            child:
-                                Theme.of(context).platform == TargetPlatform.iOS
-                                    ? CupertinoActivityIndicator()
-                                    : CircularProgressIndicator(),
+                            child: const AppSpinner(),
                           )
                         : postData.failed
                             ? Center(
@@ -206,10 +200,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                               ),
                     postData.isLoading
                         ? Center(
-                            child:
-                                Theme.of(context).platform == TargetPlatform.iOS
-                                    ? CupertinoActivityIndicator()
-                                    : CircularProgressIndicator(),
+                            child: const AppSpinner(),
                           )
                         : postData.failed
                             ? Center(
@@ -359,7 +350,6 @@ class Feeds extends StatelessWidget {
                 : print("ok"),
             child: CustomScrollView(
               physics: AlwaysScrollableScrollPhysics(),
-              shrinkWrap: true,
               slivers: <Widget>[
                 SliverList(
                   delegate: SliverChildBuilderDelegate(
@@ -383,20 +373,20 @@ class Feeds extends StatelessWidget {
                                       color: Color.fromRGBO(0, 0, 0, 0.5),
                                       borderRadius: bRadius,
                                     ),
-                                    child: FadeInImage(
-                                      placeholder:
-                                          AssetImage("assets/images/logo.jpg"),
-                                      fit: BoxFit.cover,
-                                      image: posts[idx]["image"]
-                                              .endsWith(".m4a")
-                                          ? AssetImage(
-                                              "assets/images/waveform.png")
-                                          : posts[idx]["image"].endsWith(".mp4")
-                                              ? AssetImage(
-                                                  "assets/images/vid.jpg")
-                                              : NetworkImage(
-                                                  posts[idx]["image"]),
-                                    ),
+                                    child: posts[idx]["image"].endsWith(".m4a")
+                                        ? Image.asset(
+                                            "assets/images/waveform.png",
+                                            fit: BoxFit.cover,
+                                          )
+                                        : posts[idx]["image"].endsWith(".mp4")
+                                            ? Image.asset(
+                                                "assets/images/vid.jpg",
+                                                fit: BoxFit.cover,
+                                              )
+                                            : Image.network(
+                                                posts[idx]["image"],
+                                                fit: BoxFit.cover,
+                                              ),
                                   ),
                                   Padding(
                                     padding: EdgeInsets.all(10.0),

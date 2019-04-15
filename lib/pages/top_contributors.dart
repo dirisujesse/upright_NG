@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:states_rebuilder/states_rebuilder.dart';
 
 import '../components/app_drawer.dart';
 import '../components/text_style.dart';
 import '../components/app_bar_default.dart';
+import '../components/app_activity_indicator.dart';
 import '../models/user.dart';
 import '../stores/user.dart';
 
@@ -77,9 +77,7 @@ class _TopcontributorsPageState extends State<TopcontributorsPage> {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
-            Theme.of(context).platform == TargetPlatform.iOS
-                ? CupertinoActivityIndicator()
-                : CircularProgressIndicator(),
+            const AppSpinner(),
             Text(
               data.msgTopUsrs,
               style: AppTextStyle.appText,

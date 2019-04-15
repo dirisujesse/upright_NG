@@ -38,9 +38,9 @@ class OnboardingPage extends StatelessWidget {
       body: Stack(
         children: <Widget>[
           PageView(
+            controller: cntrl,
             onPageChanged: (val) {
               activ.value = val;
-              // setState(() => activ = val);
             },
             children: <Widget>[
               Container(
@@ -147,7 +147,7 @@ class OnboardingPage extends StatelessWidget {
                         "Pledge",
                         style: TextStyle(color: Colors.white),
                       ),
-                      onPressed: () => cntrl.jumpToPage(2),
+                      onPressed: () => cntrl.animateToPage(2, duration: Duration(milliseconds: 300), curve: Curves.easeIn),
                     ),
                   ],
                 ),

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:states_rebuilder/states_rebuilder.dart';
+import 'app_activity_indicator.dart';
 
 import '../stores/post.dart';
 
@@ -45,7 +45,7 @@ class UprightSearchDelegate extends SearchDelegate {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: <Widget>[
-                  Theme.of(context).platform == TargetPlatform.iOS ? CupertinoActivityIndicator() : CircularProgressIndicator(),
+                  const AppSpinner(),
                   Text("Searching records...")
                 ],
               ),

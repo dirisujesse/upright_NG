@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:simple_share/simple_share.dart';
 import 'package:states_rebuilder/states_rebuilder.dart';
@@ -8,6 +7,7 @@ import '../stores/post.dart';
 import '../models/post.dart';
 import '../components/form_style.dart';
 import '../components/video_player.dart';
+import '../components/app_activity_indicator.dart';
 
 final postData = PostBloc.getInstance();
 
@@ -38,112 +38,6 @@ class _FeedPageState extends State<FeedPage> {
     super.dispose();
   }
 
-  Widget commentsList(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
-      margin: EdgeInsets.symmetric(horizontal: 1.0),
-      height: MediaQuery.of(context).size.height * 0.83,
-      decoration: BoxDecoration(
-        color: Color(0xCCCCCCCC),
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(10.0),
-          topRight: Radius.circular(10.0),
-        ),
-      ),
-      child: StateBuilder(
-        blocs: [postData],
-        stateID: "postComState",
-        builder: (_) {
-          if (postData.showComments) {
-            if (postData.isLoadingComments) {
-              return Center(
-                child: Theme.of(context).platform == TargetPlatform.iOS
-                    ? CupertinoActivityIndicator()
-                    : CircularProgressIndicator(),
-              );
-            } else {
-              final comments = postData.comments;
-              if (comments.length > 0) {
-                return ListView.builder(
-                  itemCount: comments.length,
-                  itemBuilder: (context, idx) {
-                    return Container(
-                      width: MediaQuery.of(context).size.width,
-                      padding: EdgeInsets.all(10.0),
-                      margin: EdgeInsets.only(bottom: 10.0),
-                      decoration: BoxDecoration(
-                        color: Colors.black87,
-                        borderRadius: BorderRadius.all(
-                          Radius.circular(5.0),
-                        ),
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: <Widget>[
-                          CircleAvatar(
-                            backgroundColor: Colors.teal,
-                            backgroundImage: NetworkImage(
-                              comments[idx]["author"]["avatar"],
-                            ),
-                            radius: 34.0,
-                          ),
-                          SizedBox(
-                            width: 10.0,
-                          ),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              Text(
-                                comments[idx]["author"]["name"],
-                                style: TextStyle(
-                                  fontSize: 18.0,
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              Text(
-                                comments[idx]["time"],
-                                style: TextStyle(
-                                  color: Colors.grey,
-                                  fontSize: 10.0,
-                                ),
-                              ),
-                              SizedBox(
-                                width: MediaQuery.of(context).size.width * 0.6,
-                                child: Text(
-                                  comments[idx]["body"],
-                                  textAlign: TextAlign.start,
-                                  softWrap: true,
-                                  style: TextStyle(
-                                    fontSize: 14.0,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                              )
-                            ],
-                          ),
-                        ],
-                      ),
-                    );
-                  },
-                );
-              } else {
-                return Center(
-                  child: Text(
-                    "Be the first to comment",
-                  ),
-                );
-              }
-            }
-          }
-          return SizedBox(
-            height: 0.0,
-          );
-        },
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -155,7 +49,9 @@ class _FeedPageState extends State<FeedPage> {
           color: Colors.black,
         ),
         onPressed: () {
-          SimpleShare.share(msg: '${postData.post.body ?? ""} ${postData.post.image ?? ""}', title: widget.title);
+          SimpleShare.share(
+              msg: '${postData.post.body ?? ""} ${postData.post.image ?? ""}',
+              title: widget.title);
         },
       ),
       bottomNavigationBar: Container(
@@ -258,9 +154,7 @@ class _FeedPageState extends State<FeedPage> {
                 builder: (_) {
                   if (postData.isLoadingPost) {
                     return Center(
-                      child: Theme.of(context).platform == TargetPlatform.iOS
-                          ? CupertinoActivityIndicator()
-                          : CircularProgressIndicator(),
+                      child: const AppSpinner(),
                     );
                   } else {
                     if (postData.post != null) {
@@ -356,7 +250,7 @@ class _FeedPageState extends State<FeedPage> {
                                     onPressed: () {
                                       postData.loadComments(postData.post.id);
                                       Scaffold.of(context).showBottomSheet(
-                                        (context) => commentsList(context),
+                                        (context) => CommentsList(),
                                       );
                                     },
                                   );
@@ -491,6 +385,120 @@ class _FeedPageState extends State<FeedPage> {
           );
         },
       ),
+    );
+  }
+}
+
+class CommentsList extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final wide = constraints.constrainWidth();
+        final tall = constraints.constrainHeight();
+        return Container(
+          padding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
+          height: tall * 0.83,
+          width: wide,
+          decoration: BoxDecoration(
+            color: Color(0x22318700),
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(10.0),
+              topRight: Radius.circular(10.0),
+            ),
+          ),
+          child: StateBuilder(
+            blocs: [postData],
+            stateID: "postComState",
+            builder: (_) {
+              if (postData.showComments) {
+                if (postData.isLoadingComments) {
+                  return Center(
+                    child: const AppSpinner(),
+                  );
+                } else {
+                  final comments = postData.comments;
+                  if (comments.length > 0) {
+                    return ListView.builder(
+                      itemCount: comments.length,
+                      itemBuilder: (context, idx) {
+                        return Container(
+                          width: wide,
+                          padding: EdgeInsets.all(10.0),
+                          margin: EdgeInsets.only(bottom: 10.0),
+                          decoration: BoxDecoration(
+                            color: Colors.black87,
+                            borderRadius: BorderRadius.all(
+                              Radius.circular(5.0),
+                            ),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: <Widget>[
+                              CircleAvatar(
+                                backgroundColor: Colors.teal,
+                                backgroundImage: NetworkImage(
+                                  comments[idx]["author"]["avatar"],
+                                ),
+                                radius: 34.0,
+                              ),
+                              SizedBox(
+                                width: 10.0,
+                              ),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: <Widget>[
+                                  Text(
+                                    comments[idx]["author"]["name"],
+                                    style: TextStyle(
+                                      fontSize: 18.0,
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  Text(
+                                    comments[idx]["time"],
+                                    style: TextStyle(
+                                      color: Colors.grey,
+                                      fontSize: 10.0,
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    width:
+                                        MediaQuery.of(context).size.width * 0.6,
+                                    child: Text(
+                                      comments[idx]["body"],
+                                      textAlign: TextAlign.start,
+                                      softWrap: true,
+                                      style: TextStyle(
+                                        fontSize: 14.0,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                  )
+                                ],
+                              ),
+                            ],
+                          ),
+                        );
+                      },
+                    );
+                  } else {
+                    return Center(
+                      child: Text(
+                        "Be the first to comment",
+                      ),
+                    );
+                  }
+                }
+              }
+              return SizedBox(
+                height: 0.0,
+              );
+            },
+          ),
+        );
+      },
     );
   }
 }

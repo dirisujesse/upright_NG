@@ -146,7 +146,7 @@ class UserBloc extends StatesRebuilder {
   Future<bool> login(String username) {
     isLoading = true;
     loginFail = false;
-    rebuildStates(ids: ["authState"]);
+    rebuildStates(ids: ["authFloatBtnState", "authLogState"]);
     return Future.value(
       HttpService.login(username).then((val) {
         if (!(val is int) && val is Map<String, dynamic>) {
@@ -155,18 +155,18 @@ class UserBloc extends StatesRebuilder {
           isLoggedIn = true;
           loginFail = false;
           logUsrName.clear();
-          rebuildStates(ids: ["authState"]);
+          rebuildStates(ids: ["authFloatBtnState", "authLogState"]);
           return Future.value(true);
         } else {
           isLoading = false;
           loginFail = true;
-          rebuildStates(ids: ["authState"]);
+          rebuildStates(ids: ["authFloatBtnState", "authLogState"]);
           return Future.value(false);
         }
       }).catchError((err) {
         isLoading = false;
         loginFail = true;
-        rebuildStates(ids: ["authState"]);
+        rebuildStates(ids: ["authFloatBtnState", "authLogState"]);
         return Future.value(false);
       }),
     );
@@ -174,9 +174,8 @@ class UserBloc extends StatesRebuilder {
 
   Future<bool> signUp(String username, String name) {
     isLoading = true;
-    // isLoggedIn = false;
     loginFail = false;
-    rebuildStates(ids: ["authState"]);
+    rebuildStates(ids: ["authFloatBtnState", "authRegState"]);
     return Future.value(
       HttpService.signup(username, name).then((val) {
         if (!(val is int) && val is Map<dynamic, dynamic>) {
@@ -186,18 +185,18 @@ class UserBloc extends StatesRebuilder {
           loginFail = false;
           signName.clear();
           signUsrName.clear();
-          rebuildStates(ids: ["authState"]);
+          rebuildStates(ids: ["authFloatBtnState", "authRegState"]);
           return Future.value(true);
         } else {
           isLoading = false;
           loginFail = true;
-          rebuildStates(ids: ["authState"]);
+          rebuildStates(ids: ["authFloatBtnState", "authRegState"]);
           return Future.value(false);
         }
       }).catchError((err) {
         isLoading = false;
         loginFail = true;
-        rebuildStates(ids: ["authState"]);
+        rebuildStates(ids: ["authFloatBtnState", "authRegState"]);
         return Future.value(false);
       }),
     );

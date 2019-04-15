@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
 
 import '../components/text_style.dart';
+import '../components/app_activity_indicator.dart';
 
 class WebPage extends StatelessWidget {
   final String url;
@@ -29,11 +29,7 @@ class WebPage extends StatelessWidget {
       hidden: true,
       withJavascript: true,
       initialChild: Center(
-        child: Theme.of(context).platform == TargetPlatform.iOS
-            ? CupertinoActivityIndicator()
-            : CircularProgressIndicator(
-                backgroundColor: Colors.teal,
-              ),
+        child: const AppSpinner(),
       ),
     );
   }
