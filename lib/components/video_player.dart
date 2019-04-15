@@ -103,7 +103,7 @@ class _VideoWidgetState extends State<VideoWidget> {
                                 upDatePos: (valu) {
                                   final curPos =
                                       ctrl.value.duration.inMilliseconds;
-                                  pos.value = val;
+                                  pos.value = valu;
                                   final nwPos = curPos * valu;
                                   ctrl.seekTo(
                                     Duration(
