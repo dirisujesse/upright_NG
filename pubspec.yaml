@@ -11,7 +11,7 @@ description: Corruption Reporting.
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 7.1.1+1
+version: 7.2.2+1
 
 environment:
   sdk: ">=2.1.0 <3.0.0"
@@ -26,7 +26,9 @@ dependencies:
   #     ref: development
   #     path: packages/flutter_ffmpeg_https-gpl_lts
   flutter_sound: ^1.3.7
+  flutter_luban: ^0.1.6+1
   flutter_webview_plugin: ^0.3.1
+  # flutter_video_compress: ^0.1.8
   http: ^0.12.0+1
   image_picker: ^0.5.0+9
   lazy_load_scrollview: ^0.0.2
@@ -62,22 +64,16 @@ flutter:
   uses-material-design: true
 
   assets:
-    - assets/images/asset1.png
     - assets/images/asset2.png
     - assets/images/firslogo.png
     - assets/images/leaksnglogo.png
     - assets/images/logo.jpg
-    - assets/images/pledge_lg.png
-    - assets/images/pledge_md.png
-    - assets/images/pledge_white_lg.png
+    - assets/images/Logomin.jpg
     - assets/images/pledge_white_md.png
-    - assets/images/pledge_white.png
-    - assets/images/pledge.png
     - assets/images/repselflogo.png
     - assets/images/tourguide01.jpg
     - assets/images/tourguide02.jpg
     - assets/images/tourguide03.jpg
-    - assets/images/user.png
     - assets/images/voicesagainstcorruption_logo.png
     - assets/images/waveform.png
     - assets/images/well_done.png

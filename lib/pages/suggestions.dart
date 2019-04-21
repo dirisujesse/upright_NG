@@ -26,16 +26,15 @@ class _SuggestionPageState extends State<SuggestionPage> {
     emailCntrl = TextEditingController(text: "");
     titleCtrl = TextEditingController(text: "");
     contentCtrl = TextEditingController(text: "");
+    scrnSiaz = MediaQuery.of(context).size.width;
+    scrnHaiyt = MediaQuery.of(context).size.height;
+    pagePad = scrnSiaz > 550 ? scrnSiaz * 0.085 : scrnSiaz * 0.035;
+    topPadding = scrnSiaz > 550 ? scrnSiaz * 0.010 : scrnSiaz * 0.15;
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    scrnSiaz = MediaQuery.of(context).size.width;
-    scrnHaiyt = MediaQuery.of(context).size.height;
-    pagePad = scrnSiaz > 550 ? scrnSiaz * 0.085 : scrnSiaz * 0.035;
-    topPadding = scrnSiaz > 550 ? scrnSiaz * 0.010 : scrnSiaz * 0.15;
-
     return Scaffold(
       drawer: AppDrawer(),
       appBar: appBarDefault(title: "Suggestions", context: context),

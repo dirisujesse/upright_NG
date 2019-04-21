@@ -44,7 +44,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     return Scaffold(
       backgroundColor: Colors.white,
       key: scaffoldKey,
-      drawer: AppDrawer(),
+      drawer: AppDrawer(isHome: true,),
       floatingActionButton: StateBuilder(
         builder: (_) {
           return Column(
@@ -132,7 +132,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                           },
                         ),
                       ],
-                      expandedHeight: MediaQuery.of(context).size.height * 0.7,
+                      expandedHeight: MediaQuery.of(context).size.height * 0.5,
                       flexibleSpace: FlexibleSpaceBar(
                         background: Hero(
                           tag: "HOME",
@@ -383,7 +383,10 @@ class Feeds extends StatelessWidget {
                                                 "assets/images/vid.jpg",
                                                 fit: BoxFit.cover,
                                               )
-                                            : Image.network(
+                                            : posts[idx]["image"].endsWith("Logo.jpg") ? Image.asset(
+                                                "assets/images/Logomin.jpg",
+                                                fit: BoxFit.cover,
+                                              ) : Image.network(
                                                 posts[idx]["image"],
                                                 fit: BoxFit.cover,
                                               ),
@@ -455,7 +458,7 @@ class Feeds extends StatelessWidget {
                                   Text(
                                     posts[idx]["body"],
                                     maxLines: 3,
-                                    textAlign: TextAlign.justify,
+                                    textAlign: TextAlign.start,
                                     style: TextStyle(
                                       fontSize: 13.0,
                                     ),

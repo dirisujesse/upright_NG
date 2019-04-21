@@ -44,6 +44,7 @@ class PostCreatePageState extends State<PostCreatePage> {
 
   @override
   void initState() {
+    postData.reset();
     titleCtrl = TextEditingController(text: "");
     contentCtrl = TextEditingController(text: "");
     super.initState();

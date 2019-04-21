@@ -5,14 +5,9 @@ import '../stores/user.dart';
 
 final userData = UserBloc.getInstance();
 
-class SplashWidget extends StatefulWidget {
-  @override
-  State<StatefulWidget> createState() {
-    return _SplashPage();
-  }
-}
+class SplashWidget extends StatelessWidget {
+  const SplashWidget();
 
-class _SplashPage extends State<SplashWidget> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -21,7 +16,7 @@ class _SplashPage extends State<SplashWidget> {
         builder: (_) => Container(
         decoration: BoxDecoration(
           color: Colors.white,
-          image: DecorationImage(
+          image: const DecorationImage(
             image: AssetImage("assets/images/logo.jpg"),
           ),
         ),

@@ -159,6 +159,7 @@ class _FeedPageState extends State<FeedPage> {
                   } else {
                     if (postData.post != null) {
                       final post = postData.post;
+                      print(post.image);
                       return SingleChildScrollView(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.stretch,

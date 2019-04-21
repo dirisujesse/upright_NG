@@ -4,6 +4,8 @@ import '../components/app_bar_default.dart';
 import 'webview.dart';
 
 class ReportPage extends StatelessWidget {
+  const ReportPage();
+
   void launchWebPage(context, String url, String title) {
     Navigator.push(
       context,
@@ -100,23 +102,17 @@ class ReportPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var items = grids(context);
+    final items = grids(context);
     return Scaffold(
       backgroundColor: Colors.white,
       drawer: AppDrawer(),
       appBar: appBarDefault(title: 'Affiliate Reporting', context: context),
-      body: Stack(
-        fit: StackFit.expand,
-        alignment: Alignment.center,
-        children: [
-          GridView.builder(
-            padding: EdgeInsets.all(0),
-            itemCount: items.length,
-            gridDelegate:
-                SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
-            itemBuilder: (context, index) => items[index],
-          ),
-        ],
+      body: GridView.builder(
+        padding: EdgeInsets.all(0),
+        itemCount: items.length,
+        gridDelegate:
+            SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
+        itemBuilder: (context, index) => items[index],
       ),
     );
   }

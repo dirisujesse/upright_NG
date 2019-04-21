@@ -64,13 +64,16 @@ class OnboardingPage extends StatelessWidget {
                     SizedBox(
                       height: 10.0,
                     ),
-                    Text(
-                      "Resist Corruption, Embrace Zero Tolerance for Corruption",
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                          fontSize: 23.0,
-                          color: Colors.white,
-                          fontFamily: 'PlayfairDisplay'),
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 10.0),
+                      child: Text(
+                        "Resist Corruption, Embrace Zero Tolerance for Corruption",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                            fontSize: 23.0,
+                            color: Colors.white,
+                            fontFamily: 'PlayfairDisplay'),
+                      ),
                     ),
                     SizedBox(
                       height: 10.0,
@@ -130,13 +133,16 @@ class OnboardingPage extends StatelessWidget {
                     SizedBox(
                       height: 10.0,
                     ),
-                    Text(
-                      "Take the Anti-Corruption Pledge",
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                          fontSize: 23.0,
-                          color: Colors.white,
-                          fontFamily: 'PlayfairDisplay'),
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 10.0),
+                      child: Text(
+                        "Take the Anti-Corruption Pledge",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                            fontSize: 23.0,
+                            color: Colors.white,
+                            fontFamily: 'PlayfairDisplay'),
+                      ),
                     ),
                     SizedBox(
                       height: 10.0,
@@ -147,7 +153,9 @@ class OnboardingPage extends StatelessWidget {
                         "Pledge",
                         style: TextStyle(color: Colors.white),
                       ),
-                      onPressed: () => cntrl.animateToPage(2, duration: Duration(milliseconds: 300), curve: Curves.easeIn),
+                      onPressed: () => cntrl.animateToPage(2,
+                          duration: Duration(milliseconds: 300),
+                          curve: Curves.easeIn),
                     ),
                   ],
                 ),

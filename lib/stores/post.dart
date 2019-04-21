@@ -8,10 +8,14 @@ import 'package:path/path.dart';
 import 'package:flutter_sound/flutter_sound.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:flutter_luban/flutter_luban.dart';
+// import 'package:flutter_video_compress/flutter_video_compress.dart';
 
 import '../models/post.dart';
 import './user.dart';
 import '../services/http_service.dart';
+
+// final vidCompressor = FlutterVideoCompress();
 
 class PostBloc extends StatesRebuilder {
   StreamSubscription<dynamic> feedsPageInitSub;
@@ -409,9 +413,29 @@ class PostBloc extends StatesRebuilder {
     }
     if (isPermitted != null && isPermitted == true) {
       reset();
-      final imageData = await ImagePicker.pickImage(
+      var imageData = await ImagePicker.pickImage(
               source: isGal ? ImageSource.gallery : ImageSource.camera) ??
           image;
+
+      if (imageData != null && imageData.lengthSync() > 100000) {
+        var saiz = imageData.lengthSync();
+        print(saiz);
+        final tmpDir = await fs.getTemporaryDirectory();
+        CompressObject fileData = CompressObject(
+          imageFile: imageData,
+          path: tmpDir.path,
+          // mode: CompressMode.LARGE2SMALL,
+          // quality: 50,
+          // step: 4
+        );
+        final compFilePath = await Luban.compressImage(fileData);
+        if (compFilePath != null) {
+          imageData = File(compFilePath);
+          print(imageData.lengthSync());
+        } else {
+          imageData = null;
+        }
+      }
 
       if (imageData != null) {
         print("ok");
@@ -455,8 +479,16 @@ class PostBloc extends StatesRebuilder {
 
       if (vid != null) {
         var saiz = await vid.length();
+        print(saiz);
         print("file is ${saiz / 1000000} mb");
-        if ((saiz / 1000000) > 4.0) {
+        if ((saiz / 1000000) > 6.0) {
+          // final nuPath = await vidCompressor.compressVideo(path: vid.absolute.path, deleteOrigin: true);
+          // if (nuPath != null) {
+          //   vid = File(nuPath);
+          //   print(vid.lengthSync());
+          // } else {
+          //   vid = null;
+          // }
           vid = null;
         }
         if (vid != null) {
