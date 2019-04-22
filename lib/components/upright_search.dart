@@ -59,40 +59,51 @@ class UprightSearchDelegate extends SearchDelegate {
           }
           if (!(postBloc.isLoading && postBloc.isFail)) {
             if (postBloc.results.length > 0) {
-            final results = postBloc.results;
-            return ListView.builder(
-              itemCount: results.length,
-              physics: AlwaysScrollableScrollPhysics(),
-              itemBuilder: (BuildContext context, int index) {
-                return ListTile(
-                  leading: CircleAvatar(
-                    backgroundImage: results[index]["image"].endsWith(".mp4") || results[index]["image"].endsWith(".m4a") ? AssetImage("assets/images/logo.jpg") : NetworkImage(results[index]["image"]),
-                    backgroundColor: Colors.teal,
-                  ),
-                  title: Text(
-                    results[index]["title"],
-                    style:
-                        TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
-                  ),
-                  subtitle: Text(
-                    results[index]["anonymous"] ? "Anonymous User" : results[index]["author"]["name"],
-                  ),
-                  trailing: IconButton(
-                    icon: Icon(Icons.arrow_forward_ios),
-                    onPressed: () {
-                      // query = "";
-                      Navigator.pushNamed(
-                        context, '/post/${results[index]["id"]}/${results[index]["title"]}');
-                    },
-                  ),
-                );
-              },
-            );
-          } else {
-            return Center(
-              child: Text("Sorry no result was found that matched your query"),
-            );
-          } 
+              final results = postBloc.results;
+              return ListView.builder(
+                itemCount: results.length,
+                physics: AlwaysScrollableScrollPhysics(),
+                itemBuilder: (BuildContext context, int index) {
+                  return ListTile(
+                    leading: CircleAvatar(
+                      backgroundImage:
+                          results[index]["image"].endsWith(".mp4") ||
+                                  results[index]["image"].endsWith(".m4a")
+                              ? AssetImage("assets/images/Logomin.jpg")
+                              : results[index]["image"].endsWith("Logo.jpg")
+                                  ? AssetImage(
+                                      "assets/images/Logomin.jpg",
+                                    )
+                                  : NetworkImage(results[index]["image"]),
+                      backgroundColor: Colors.teal,
+                    ),
+                    title: Text(
+                      results[index]["title"],
+                      style: TextStyle(
+                          fontSize: 18.0, fontWeight: FontWeight.bold),
+                    ),
+                    subtitle: Text(
+                      results[index]["anonymous"]
+                          ? "Anonymous User"
+                          : results[index]["author"]["name"],
+                    ),
+                    trailing: IconButton(
+                      icon: Icon(Icons.arrow_forward_ios),
+                      onPressed: () {
+                        // query = "";
+                        Navigator.pushNamed(context,
+                            '/post/${results[index]["id"]}/${results[index]["title"]}');
+                      },
+                    ),
+                  );
+                },
+              );
+            } else {
+              return Center(
+                child:
+                    Text("Sorry no result was found that matched your query"),
+              );
+            }
           }
         },
       );

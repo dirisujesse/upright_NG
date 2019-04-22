@@ -42,17 +42,33 @@ class _FeedPageState extends State<FeedPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: Color(0xFFE8C11C),
-        child: Icon(
-          Icons.share,
-          color: Colors.black,
-        ),
-        onPressed: () {
-          SimpleShare.share(
-              msg: '${postData.post.body ?? ""} ${postData.post.image ?? ""}',
-              title: widget.title);
-        },
+      floatingActionButton: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          FloatingActionButton(
+            heroTag: 'lover',
+            mini: true,
+            backgroundColor: Colors.white,
+            child: Icon(
+              Icons.favorite,
+              color: Color(0xFF318F00),
+            ),
+            onPressed: () => postData.vote(),
+          ),
+          SizedBox(
+            height: 5.0,
+          ),
+          FloatingActionButton(
+            heroTag: 'hater',
+            mini: true,
+            backgroundColor: Color(0xFF318F00),
+            child: Icon(
+              LineIcons.frown_o,
+              color: Colors.white,
+            ),
+            onPressed: () => postData.vote(false),
+          ),
+        ],
       ),
       bottomNavigationBar: Container(
         color: Color(0xFF318700),
@@ -69,49 +85,43 @@ class _FeedPageState extends State<FeedPage> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: <Widget>[
-                    GestureDetector(
-                      onTap: () => postData.vote(false),
-                      child: Row(
-                        children: <Widget>[
-                          Icon(
-                            LineIcons.frown_o,
+                    Row(
+                      children: <Widget>[
+                        Icon(
+                          LineIcons.frown_o,
+                          color: Colors.white,
+                        ),
+                        SizedBox(
+                          width: 5.0,
+                        ),
+                        Text(
+                          post == null ? "0" : post.downvotes.toString(),
+                          style: TextStyle(
                             color: Colors.white,
                           ),
-                          SizedBox(
-                            width: 5.0,
-                          ),
-                          Text(
-                            post == null ? "0" : post.downvotes.toString(),
-                            style: TextStyle(
-                              color: Colors.white,
-                            ),
-                          ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
                     SizedBox(
                       width: 10.0,
                     ),
-                    GestureDetector(
-                      onTap: () => postData.vote(),
-                      child: Row(
-                        children: <Widget>[
-                          Icon(
-                            LineIcons.heart,
+                    Row(
+                      children: <Widget>[
+                        Icon(
+                          LineIcons.heart,
+                          color: Colors.white,
+                        ),
+                        SizedBox(
+                          width: 5.0,
+                        ),
+                        Text(
+                          post == null ? "0" : post.upvotes.toString(),
+                          style: TextStyle(
                             color: Colors.white,
                           ),
-                          SizedBox(
-                            width: 5.0,
-                          ),
-                          Text(
-                            post == null ? "0" : post.upvotes.toString(),
-                            style: TextStyle(
-                              color: Colors.white,
-                            ),
-                          ),
-                        ],
-                      ),
-                    )
+                        ),
+                      ],
+                    ),
                   ],
                 ),
                 Text(
@@ -143,6 +153,20 @@ class _FeedPageState extends State<FeedPage> {
                   ),
                   elevation: 0.5,
                   centerTitle: true,
+                  actions: <Widget>[
+                    IconButton(
+                      icon: Icon(
+                        Icons.share,
+                        color: Colors.black,
+                      ),
+                      onPressed: () {
+                        SimpleShare.share(
+                            msg:
+                                '${postData.post.body ?? ""} ${postData.post.image ?? ""}',
+                            title: widget.title);
+                      },
+                    ),
+                  ],
                 ),
               ];
             },

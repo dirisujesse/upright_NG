@@ -299,7 +299,7 @@ class PostCreatePageState extends State<PostCreatePage> {
                                             ),
                                           ),
                                         );
-                                        postData.addPost(data).then((val) {
+                                        postData.addPost(data, postData).then((val) {
                                           if (val) {
                                             Scaffold.of(context).showSnackBar(
                                               SnackBar(

@@ -193,6 +193,15 @@ class _VideoWidgetState extends State<VideoWidget> {
                 : SizedBox(
                     height: 0.0,
                   ),
+            ctrl.value.isBuffering
+                ? Positioned.fill(
+                    child: Center(
+                      child: const AppSpinner(),
+                    ),
+                  )
+                : SizedBox(
+                    height: 0.0,
+                  ),
           ],
         );
       },

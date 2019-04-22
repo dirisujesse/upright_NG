@@ -25,7 +25,10 @@ class AppDrawer extends StatelessWidget {
                     Icons.arrow_forward_ios,
                     color: Colors.black,
                   ),
-                  onPressed: () => Navigator.pushNamed(context, '/profile'),
+                  onPressed: () {
+                    Navigator.pop(context);
+                    Navigator.pushNamed(context, '/profile');
+                  },
                 )
               ],
               leading: Padding(
@@ -68,9 +71,10 @@ class AppDrawer extends StatelessWidget {
                 'HOME',
               ),
               onTap: () {
+                Navigator.pop(context);
                 if (!isHome) {
                   Navigator.pushReplacementNamed(context, '/home');
-                } 
+                }
               },
             ),
             ListTile(
@@ -78,42 +82,60 @@ class AppDrawer extends StatelessWidget {
               title: Text(
                 'ABOUT UPRIGHT_NG',
               ),
-              onTap: () => Navigator.pushNamed(context, '/about'),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.pushNamed(context, '/about');
+              },
             ),
             ListTile(
               leading: Icon(LineIcons.user_secret),
               title: Text(
                 'ANONYMOUS REPORTING',
               ),
-              onTap: () => Navigator.pushNamed(context, '/post/add/anon'),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.pushNamed(context, '/post/add/anon');
+              },
             ),
             ListTile(
               leading: Icon(LineIcons.chrome),
               title: Text(
                 'AFFILIATE REPORTING',
               ),
-              onTap: () => Navigator.pushNamed(context, '/report'),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.pushNamed(context, '/report');
+              },
             ),
             ListTile(
               leading: Icon(LineIcons.bar_chart),
               title: Text(
                 'TOP CONTRIBUTORS',
               ),
-              onTap: () => Navigator.pushNamed(context, '/topconts'),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.pushNamed(context, '/topconts');
+              },
             ),
             ListTile(
               leading: Icon(LineIcons.gavel),
               title: Text(
                 'TERMS AND CONDITIONS',
               ),
-              onTap: () => Navigator.pushNamed(context, '/tncs'),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.pushNamed(context, '/tncs');
+              },
             ),
             ListTile(
               leading: Icon(LineIcons.comments),
               title: Text(
                 'MAKE A SUGGESTION',
               ),
-              onTap: () => Navigator.pushNamed(context, '/suggestions'),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.pushNamed(context, '/suggestions');
+              },
             ),
             SizedBox(
               height: 20.0,
@@ -122,16 +144,15 @@ class AppDrawer extends StatelessWidget {
               stateID: "authState",
               blocs: [usrBloc],
               builder: (_) => ListTile(
-                    leading: Icon(
-                      usrBloc.isLoggedIn ? LineIcons.sign_out : LineIcons.sign_in,
-                    ),
-                    title: Text(
-                      usrBloc.isLoggedIn ? 'LOGOUT' : 'LOGIN',
-                    ),
-                    onTap: () {
-                      usrBloc.logout(context);
-                    }
+                  leading: Icon(
+                    usrBloc.isLoggedIn ? LineIcons.sign_out : LineIcons.sign_in,
                   ),
+                  title: Text(
+                    usrBloc.isLoggedIn ? 'LOGOUT' : 'LOGIN',
+                  ),
+                  onTap: () {
+                    usrBloc.logout(context);
+                  }),
             ),
           ],
         ),

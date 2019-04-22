@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:states_rebuilder/states_rebuilder.dart';
@@ -61,9 +62,44 @@ class PostBloc extends StatesRebuilder {
     return instance;
   }
 
-  Future<bool> addPost(Map<String, dynamic> postData) {
+  Future<bool> addPost(Map<String, dynamic> postData, PostBloc instance) async {
     isSubmitingPost = true;
     rebuildStates(ids: ["postCreateState"]);
+    if (instance.isImg &&
+        instance.image != null &&
+        instance.image.lengthSync() > 100000) {
+      final tmpDir = await fs.getTemporaryDirectory();
+      CompressObject fileData = CompressObject(
+        imageFile: instance.image,
+        path: tmpDir.path,
+        // quality: 50,
+        // step: 4
+      );
+      final compFilePath = await Luban.compressImage(fileData);
+      if (compFilePath != null) {
+        postData["img"] = base64Encode(File(compFilePath).readAsBytesSync());
+      } else {
+        postData["img"] = "";
+      }
+    }
+
+    // print(postData["img"].length);
+    // if (instance.isVid &&
+    //     instance.video != null &&
+    //     (instance.video.lengthSync() / 1000000) > 2.0) {
+    //   print("${instance.video.lengthSync() / 1000000} mb");
+    //   FlutterVideoCompress compressor = FlutterVideoCompress();
+    //   final compFilePath = await compressor.compressVideo(path: instance.video.absolute.path);
+    //   if (compFilePath != null) {
+    //     final file = File(compFilePath);
+    //     print(file.lengthSync());
+    //     postData["img"] = base64Encode(file.readAsBytesSync());
+    //   } else {
+    //     postData["img"] = "";
+    //   }
+    // }
+
+    // print(postData["img"].length);
     return Future.value(
       HttpService.addPost(postData).then(
         (val) {
@@ -88,6 +124,10 @@ class PostBloc extends StatesRebuilder {
         },
       ),
     );
+
+    // isSubmitingPost = false;
+    // rebuildStates(ids: ["postCreateState"]);
+    // return Future.value(false);
   }
 
   loadComments(String postId) {
@@ -417,26 +457,6 @@ class PostBloc extends StatesRebuilder {
               source: isGal ? ImageSource.gallery : ImageSource.camera) ??
           image;
 
-      if (imageData != null && imageData.lengthSync() > 100000) {
-        var saiz = imageData.lengthSync();
-        print(saiz);
-        final tmpDir = await fs.getTemporaryDirectory();
-        CompressObject fileData = CompressObject(
-          imageFile: imageData,
-          path: tmpDir.path,
-          // mode: CompressMode.LARGE2SMALL,
-          // quality: 50,
-          // step: 4
-        );
-        final compFilePath = await Luban.compressImage(fileData);
-        if (compFilePath != null) {
-          imageData = File(compFilePath);
-          print(imageData.lengthSync());
-        } else {
-          imageData = null;
-        }
-      }
-
       if (imageData != null) {
         print("ok");
         isAud = false;
@@ -478,29 +498,14 @@ class PostBloc extends StatesRebuilder {
           video;
 
       if (vid != null) {
-        var saiz = await vid.length();
-        print(saiz);
-        print("file is ${saiz / 1000000} mb");
-        if ((saiz / 1000000) > 6.0) {
-          // final nuPath = await vidCompressor.compressVideo(path: vid.absolute.path, deleteOrigin: true);
-          // if (nuPath != null) {
-          //   vid = File(nuPath);
-          //   print(vid.lengthSync());
-          // } else {
-          //   vid = null;
-          // }
-          vid = null;
-        }
-        if (vid != null) {
-          isImg = false;
-          isAud = false;
-          video = vid;
-          isVid = true;
-          image = null;
-          audio = null;
-          isRecording = false;
-          rebuildStates(ids: ["postMediaState"]);
-        }
+        isImg = false;
+        isAud = false;
+        video = vid;
+        isVid = true;
+        image = null;
+        audio = null;
+        isRecording = false;
+        rebuildStates(ids: ["postMediaState"]);
       }
     } else {
       await _permissionHandler.requestPermissions(

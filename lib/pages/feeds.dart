@@ -44,7 +44,9 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     return Scaffold(
       backgroundColor: Colors.white,
       key: scaffoldKey,
-      drawer: AppDrawer(isHome: true,),
+      drawer: AppDrawer(
+        isHome: true,
+      ),
       floatingActionButton: StateBuilder(
         builder: (_) {
           return Column(
@@ -383,13 +385,16 @@ class Feeds extends StatelessWidget {
                                                 "assets/images/vid.jpg",
                                                 fit: BoxFit.cover,
                                               )
-                                            : posts[idx]["image"].endsWith("Logo.jpg") ? Image.asset(
-                                                "assets/images/Logomin.jpg",
-                                                fit: BoxFit.cover,
-                                              ) : Image.network(
-                                                posts[idx]["image"],
-                                                fit: BoxFit.cover,
-                                              ),
+                                            : posts[idx]["image"]
+                                                    .endsWith("Logo.jpg")
+                                                ? Image.asset(
+                                                    "assets/images/Logomin.jpg",
+                                                    fit: BoxFit.cover,
+                                                  )
+                                                : Image.network(
+                                                    posts[idx]["image"],
+                                                    fit: BoxFit.cover,
+                                                  ),
                                   ),
                                   Padding(
                                     padding: EdgeInsets.all(10.0),
@@ -445,22 +450,26 @@ class Feeds extends StatelessWidget {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: <Widget>[
-                                  Text(
-                                    posts[idx]["title"],
-                                    textAlign: TextAlign.start,
-                                    style: TextStyle(
-                                      fontSize: 18.0,
-                                    ),
-                                  ),
-                                  SizedBox(
-                                    height: 5.0,
-                                  ),
-                                  Text(
-                                    posts[idx]["body"],
-                                    maxLines: 3,
-                                    textAlign: TextAlign.start,
-                                    style: TextStyle(
-                                      fontSize: 13.0,
+                                  // Text(
+                                  //   posts[idx]["title"],
+                                  //   textAlign: TextAlign.start,
+                                  //   style: TextStyle(
+                                  //     fontSize: 18.0,
+                                  //   ),
+                                  // ),
+                                  // SizedBox(
+                                  //   height: 5.0,
+                                  // ),
+                                  GestureDetector(
+                                    onTap: () => Navigator.pushNamed(context,
+                                        '/post/${posts[idx]["id"]}/${posts[idx]["title"]}'),
+                                    child: Text(
+                                      posts[idx]["body"],
+                                      maxLines: 3,
+                                      textAlign: TextAlign.start,
+                                      style: TextStyle(
+                                        fontSize: 13.0,
+                                      ),
                                     ),
                                   ),
                                 ],
