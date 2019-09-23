@@ -109,9 +109,9 @@ class AppDrawer extends StatelessWidget {
                       },
                     ),
                     SizedBox(
-                      height: usrBloc.activeUser.isMember ?? false ? 3.0 : 0,
+                      height: 3.0,
                     ),
-                     usrBloc.activeUser.isMember ?? false ? FlatButton(
+                    FlatButton(
                       padding: EdgeInsets.all(3),
                       child: AutoSizeText(
                         'About Upright_NG',
@@ -121,54 +121,72 @@ class AppDrawer extends StatelessWidget {
                         Navigator.pop(context);
                         Navigator.pushNamed(context, '/about');
                       },
-                    ) : SizedBox(),
+                    ),
                     SizedBox(
                       height: usrBloc.activeUser.isMember ?? false ? 0 : 3.0,
                     ),
-                    usrBloc.activeUser.isMember ?? false ? SizedBox() : FlatButton(
-                      padding: EdgeInsets.all(3),
-                      child: AutoSizeText(
-                        'Become a Member',
-                        style: Theme.of(context).textTheme.title,
-                      ),
-                      onPressed: () {
-                        Navigator.pop(context);
-                        // Navigator.pushNamed(context, '/about');
-                        showDialog(context: context, builder: (context) {
-                          return AlertDialog(
-                            title: Text("Join Upright Nigeria"),
-                            content: StateBuilder(
-                              stateID: "memberState",
-                              blocs: [usrBloc],
-                              builder: (_) {
-                                if (usrBloc.isUpdating) {
-                                  return FractionallySizedBox(
-                                    heightFactor: 0.3,
-                                    child: Center(
-                                    child: const AppSpinner(),
-                                  ),
-                                  );
-                                } else {
-                                  return Text("Confirm your decision to become a member upright_NG?");
-                                }
-                              },
+                    usrBloc.activeUser.isMember ?? false
+                        ? SizedBox()
+                        : FlatButton(
+                            padding: EdgeInsets.all(3),
+                            child: AutoSizeText(
+                              'Become a Member',
+                              style: Theme.of(context).textTheme.title,
                             ),
-                            actions: <Widget>[
-                              FlatButton(child: Text("Confirm"), onPressed: () async {
-                                final becameMember = await usrBloc.makeMember();
-                                if (becameMember) {
-                                  Navigator.of(context).pop();
-                                  Navigator.of(context).pushReplacementNamed("/pledge");
-                                }
-                              }, color: appGreen, textColor: appWhite,),
-                              FlatButton(child: Text("Cancel"), onPressed: () {
-                                Navigator.of(context).pop();
-                              }, textColor: Colors.grey,)
-                            ],
-                          );
-                        }, barrierDismissible: false);
-                      },
-                    ),
+                            onPressed: () {
+                              Navigator.pop(context);
+                              // Navigator.pushNamed(context, '/about');
+                              showDialog(
+                                  context: context,
+                                  builder: (context) {
+                                    return AlertDialog(
+                                      title: Text("Join Upright Nigeria"),
+                                      content: StateBuilder(
+                                        stateID: "memberState",
+                                        blocs: [usrBloc],
+                                        builder: (_) {
+                                          if (usrBloc.isUpdating) {
+                                            return FractionallySizedBox(
+                                              heightFactor: 0.3,
+                                              child: Center(
+                                                child: const AppSpinner(),
+                                              ),
+                                            );
+                                          } else {
+                                            return Text(
+                                                "Confirm your decision to become a member upright_NG?");
+                                          }
+                                        },
+                                      ),
+                                      actions: <Widget>[
+                                        FlatButton(
+                                          child: Text("Confirm"),
+                                          onPressed: () async {
+                                            final becameMember =
+                                                await usrBloc.makeMember();
+                                            if (becameMember) {
+                                              Navigator.of(context).pop();
+                                              Navigator.of(context)
+                                                  .pushReplacementNamed(
+                                                      "/pledge");
+                                            }
+                                          },
+                                          color: appGreen,
+                                          textColor: appWhite,
+                                        ),
+                                        FlatButton(
+                                          child: Text("Cancel"),
+                                          onPressed: () {
+                                            Navigator.of(context).pop();
+                                          },
+                                          textColor: Colors.grey,
+                                        )
+                                      ],
+                                    );
+                                  },
+                                  barrierDismissible: false);
+                            },
+                          ),
                     SizedBox(
                       height: 3.0,
                     ),
