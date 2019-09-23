@@ -1,8 +1,9 @@
+import 'package:Upright_NG/components/app_activity_indicator.dart';
+import 'package:Upright_NG/styles/colors.dart';
 import 'package:flutter/material.dart';
-import 'package:line_icons/line_icons.dart';
 import 'package:states_rebuilder/states_rebuilder.dart';
 
-import 'text_style.dart';
+import 'package:auto_size_text/auto_size_text.dart';
 import '../stores/user.dart';
 
 final usrBloc = UserBloc.getInstance();
@@ -15,147 +16,206 @@ class AppDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Drawer(
-      child: SingleChildScrollView(
-        child: Column(
-          children: <Widget>[
-            AppBar(
-              actions: <Widget>[
-                IconButton(
-                  icon: Icon(
-                    Icons.arrow_forward_ios,
-                    color: Colors.black,
-                  ),
-                  onPressed: () {
-                    Navigator.pop(context);
-                    Navigator.pushNamed(context, '/profile');
-                  },
-                )
-              ],
-              leading: Padding(
-                padding: EdgeInsets.all(2.0),
-                child: StateBuilder(
-                  stateID: "authState",
-                  blocs: [usrBloc],
-                  builder: (_) => CircleAvatar(
-                        backgroundImage:
-                            NetworkImage(usrBloc.activeUser.avatar),
-                        backgroundColor: Theme.of(context).accentColor,
-                      ),
-                ),
-              ),
-              automaticallyImplyLeading: false,
-              title: StateBuilder(
-                stateID: "authState",
-                blocs: [usrBloc],
-                builder: (_) => Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      child: StateBuilder(
+        stateID: "authState",
+        blocs: [usrBloc],
+        builder: (_) {
+          return SafeArea(
+            child: Container(
+              color: Colors.white,
+              height: MediaQuery.of(context).size.height,
+              alignment: Alignment.center,
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: <Widget>[
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: <Widget>[
-                        Text(
-                          usrBloc.activeUser.name,
-                          style: AppTextStyle.appHeader,
+                        GestureDetector(
+                          child: CircleAvatar(
+                            backgroundColor: appYellow,
+                            backgroundImage: usrBloc.isLoggedIn
+                                ? NetworkImage(
+                                    usrBloc.activeUser.avatar,
+                                  )
+                                : AssetImage("assets/images/anon.png"),
+                            radius: 90,
+                          ),
+                          onTap: () {
+                            Navigator.pop(context);
+                            Navigator.pushNamed(context, '/profile');
+                          },
                         ),
-                        Text(
+                        SizedBox(
+                          height: 3.0,
+                        ),
+                        AutoSizeText(
                           usrBloc.activeUser.username,
-                          style: TextStyle(fontSize: 14.0),
+                          style: Theme.of(context)
+                              .textTheme
+                              .display1
+                              .copyWith(fontSize: 25),
+                        ),
+                        SizedBox(
+                          height: 3.0,
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            Icon(
+                              Icons.location_on,
+                              color: appAsh,
+                              size: 15,
+                            ),
+                            AutoSizeText(
+                              "${usrBloc.activeUser.state ?? "Login"}, ${usrBloc.activeUser.country ?? "for location"}",
+                              style: TextStyle(color: Colors.grey),
+                            )
+                          ],
                         ),
                       ],
                     ),
+                    SizedBox(
+                      height: 20.0,
+                    ),
+                    FlatButton(
+                      // leading: Icon(LineIcons.home),
+                      padding: EdgeInsets.all(3),
+                      child: AutoSizeText(
+                        'Feed',
+                        style: Theme.of(context).textTheme.title,
+                      ),
+                      onPressed: () {
+                        Navigator.pop(context);
+                        if (!isHome) {
+                          Navigator.pushReplacementNamed(context, '/home');
+                        }
+                      },
+                    ),
+                    SizedBox(
+                      height: 3.0,
+                    ),
+                    FlatButton(
+                      padding: EdgeInsets.all(3),
+                      child: AutoSizeText(
+                        'Acivity',
+                        style: Theme.of(context).textTheme.title,
+                      ),
+                      onPressed: () {
+                        Navigator.pop(context);
+                        Navigator.pushNamed(context, '/profile');
+                      },
+                    ),
+                    SizedBox(
+                      height: usrBloc.activeUser.isMember ?? false ? 3.0 : 0,
+                    ),
+                     usrBloc.activeUser.isMember ?? false ? FlatButton(
+                      padding: EdgeInsets.all(3),
+                      child: AutoSizeText(
+                        'About Upright_NG',
+                        style: Theme.of(context).textTheme.title,
+                      ),
+                      onPressed: () {
+                        Navigator.pop(context);
+                        Navigator.pushNamed(context, '/about');
+                      },
+                    ) : SizedBox(),
+                    SizedBox(
+                      height: usrBloc.activeUser.isMember ?? false ? 0 : 3.0,
+                    ),
+                    usrBloc.activeUser.isMember ?? false ? SizedBox() : FlatButton(
+                      padding: EdgeInsets.all(3),
+                      child: AutoSizeText(
+                        'Become a Member',
+                        style: Theme.of(context).textTheme.title,
+                      ),
+                      onPressed: () {
+                        Navigator.pop(context);
+                        // Navigator.pushNamed(context, '/about');
+                        showDialog(context: context, builder: (context) {
+                          return AlertDialog(
+                            title: Text("Join Upright Nigeria"),
+                            content: StateBuilder(
+                              stateID: "memberState",
+                              blocs: [usrBloc],
+                              builder: (_) {
+                                if (usrBloc.isUpdating) {
+                                  return FractionallySizedBox(
+                                    heightFactor: 0.3,
+                                    child: Center(
+                                    child: const AppSpinner(),
+                                  ),
+                                  );
+                                } else {
+                                  return Text("Confirm your decision to become a member upright_NG?");
+                                }
+                              },
+                            ),
+                            actions: <Widget>[
+                              FlatButton(child: Text("Confirm"), onPressed: () async {
+                                final becameMember = await usrBloc.makeMember();
+                                if (becameMember) {
+                                  Navigator.of(context).pop();
+                                  Navigator.of(context).pushReplacementNamed("/pledge");
+                                }
+                              }, color: appGreen, textColor: appWhite,),
+                              FlatButton(child: Text("Cancel"), onPressed: () {
+                                Navigator.of(context).pop();
+                              }, textColor: Colors.grey,)
+                            ],
+                          );
+                        }, barrierDismissible: false);
+                      },
+                    ),
+                    SizedBox(
+                      height: 3.0,
+                    ),
+                    FlatButton(
+                      padding: EdgeInsets.all(3),
+                      child: AutoSizeText(
+                        'Make a Suggestion',
+                        style: Theme.of(context).textTheme.title,
+                      ),
+                      onPressed: () {
+                        Navigator.pop(context);
+                        Navigator.pushNamed(context, '/suggestions');
+                      },
+                    ),
+                    SizedBox(
+                      height: 3.0,
+                    ),
+                    FlatButton(
+                      padding: EdgeInsets.all(3),
+                      child: AutoSizeText(
+                        'Settings',
+                        style: Theme.of(context).textTheme.title,
+                      ),
+                      onPressed: () {
+                        Navigator.pop(context);
+                        Navigator.pushNamed(context, '/settings');
+                      },
+                    ),
+                    SizedBox(
+                      height: 3.0,
+                    ),
+                    FlatButton(
+                      padding: EdgeInsets.all(3),
+                      child: AutoSizeText(
+                        usrBloc.isLoggedIn ? 'Logout' : 'Login',
+                        style: Theme.of(context).textTheme.title,
+                      ),
+                      onPressed: () {
+                        usrBloc.logout(context);
+                      },
+                    ),
+                  ],
+                ),
               ),
-              backgroundColor: Color(0xFFFFFFFF),
-              elevation: 0.5,
             ),
-            ListTile(
-              leading: Icon(LineIcons.home),
-              title: Text(
-                'HOME',
-              ),
-              onTap: () {
-                Navigator.pop(context);
-                if (!isHome) {
-                  Navigator.pushReplacementNamed(context, '/home');
-                }
-              },
-            ),
-            ListTile(
-              leading: Icon(LineIcons.bullhorn),
-              title: Text(
-                'ABOUT UPRIGHT_NG',
-              ),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.pushNamed(context, '/about');
-              },
-            ),
-            ListTile(
-              leading: Icon(LineIcons.user_secret),
-              title: Text(
-                'ANONYMOUS REPORTING',
-              ),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.pushNamed(context, '/post/add/anon');
-              },
-            ),
-            ListTile(
-              leading: Icon(LineIcons.chrome),
-              title: Text(
-                'AFFILIATE REPORTING',
-              ),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.pushNamed(context, '/report');
-              },
-            ),
-            ListTile(
-              leading: Icon(LineIcons.bar_chart),
-              title: Text(
-                'TOP CONTRIBUTORS',
-              ),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.pushNamed(context, '/topconts');
-              },
-            ),
-            ListTile(
-              leading: Icon(LineIcons.gavel),
-              title: Text(
-                'TERMS AND CONDITIONS',
-              ),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.pushNamed(context, '/tncs');
-              },
-            ),
-            ListTile(
-              leading: Icon(LineIcons.comments),
-              title: Text(
-                'MAKE A SUGGESTION',
-              ),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.pushNamed(context, '/suggestions');
-              },
-            ),
-            SizedBox(
-              height: 20.0,
-            ),
-            StateBuilder(
-              stateID: "authState",
-              blocs: [usrBloc],
-              builder: (_) => ListTile(
-                  leading: Icon(
-                    usrBloc.isLoggedIn ? LineIcons.sign_out : LineIcons.sign_in,
-                  ),
-                  title: Text(
-                    usrBloc.isLoggedIn ? 'LOGOUT' : 'LOGIN',
-                  ),
-                  onTap: () {
-                    usrBloc.logout(context);
-                  }),
-            ),
-          ],
-        ),
+          );
+        },
       ),
     );
   }

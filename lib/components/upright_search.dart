@@ -1,17 +1,43 @@
+import 'package:Upright_NG/styles/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:states_rebuilder/states_rebuilder.dart';
 import 'app_activity_indicator.dart';
 
 import '../stores/post.dart';
+import 'package:auto_size_text/auto_size_text.dart';
 
 final postBloc = PostBloc.getInstance();
 
 class UprightSearchDelegate extends SearchDelegate {
   @override
+  ThemeData appBarTheme(BuildContext context) {
+    return super.appBarTheme(context).copyWith(
+          primaryColor: appGreen,
+          inputDecorationTheme: InputDecorationTheme(
+            filled: false,
+            fillColor: appWhite,
+            focusColor: appWhite,
+            hintStyle: TextStyle(
+              color: appWhite,
+              fontFamily: "OpenSans",
+            ),
+            contentPadding: EdgeInsets.all(0),
+            enabledBorder: UnderlineInputBorder(
+                borderSide: BorderSide(color: appWhite, width: 2)),
+            focusedBorder: UnderlineInputBorder(
+                borderSide: BorderSide(color: appWhite, width: 3)),
+            errorBorder: UnderlineInputBorder(
+                borderSide: BorderSide(color: appRed, width: 3)),
+          ),
+        );
+  }
+
+  @override
   List<Widget> buildActions(BuildContext context) {
     return [
       IconButton(
         icon: Icon(Icons.clear),
+        color: appWhite,
         onPressed: () {
           query = '';
         },
@@ -22,9 +48,8 @@ class UprightSearchDelegate extends SearchDelegate {
   @override
   Widget buildLeading(BuildContext context) {
     return IconButton(
-      icon: Icon(Theme.of(context).platform == TargetPlatform.iOS
-          ? Icons.arrow_back_ios
-          : Icons.arrow_back),
+      icon: BackButtonIcon(),
+      color: appWhite,
       onPressed: () {
         close(context, null);
       },
@@ -46,14 +71,14 @@ class UprightSearchDelegate extends SearchDelegate {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: <Widget>[
                   const AppSpinner(),
-                  Text("Searching records...")
+                  AutoSizeText("Searching records...")
                 ],
               ),
             );
           }
           if (postBloc.isFail) {
             return Center(
-              child: Text(
+              child: AutoSizeText(
                   "Sorry search failed you may have lost internet connection"),
             );
           }
@@ -77,12 +102,12 @@ class UprightSearchDelegate extends SearchDelegate {
                                   : NetworkImage(results[index]["image"]),
                       backgroundColor: Colors.teal,
                     ),
-                    title: Text(
+                    title: AutoSizeText(
                       results[index]["title"],
                       style: TextStyle(
                           fontSize: 18.0, fontWeight: FontWeight.bold),
                     ),
-                    subtitle: Text(
+                    subtitle: AutoSizeText(
                       results[index]["anonymous"]
                           ? "Anonymous User"
                           : results[index]["author"]["name"],
@@ -92,7 +117,8 @@ class UprightSearchDelegate extends SearchDelegate {
                       onPressed: () {
                         // query = "";
                         Navigator.pushNamed(context,
-                            '/post/${results[index]["id"]}/${results[index]["title"]}');
+                            '/post/${results[index]["id"]}/${results[index]["title"]}',
+                            arguments: results[index]);
                       },
                     ),
                   );
@@ -100,8 +126,8 @@ class UprightSearchDelegate extends SearchDelegate {
               );
             } else {
               return Center(
-                child:
-                    Text("Sorry no result was found that matched your query"),
+                child: AutoSizeText(
+                    "Sorry no result was found that matched your query"),
               );
             }
           }
@@ -109,7 +135,7 @@ class UprightSearchDelegate extends SearchDelegate {
       );
     } else {
       return Center(
-        child: Text("Enter post title to search"),
+        child: AutoSizeText("Enter post title to search"),
       );
     }
   }
@@ -117,7 +143,7 @@ class UprightSearchDelegate extends SearchDelegate {
   @override
   Widget buildSuggestions(BuildContext context) {
     return Center(
-      child: Text("Enter post title to search"),
+      child: AutoSizeText("Enter post title to search"),
     );
   }
 }

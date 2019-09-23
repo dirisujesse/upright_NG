@@ -1,11 +1,15 @@
+import 'package:Upright_NG/components/parsed_text.dart';
+import 'package:Upright_NG/styles/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:simple_share/simple_share.dart';
 import 'package:states_rebuilder/states_rebuilder.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:auto_size_text/auto_size_text.dart';
 
 import '../stores/post.dart';
 import '../models/post.dart';
-import '../components/form_style.dart';
+import '../styles/form_style.dart';
 import '../components/video_player.dart';
 import '../components/app_activity_indicator.dart';
 
@@ -14,8 +18,13 @@ final postData = PostBloc.getInstance();
 class FeedPage extends StatefulWidget {
   final String title;
   final String id;
+  final Post post;
 
-  FeedPage({@required this.title, @required this.id});
+  FeedPage({
+    @required this.title,
+    @required this.id,
+    @required this.post,
+  });
   @override
   State<StatefulWidget> createState() {
     return _FeedPageState();
@@ -30,6 +39,7 @@ class _FeedPageState extends State<FeedPage> {
   void initState() {
     super.initState();
     comntCtrl = TextEditingController(text: "");
+    postData.post = widget.post;
   }
 
   @override
@@ -38,103 +48,144 @@ class _FeedPageState extends State<FeedPage> {
     super.dispose();
   }
 
+  void launchUrl(String url) async {
+    if (await canLaunch(url)) {
+      await launch(url);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
-      floatingActionButton: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
-          FloatingActionButton(
-            heroTag: 'lover',
-            mini: true,
-            backgroundColor: Colors.white,
-            child: Icon(
-              Icons.favorite,
-              color: Color(0xFF318F00),
-            ),
-            onPressed: () => postData.vote(),
-          ),
-          SizedBox(
-            height: 5.0,
-          ),
-          FloatingActionButton(
-            heroTag: 'hater',
-            mini: true,
-            backgroundColor: Color(0xFF318F00),
-            child: Icon(
-              LineIcons.frown_o,
-              color: Colors.white,
-            ),
-            onPressed: () => postData.vote(false),
-          ),
-        ],
-      ),
-      bottomNavigationBar: Container(
-        color: Color(0xFF318700),
-        padding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 15.0),
-        height: 40.0,
-        child: StateBuilder(
-          blocs: [postData],
-          stateID: "postDetState",
-          builder: (_) {
-            final Post post = postData.post ?? null;
-            return Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: <Widget>[
-                    Row(
-                      children: <Widget>[
-                        Icon(
-                          LineIcons.frown_o,
-                          color: Colors.white,
-                        ),
-                        SizedBox(
-                          width: 5.0,
-                        ),
-                        Text(
-                          post == null ? "0" : post.downvotes.toString(),
-                          style: TextStyle(
-                            color: Colors.white,
-                          ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(
-                      width: 10.0,
-                    ),
-                    Row(
-                      children: <Widget>[
-                        Icon(
-                          LineIcons.heart,
-                          color: Colors.white,
-                        ),
-                        SizedBox(
-                          width: 5.0,
-                        ),
-                        Text(
-                          post == null ? "0" : post.upvotes.toString(),
-                          style: TextStyle(
-                            color: Colors.white,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-                Text(
-                  post == null
-                      ? ""
-                      : !post.anonymous
-                          ? "by " + post.author.name
-                          : "by Anonymous User",
-                  style: TextStyle(color: Colors.white),
-                ),
-              ],
+      backgroundColor: appWhite,
+      floatingActionButton: Builder(builder: (context) {
+        return FloatingActionButton(
+          child: Icon(Icons.forum),
+          onPressed: () {
+            postData.loadComments(widget.post.id);
+            Scaffold.of(context).showBottomSheet(
+              (context) => CommentsList(),
             );
           },
+          // label: AutoSizeText("View Comments"),
+        );
+      }),
+      bottomNavigationBar: BottomAppBar(
+        shape: CircularNotchedRectangle(),
+        child: Container(
+          color: Color(0xFF318700),
+          padding: EdgeInsets.all(0),
+          child: Table(
+            children: [
+              TableRow(
+                children: [
+                  GestureDetector(
+                    onTap: () {
+                      postData.vote();
+                    },
+                    child: Container(
+                      color: Color(0xFF3B5998),
+                      height: 60.0,
+                      child: Center(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            Icon(
+                              Icons.favorite,
+                              color: Colors.white,
+                              size: 30,
+                            ),
+                            SizedBox(
+                              width: 5.0,
+                            ),
+                            StateBuilder(
+                              blocs: [postData],
+                              stateID: "postDetState",
+                              builder: (_) {
+                                return AutoSizeText(
+                                  postData.post.upvotes.toString(),
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 20,
+                                  ),
+                                );
+                              },
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                  Container(
+                    color: Color(0xFFC536A4),
+                    height: 60.0,
+                    child: Center(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          Icon(
+                            Icons.forum,
+                            color: Colors.white,
+                            size: 30,
+                          ),
+                          SizedBox(
+                            width: 5.0,
+                          ),
+                          StateBuilder(
+                            blocs: [postData],
+                            stateID: "postComState",
+                            builder: (_) {
+                              return AutoSizeText(
+                                postData.comments != null
+                                    ? postData.comments.length.toString()
+                                    : widget.post.comments != null
+                                        ? widget.post.comments.length.toString()
+                                        : "0",
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 20,
+                                ),
+                              );
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  GestureDetector(
+                    child: Container(
+                      color: Color(0xFF1DA1F2),
+                      height: 60.0,
+                      child: Center(
+                        child: Icon(
+                          LineIcons.twitter,
+                          color: Colors.white,
+                          size: 30,
+                        ),
+                      ),
+                    ),
+                    onTap: () => launch(
+                        "https://twitter.com/intent/tweet?text=${widget.post.body}"),
+                  ),
+                  GestureDetector(
+                    child: Container(
+                      color: Color(0xFF39B34A),
+                      height: 60.0,
+                      child: Center(
+                        child: Icon(
+                          LineIcons.whatsapp,
+                          color: Colors.white,
+                          size: 30,
+                        ),
+                      ),
+                    ),
+                    onTap: () =>
+                        launch("whatsapp://send?text=${widget.post.body}"),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
       body: Builder(
@@ -143,268 +194,260 @@ class _FeedPageState extends State<FeedPage> {
             headerSliverBuilder: (BuildContext context, bool boxIsScrolled) {
               return [
                 SliverAppBar(
-                  pinned: true,
-                  title: Text(
-                    "POST",
-                    style: TextStyle(
-                      fontSize: 18.0,
-                      fontFamily: 'PlayfairDisplay',
-                    ),
+                  leading: BackButton(
+                    // color: Colors.black,
                   ),
-                  elevation: 0.5,
-                  centerTitle: true,
+                  pinned: true,
+                  elevation: 0,
+                  expandedHeight: MediaQuery.of(context).size.height * 0.35,
                   actions: <Widget>[
                     IconButton(
                       icon: Icon(
                         Icons.share,
-                        color: Colors.black,
                       ),
+                      // color: Colors.black,
                       onPressed: () {
                         SimpleShare.share(
-                            msg:
-                                '${postData.post.body ?? ""} ${postData.post.image ?? ""}',
-                            title: widget.title);
+                          msg: widget.post.body,
+                          title: widget.title,
+                          subject: widget.post.image,
+                        );
                       },
                     ),
                   ],
+                  flexibleSpace: Stack(
+                    alignment: Alignment.center,
+                    fit: StackFit.expand,
+                    children: <Widget>[
+                      Container(
+                        margin: EdgeInsets.only(
+                          bottom: 5,
+                        ),
+                        child: FlexibleSpaceBar(
+                          background: Container(
+                            color: appAsh,
+                            child: AspectRatio(
+                              aspectRatio: 100.0 / 80.0,
+                              child: Hero(
+                                tag: widget.id,
+                                child: widget.post.image.endsWith(".m4a") ||
+                                        widget.post.image.endsWith(".mp4")
+                                    ? Image.asset(
+                                        "assets/images/logo.jpg",
+                                        color: Color.fromRGBO(0, 0, 0, 0.7),
+                                        colorBlendMode: BlendMode.darken,
+                                        fit: BoxFit.fill,
+                                      )
+                                    : Image.network(
+                                        widget.post.image,
+                                        color: Color.fromRGBO(0, 0, 0, 0.7),
+                                        colorBlendMode: BlendMode.darken,
+                                        fit: BoxFit.fill,
+                                      ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      Positioned(
+                        bottom: 0,
+                        child: Container(
+                          color: appGreen,
+                          alignment: Alignment.center,
+                          width: MediaQuery.of(context).size.width * 0.9,
+                          height: 10.0,
+                        ),
+                      ),
+                      Positioned(
+                        bottom: 40,
+                        left: 30,
+                        child: Container(
+                          child: AutoSizeText(
+                            widget.post.title
+                                .replaceAll(new RegExp(r"\s{2,}"), " ")
+                                .trim(),
+                            style:
+                                Theme.of(context).textTheme.headline.copyWith(
+                                      fontSize: 25.0,
+                                      color: appWhite,
+                                    ),
+                          ),
+                          constraints: BoxConstraints(
+                            maxWidth: MediaQuery.of(context).size.width * 0.6,
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
                 ),
               ];
             },
             body: Container(
-              padding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 15.0),
+              padding: EdgeInsets.only(
+                left: 30.0,
+                right: 30.0,
+              ),
               height: MediaQuery.of(context).size.height,
-              child: StateBuilder(
-                initState: (state) => postData.getPost(state, widget.id),
-                builder: (_) {
-                  if (postData.isLoadingPost) {
-                    return Center(
-                      child: const AppSpinner(),
-                    );
-                  } else {
-                    if (postData.post != null) {
-                      final post = postData.post;
-                      print(post.image);
-                      return SingleChildScrollView(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: <Widget>[
-                            Text(
-                              widget.title.toUpperCase().trim(),
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                color: Color(0xFF318700),
-                                fontSize: 20.0,
-                                fontFamily: 'PlayfairDisplay',
-                                fontWeight: FontWeight.bold,
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: <Widget>[
+                    Container(
+                      margin: EdgeInsets.symmetric(
+                        vertical: 20.0,
+                      ),
+                      child: ListTile(
+                        contentPadding: EdgeInsets.all(0),
+                        leading: CircleAvatar(
+                          backgroundColor: appBlack,
+                          backgroundImage: widget.post.anonymous
+                              ? null
+                              : NetworkImage(
+                                  widget.post.author.avatar,
+                                ),
+                          radius: 30,
+                        ),
+                        title: AutoSizeText(
+                          widget.post.anonymous
+                              ? "Anonymous"
+                              : widget.post.author.name,
+                          style: Theme.of(context).textTheme.title.copyWith(
+                                fontSize: 22.0,
                               ),
-                            ),
-                            SizedBox(
-                              height: 5.0,
-                            ),
-                            Text(
-                              post.anonymous
-                                  ? "Anonymous User"
-                                  : post.author.name,
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                color: Color(0xFF25333D),
-                                fontSize: 14.0,
+                        ),
+                        subtitle: AutoSizeText(
+                          widget.post.time,
+                          style: TextStyle(
+                            fontSize: 15.0,
+                          ),
+                        ),
+                      ),
+                    ),
+                    Container(
+                      child: widget.post.image.endsWith(".m4a") ||
+                              widget.post.image.endsWith(".mp4")
+                          ? Padding(
+                              child: VideoWidget(
+                                url: widget.post.image,
                               ),
-                            ),
-                            post.anonymous
-                                ? SizedBox(
-                                    height: 0.0,
-                                  )
-                                : Text(
-                                    post.loc,
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                      color: Color(0xFF25333D),
-                                      fontSize: 12.0,
+                              padding: EdgeInsets.only(
+                                bottom: 20.0,
+                              ),
+                            )
+                          : null,
+                    ),
+                    UprightParsedText(
+                      text: widget.post.body,
+                      style: Theme.of(context).textTheme.body1,
+                    ),
+                    SizedBox(
+                      height: 20.0,
+                    ),
+                    postData.usrData.isLoggedIn
+                        ? Form(
+                            key: formKey,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: <Widget>[
+                                Container(
+                                  color: appGreen,
+                                  height: 5.0,
+                                ),
+                                SizedBox(
+                                  height: 20.0,
+                                ),
+                                TextFormField(
+                                  decoration: formInputStyle.copyWith(
+                                    hintText: 'Comment',
+                                    prefixIcon: Icon(
+                                      Icons.forum,
+                                      color: appGreen,
                                     ),
                                   ),
-                            Text(
-                              post.time,
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                color: Color(0xFF25333D),
-                                fontSize: 12.0,
-                              ),
-                            ),
-                            SizedBox(
-                              height: 15.0,
-                            ),
-                            post.image.endsWith(".m4a") ||
-                                    post.image.endsWith(".mp4")
-                                ? VideoWidget(
-                                    url: post.image,
-                                  )
-                                : FadeInImage(
-                                    placeholder:
-                                        AssetImage("assets/images/logo.jpg"),
-                                    fit: BoxFit.fill,
-                                    image: NetworkImage(
-                                      post.image,
-                                    ),
+                                  controller: comntCtrl,
+                                  keyboardType: TextInputType.multiline,
+                                  maxLines: null,
+                                  validator: (String val) {
+                                    if (val.isEmpty) {
+                                      return "Please you must provide content";
+                                    }
+                                    return null;
+                                  },
+                                  style: TextStyle(
+                                    color: Colors.black,
+                                    fontSize: 20.0,
                                   ),
-                            SizedBox(
-                              height: 15.0,
-                            ),
-                            Text(
-                              post.body,
-                              textAlign: TextAlign.justify,
-                              style: TextStyle(
-                                fontSize: 15.0,
-                              ),
-                            ),
-                            SizedBox(
-                              height: 15.0,
-                            ),
-                            StateBuilder(
-                                blocs: [postData],
-                                stateID: "postComState1",
-                                builder: (_) {
-                                  return RaisedButton(
-                                    color: Color(0xFF25333D),
-                                    child: Text(
-                                      "LOAD COMMENTS",
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                      ),
-                                    ),
-                                    onPressed: () {
-                                      postData.loadComments(postData.post.id);
-                                      Scaffold.of(context).showBottomSheet(
-                                        (context) => CommentsList(),
-                                      );
-                                    },
-                                  );
-                                }),
-                            SizedBox(
-                              height: 15.0,
-                            ),
-                            postData.usrData.isLoggedIn
-                                ? Form(
-                                    key: formKey,
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: <Widget>[
-                                        TextFormField(
-                                          decoration: InputDecoration(
-                                            labelStyle: TextStyle(
-                                                color: Color(0xFFCCCCCC),
-                                                fontSize: 18.0),
-                                            enabledBorder: formBrdr,
-                                            focusedBorder: formActiveBrdr,
-                                            errorBorder: errBrdr,
-                                            focusedErrorBorder: errBrdr,
-                                            labelText: 'Comment',
-                                            filled: false,
+                                ),
+                                SizedBox(
+                                  height: 20.0,
+                                ),
+                                RaisedButton(
+                                  onPressed: () {
+                                    if (formKey.currentState.validate()) {
+                                      formKey.currentState.save();
+                                      Scaffold.of(context).showSnackBar(
+                                        SnackBar(
+                                          content:
+                                              AutoSizeText("Submitting your comment"),
+                                          action: SnackBarAction(
+                                            label: "OK",
+                                            onPressed: () {},
                                           ),
-                                          controller: comntCtrl,
-                                          keyboardType: TextInputType.multiline,
-                                          maxLines: null,
-                                          validator: (String val) {
-                                            if (val.isEmpty) {
-                                              return "Please you must provide content";
-                                            }
-                                          },
-                                          style: TextStyle(
-                                              color: Colors.black,
-                                              fontSize: 20.0),
                                         ),
-                                        RaisedButton(
-                                          onPressed: () {
-                                            if (formKey.currentState
-                                                .validate()) {
-                                              formKey.currentState.save();
-                                              Scaffold.of(context).showSnackBar(
-                                                SnackBar(
-                                                  content: Text(
-                                                      "Submitting your comment"),
-                                                  action: SnackBarAction(
-                                                    label: "OK",
-                                                    onPressed: () {},
-                                                  ),
-                                                ),
-                                              );
-                                              postData
-                                                  .addComment(comntCtrl.text)
-                                                  .then((val) {
-                                                if (val) {
-                                                  Scaffold.of(context)
-                                                      .showSnackBar(
-                                                    SnackBar(
-                                                      backgroundColor:
-                                                          Theme.of(context)
-                                                              .accentColor,
-                                                      content: Text(
-                                                        "Comment was successfully submitted",
-                                                      ),
-                                                    ),
-                                                  );
-                                                } else {
-                                                  Scaffold.of(context)
-                                                      .showSnackBar(
-                                                    SnackBar(
-                                                      backgroundColor:
-                                                          Color(0xFF9B0D54),
-                                                      content: Text(
-                                                        "Comment wasn't successfully submitted, please check that you have internet connection",
-                                                      ),
-                                                    ),
-                                                  );
-                                                }
-                                              }).catchError((err) {
-                                                Scaffold.of(context)
-                                                    .showSnackBar(
-                                                  SnackBar(
-                                                    backgroundColor:
-                                                        Color(0xFF9B0D54),
-                                                    content: Text(
-                                                      "Comment wasn't successfully submitted, please check that you have internet connection",
-                                                    ),
-                                                  ),
-                                                );
-                                              });
-                                            }
-                                          },
-                                          color: Color(0xFFE8C11C),
-                                          child: Text(
-                                            "SUBMIT",
-                                            style: TextStyle(
-                                                color: Color(0xFF25333D)),
+                                      );
+                                      postData
+                                          .addComment(comntCtrl.text)
+                                          .then((val) {
+                                        if (val) {
+                                          comntCtrl.clear();
+                                          Scaffold.of(context).showSnackBar(
+                                            SnackBar(
+                                              backgroundColor:
+                                                  Theme.of(context).accentColor,
+                                              content: AutoSizeText(
+                                                "Comment was successfully submitted",
+                                              ),
+                                            ),
+                                          );
+                                        } else {
+                                          Scaffold.of(context).showSnackBar(
+                                            SnackBar(
+                                              backgroundColor:
+                                                  Color(0xFF9B0D54),
+                                              content: AutoSizeText(
+                                                "Comment wasn't successfully submitted, please check that you have internet connection",
+                                              ),
+                                            ),
+                                          );
+                                        }
+                                      }).catchError((err) {
+                                        Scaffold.of(context).showSnackBar(
+                                          SnackBar(
+                                            backgroundColor: Color(0xFF9B0D54),
+                                            content: AutoSizeText(
+                                              "Comment wasn't successfully submitted, please check that you have internet connection",
+                                            ),
                                           ),
-                                        )
-                                      ],
+                                        );
+                                      });
+                                    }
+                                  },
+                                  child: AutoSizeText(
+                                    "Add Comment",
+                                    style: TextStyle(
+                                      color: appWhite,
                                     ),
-                                  )
-                                : SizedBox(
-                                    height: 0.0,
                                   ),
-                          ],
-                        ),
-                      );
-                    } else {
-                      return Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: <Widget>[
-                            Icon(
-                              LineIcons.frown_o,
-                              size: 50.0,
+                                  // padding: EdgeInsets.symmetric(vertical: 10.0),
+                                )
+                              ],
                             ),
-                            Text(
-                              "Oops data fetch failed, check your internet connection",
-                            ),
-                          ],
-                        ),
-                      );
-                    }
-                  }
-                },
+                          )
+                        : SizedBox(
+                            height: 0.0,
+                          ),
+                  ],
+                ),
               ),
             ),
           );
@@ -425,8 +468,9 @@ class CommentsList extends StatelessWidget {
           padding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
           height: tall * 0.83,
           width: wide,
+          constraints: BoxConstraints(maxHeight: tall * 0.83),
           decoration: BoxDecoration(
-            color: Color(0x22318700),
+            color: formInputGreen,
             borderRadius: BorderRadius.only(
               topLeft: Radius.circular(10.0),
               topRight: Radius.circular(10.0),
@@ -448,7 +492,7 @@ class CommentsList extends StatelessWidget {
                       itemCount: comments.length,
                       itemBuilder: (context, idx) {
                         return Container(
-                          width: wide,
+                          constraints: BoxConstraints(maxWidth: wide * 0.9,),
                           padding: EdgeInsets.all(10.0),
                           margin: EdgeInsets.only(bottom: 10.0),
                           decoration: BoxDecoration(
@@ -459,6 +503,7 @@ class CommentsList extends StatelessWidget {
                           ),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: <Widget>[
                               CircleAvatar(
                                 backgroundColor: Colors.teal,
@@ -468,12 +513,12 @@ class CommentsList extends StatelessWidget {
                                 radius: 34.0,
                               ),
                               SizedBox(
-                                width: 10.0,
+                                width: 15.0,
                               ),
                               Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: <Widget>[
-                                  Text(
+                                  AutoSizeText(
                                     comments[idx]["author"]["name"],
                                     style: TextStyle(
                                       fontSize: 18.0,
@@ -481,17 +526,14 @@ class CommentsList extends StatelessWidget {
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
-                                  Text(
+                                  AutoSizeText(
                                     comments[idx]["time"],
                                     style: TextStyle(
                                       color: Colors.grey,
                                       fontSize: 10.0,
                                     ),
                                   ),
-                                  SizedBox(
-                                    width:
-                                        MediaQuery.of(context).size.width * 0.6,
-                                    child: Text(
+                                  AutoSizeText(
                                       comments[idx]["body"],
                                       textAlign: TextAlign.start,
                                       softWrap: true,
@@ -500,7 +542,6 @@ class CommentsList extends StatelessWidget {
                                         color: Colors.white,
                                       ),
                                     ),
-                                  )
                                 ],
                               ),
                             ],
@@ -510,7 +551,7 @@ class CommentsList extends StatelessWidget {
                     );
                   } else {
                     return Center(
-                      child: Text(
+                      child: AutoSizeText(
                         "Be the first to comment",
                       ),
                     );

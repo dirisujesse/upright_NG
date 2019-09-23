@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
 
-import '../components/text_style.dart';
+import '../styles/text_style.dart';
 import '../components/app_activity_indicator.dart';
+import 'package:auto_size_text/auto_size_text.dart';
 
 class WebPage extends StatelessWidget {
   final String url;
@@ -15,7 +16,7 @@ class WebPage extends StatelessWidget {
     return WebviewScaffold(
       url: url,
       appBar: AppBar(
-        title: Text(
+        title: AutoSizeText(
           title,
           style: AppTextStyle.appHeader,
         ),

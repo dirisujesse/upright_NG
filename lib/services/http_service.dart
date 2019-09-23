@@ -1,24 +1,37 @@
 import 'dart:convert';
 import 'dart:async';
 
-import 'package:http/http.dart' as http;
+import 'package:Upright_NG/models/order.dart';
+import 'package:dio/dio.dart'; // "https://www.uprightapi.cloud";
 
-const url = "https://www.uprightapi.cloud";
+final http = Dio(
+  BaseOptions(
+    connectTimeout: 1000 * 20,
+    receiveTimeout: 1000 * 20,
+    baseUrl: "https://uprightng.herokuapp.com",
+  ),
+);
+
+var cancelToken = CancelToken();
+
+void cancelReqs() {
+  cancelToken.cancel();
+  cancelToken = CancelToken();
+}
 
 class HttpService {
-  static Future<dynamic> login(String username) async {
+  static Future<dynamic> login(String username, String password) async {
     try {
       var req = await http.get(
-        "$url/user/login/?username=$username",
-        headers: {"Content-Type": "application/json"},
+        "/user/login/?username=$username&password=$password",
+        cancelToken: cancelToken,
       );
       if (req.statusCode > 201) {
         throw req.statusCode;
       }
-      var res = json.decode(req.body);
+      var res = req.data;
       return res;
     } catch (e) {
-      print(e);
       return 404;
     }
   }
@@ -26,16 +39,15 @@ class HttpService {
   static Future<dynamic> getUser(String id) async {
     try {
       var req = await http.get(
-        "$url/user/login/?id=$id",
-        headers: {"Content-Type": "application/json"},
+        "/user/login/?id=$id",
+        cancelToken: cancelToken,
       );
       if (req.statusCode > 201) {
         throw req.statusCode;
       }
-      var res = json.decode(req.body);
+      var res = req.data;
       return res;
     } catch (e) {
-      print(e);
       return 404;
     }
   }
@@ -43,32 +55,31 @@ class HttpService {
   static Future<dynamic> getTopUsers() async {
     try {
       var req = await http.get(
-        "$url/user/getTopUsers",
-        headers: {"Content-Type": "application/json"},
+        "/user/getTopUsers",
+        cancelToken: cancelToken,
       );
       if (req.statusCode > 201) {
         throw req.statusCode;
       }
-      var res = json.decode(req.body);
+      var res = req.data;
       return res;
     } catch (e) {
-      print(e);
       return 404;
     }
   }
 
-  static Future<dynamic> signup(String username, String name) async {
+  static Future<dynamic> signup(String username, String name, String password, bool isMember) async {
     try {
       var req = await http.post(
-          "$url/user/signup/?username=$username&name=$name",
-          headers: {"Content-Type": "application/json"});
+        "/user/signup/?username=$username&name=$name&password=$password&isMember=$isMember",
+        cancelToken: cancelToken,
+      );
       if (req.statusCode > 201) {
         throw req.statusCode;
       }
-      var res = json.decode(req.body);
+      var res = req.data;
       return res;
     } catch (e) {
-      print(e);
       return 404;
     }
   }
@@ -76,16 +87,15 @@ class HttpService {
   static Future<dynamic> getPosts() async {
     try {
       var req = await http.get(
-        "$url/post?featured=false&limit=50&sort=createdAt%20DESC",
-        headers: {"Content-Type": "application/json"},
+        "/post?featured=false&limit=50&sort=createdAt%20DESC",
+        cancelToken: cancelToken,
       );
       if (req.statusCode > 201) {
         throw req.statusCode;
       }
-      var res = json.decode(req.body);
+      var res = req.data;
       return res;
     } catch (e) {
-      print(e);
       return 404;
     }
   }
@@ -93,16 +103,15 @@ class HttpService {
   static Future<dynamic> getPostRange(int skip, int limit) async {
     try {
       var req = await http.get(
-        "$url/post?featured=false&skip=$skip&limit=$limit&sort=createdAt%20DESC",
-        headers: {"Content-Type": "application/json"},
+        "/post?featured=false&skip=$skip&limit=$limit&sort=createdAt%20DESC",
+        cancelToken: cancelToken,
       );
       if (req.statusCode > 201) {
         throw req.statusCode;
       }
-      var res = json.decode(req.body);
+      var res = req.data;
       return res;
     } catch (e) {
-      print(e);
       return 404;
     }
   }
@@ -111,16 +120,15 @@ class HttpService {
     final int time = DateTime.now().millisecondsSinceEpoch;
     try {
       var req = await http.get(
-        "$url/post/getrecposts/?time=$time",
-        headers: {"Content-Type": "application/json"},
+        "/post/getrecposts/?time=$time",
+        cancelToken: cancelToken,
       );
       if (req.statusCode > 201) {
         throw req.statusCode;
       }
-      var res = json.decode(req.body);
+      var res = req.data;
       return res;
     } catch (e) {
-      print(e);
       return 404;
     }
   }
@@ -128,16 +136,15 @@ class HttpService {
   static Future<dynamic> getTrendingPosts() async {
     try {
       var req = await http.get(
-        "$url/post/getTrendingPosts",
-        headers: {"Content-Type": "application/json"},
+        "/post/getTrendingPosts",
+        cancelToken: cancelToken,
       );
       if (req.statusCode > 201) {
         throw req.statusCode;
       }
-      var res = json.decode(req.body);
+      var res = req.data;
       return res;
     } catch (e) {
-      print(e);
       return 404;
     }
   }
@@ -145,16 +152,15 @@ class HttpService {
   static Future<dynamic> getFeaturedPosts() async {
     try {
       var req = await http.get(
-        "$url/post/getFeaturedPosts",
-        headers: {"Content-Type": "application/json"},
+        "/post/getFeaturedPosts",
+        cancelToken: cancelToken,
       );
       if (req.statusCode > 201) {
         throw req.statusCode;
       }
-      var res = json.decode(req.body);
+      var res = req.data;
       return res;
     } catch (e) {
-      print(e);
       return 404;
     }
   }
@@ -162,16 +168,15 @@ class HttpService {
   static Future<dynamic> getPost(String id) async {
     try {
       var req = await http.get(
-        "$url/post/getpost/?id=$id",
-        headers: {"Content-Type": "application/json"},
+        "/post/getpost/?id=$id",
+        cancelToken: cancelToken,
       );
       if (req.statusCode > 201) {
         throw req.statusCode;
       }
-      var res = json.decode(req.body);
+      var res = req.data;
       return res;
     } catch (e) {
-      print(e);
       return 404;
     }
   }
@@ -179,16 +184,15 @@ class HttpService {
   static Future<dynamic> searchPost(String title) async {
     try {
       var req = await http.get(
-        '$url/post/?where={"title": {"contains": "$title"}}&sort=upvotes%20DESC&limit=10&populate=author',
-        headers: {"Content-Type": "application/json"},
+        '/post/?where={"title": {"contains": "$title"}}&sort=upvotes%20DESC&limit=10&populate=author',
+        cancelToken: cancelToken,
       );
       if (req.statusCode > 201) {
         throw req.statusCode;
       }
-      var res = json.decode(req.body);
+      var res = req.data;
       return res;
     } catch (e) {
-      print(e);
       return 404;
     }
   }
@@ -196,17 +200,16 @@ class HttpService {
   static Future<dynamic> addPost(Map<String, dynamic> post) async {
     try {
       var req = await http.post(
-        '$url/post/createPost',
-        headers: {"Content-Type": "application/json"},
-        body: json.encode(post),
+        '/post/createPost',
+        data: json.encode(post),
+        cancelToken: cancelToken,
       );
       if (req.statusCode > 201) {
         throw req.statusCode;
       }
-      var res = json.decode(req.body);
+      var res = req.data;
       return res;
     } catch (e) {
-      print(e);
       return 404;
     }
   }
@@ -214,17 +217,16 @@ class HttpService {
   static Future<dynamic> addSuggestion(Map<String, dynamic> body) async {
     try {
       var req = await http.post(
-        '$url/suggestions',
-        headers: {"Content-Type": "application/json"},
-        body: json.encode(body),
+        '/suggestions',
+        cancelToken: cancelToken,
+        data: json.encode(body),
       );
       if (req.statusCode > 201) {
         throw req.statusCode;
       }
-      var res = json.decode(req.body);
+      var res = req.data;
       return res;
     } catch (e) {
-      print(e);
       return 404;
     }
   }
@@ -234,16 +236,15 @@ class HttpService {
     final endPoint = isPost ? "post" : "comment";
     try {
       var req = await http.put(
-        '$url/$endPoint/$sort/?id=$id',
-        headers: {"Content-Type": "application/json"},
+        '/$endPoint/$sort/?id=$id',
+        cancelToken: cancelToken,
       );
       if (req.statusCode > 201) {
         throw req.statusCode;
       }
-      var res = json.decode(req.body);
+      var res = req.data;
       return res;
     } catch (e) {
-      print(e);
       return 404;
     }
   }
@@ -251,35 +252,131 @@ class HttpService {
   static Future<dynamic> addComment(Map<String, dynamic> body) async {
     try {
       var req = await http.post(
-        '$url/comments/addcomment',
-        headers: {"Content-Type": "application/json"},
-        body: json.encode(body),
+        '/comments/addcomment',
+        cancelToken: cancelToken,
+        data: json.encode(body),
       );
       if (req.statusCode > 201) {
         throw req.statusCode;
       }
-      var res = json.decode(req.body);
+      var res = req.data;
       return res;
     } catch (e) {
-      print(e);
       return 404;
     }
   }
 
   static Future<dynamic> getComments(String postId) async {
-    print(postId);
     try {
       var req = await http.get(
-        '$url/comments/getcomments/?post=$postId',
-        headers: {"Content-Type": "application/json"},
+        '/comments/getcomments/?post=$postId',
+        cancelToken: cancelToken,
       );
       if (req.statusCode > 201) {
         throw req.statusCode;
       }
-      var res = json.decode(req.body);
+      var res = req.data;
       return res;
     } catch (e) {
-      print(e);
+      return 404;
+    }
+  }
+
+  static Future<dynamic> getProducts() async {
+    try {
+      var req = await http.get(
+        '/product',
+        cancelToken: cancelToken,
+      );
+      if (req.statusCode > 201) {
+        throw req.statusCode;
+      }
+      var res = req.data as List<dynamic>;
+      return res;
+    } catch (e) {
+      return 404;
+    }
+  }
+
+  static Future<dynamic> getGifts(String id) async {
+    try {
+      var req = await http.get(
+        '/order?purchaser=$id&populate=purchaser,product',
+        cancelToken: cancelToken,
+      );
+      if (req.statusCode > 201) {
+        throw req.statusCode;
+      }
+      var res = req.data;
+      return res;
+    } catch (e) {
+      return 404;
+    }
+  }
+
+  static Future<dynamic> getTestimonials({int skip = 0, int limit = 20}) async {
+    try {
+      var req = await http.get(
+        '/testimonial?skip=$skip&limit=$limit&populate=author&sort=createdAt%20DESC',
+        cancelToken: cancelToken,
+      );
+      if (req.statusCode > 201) {
+        throw req.statusCode;
+      }
+      var res = req.data;
+      return res;
+    } catch (e) {
+      return 404;
+    }
+  }
+
+  static Future<dynamic> addTestimonial(Map<String, dynamic> testimonial) async {
+    try {
+      var req = await http.post(
+        '/testimonial/createTestimonial',
+        data: json.encode(testimonial),
+        cancelToken: cancelToken,
+      );
+      if (req.statusCode > 201) {
+        throw req.statusCode;
+      }
+      var res = req.data;
+      return res;
+    } catch (e) {
+      return 404;
+    }
+  }
+
+  static Future<dynamic> pledge(String id) async {
+    try {
+      var req = await http.post(
+        '/pledge',
+        cancelToken: cancelToken,
+        data: json.encode({"by": id})
+      );
+      if (req.statusCode > 201) {
+        throw req.statusCode;
+      }
+      var res = req.data;
+      return res;
+    } catch (e) {
+      return 404;
+    }
+  }
+
+  static Future<dynamic> makeOrder(Order order) async {
+    try {
+      var req = await http.post(
+        '/order',
+        cancelToken: cancelToken,
+        data: json.encode(order.toJson())
+      );
+      if (req.statusCode > 201) {
+        throw req.statusCode;
+      }
+      var res = req.data;
+      return res;
+    } catch (e) {
       return 404;
     }
   }
@@ -287,34 +384,32 @@ class HttpService {
   static Future<dynamic> getStats(String id) async {
     try {
       var req = await http.get(
-        '$url/user/getuserstat/?id=$id',
-        headers: {"Content-Type": "application/json"},
+        '/user/getuserstat/?id=$id',
+        cancelToken: cancelToken,
       );
       if (req.statusCode > 201) {
         throw req.statusCode;
       }
-      var res = json.decode(req.body);
+      var res = req.data;
       return res;
     } catch (e) {
-      print(e);
       return 404;
     }
   }
 
-  static Future<dynamic> updateProfile(Map<String, dynamic> body) async {
+  static Future<dynamic> updateProfile(Map<String, dynamic> body, String id) async {
     try {
       var req = await http.put(
-        '$url/user/updateprofile',
-        headers: {"Content-Type": "application/json"},
-        body: json.encode(body),
+        '/user/updateprofile/?id=$id',
+        cancelToken: cancelToken,
+        data: json.encode(body),
       );
       if (req.statusCode > 201) {
         throw req.statusCode;
       }
-      var res = json.decode(req.body);
+      var res = req.data;
       return res;
     } catch (e) {
-      print(e);
       return 404;
     }
   }

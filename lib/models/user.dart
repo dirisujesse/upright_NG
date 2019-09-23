@@ -14,27 +14,38 @@ class User {
   String id;
   String name;
   String username;
+  String telephone;
   String city;
   String state;
   String country;
   String avatar = 'https://www.gravatar.com/avatar';
   List<Post> posts;
   int postCount;
+  int points = 0;
   List<Comment> comments;
   String email;
+  bool isMember;
+  String password;
+  String gender;
 
-  User(
-      {@required this.name,
-      @required this.id,
-      @required this.username,
-      this.city,
-      this.state,
-      this.country,
-      this.avatar,
-      this.posts,
-      this.postCount,
-      this.comments,
-      this.email});
+  User({
+    @required this.name,
+    @required this.id,
+    @required this.username,
+    this.points,
+    this.city,
+    this.state,
+    this.country,
+    this.avatar,
+    this.posts,
+    this.postCount,
+    this.comments,
+    this.telephone,
+    this.email,
+    this.isMember,
+    this.password,
+    this.gender,
+  });
 
   Future<bool> logOut() async {
     final status = await LocalStorage.removeItem("userData");

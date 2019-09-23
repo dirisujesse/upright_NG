@@ -3,11 +3,12 @@ import 'package:line_icons/line_icons.dart';
 import 'package:states_rebuilder/states_rebuilder.dart';
 
 import '../components/app_drawer.dart';
-import '../components/text_style.dart';
+import '../styles/text_style.dart';
 import '../components/app_bar_default.dart';
 import '../components/app_activity_indicator.dart';
 import '../models/user.dart';
 import '../stores/user.dart';
+import 'package:auto_size_text/auto_size_text.dart';
 
 final usrBloc = UserBloc.getInstance();
 
@@ -37,7 +38,7 @@ class _TopcontributorsPageState extends State<TopcontributorsPage> {
         leading: CircleAvatar(
           backgroundImage: NetworkImage(data.avatar),
         ),
-        title: Text(
+        title: AutoSizeText(
           data.name,
           style: AppTextStyle.appHeader,
         ),
@@ -78,7 +79,7 @@ class _TopcontributorsPageState extends State<TopcontributorsPage> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
             const AppSpinner(),
-            Text(
+            AutoSizeText(
               data.msgTopUsrs,
               style: AppTextStyle.appText,
               textAlign: TextAlign.center,
@@ -103,7 +104,7 @@ class _TopcontributorsPageState extends State<TopcontributorsPage> {
                     LineIcons.trash,
                     size: 100.0,
                   ),
-            Text(
+            AutoSizeText(
               data.loadingTopUsrsFail
                   ? data.msgTopUsrs
                   : "Ooops Contributors list is empty",
@@ -138,7 +139,7 @@ class _TopcontributorsPageState extends State<TopcontributorsPage> {
         ),
         height: 40,
         child: Center(
-          child: Text(
+          child: AutoSizeText(
             "PULL PAGE TO REFRESH",
             style: AppTextStyle.appText,
           ),

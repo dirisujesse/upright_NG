@@ -47,6 +47,7 @@ class _VideoWidgetState extends State<VideoWidget> {
 
   @override
   Widget build(BuildContext context) {
+    final pageHyt = MediaQuery.of(context).size.height;
     return ValueListenableBuilder(
       valueListenable: ctrl,
       builder: (context, val, pikin) {
@@ -54,7 +55,7 @@ class _VideoWidgetState extends State<VideoWidget> {
           children: <Widget>[
             !ctrl.value.initialized
                 ? Container(
-                    height: 300,
+                    height: pageHyt * 0.3,
                     decoration: BoxDecoration(
                       image: DecorationImage(
                           fit: BoxFit.cover,
@@ -67,7 +68,7 @@ class _VideoWidgetState extends State<VideoWidget> {
                 : (widget.isUrl && widget.url.endsWith(".m4a")) ||
                         !(ctrl.value.aspectRatio > 0.0)
                     ? Container(
-                        height: 80,
+                        height: pageHyt * 0.2,
                         decoration: BoxDecoration(
                           image: DecorationImage(
                             fit: BoxFit.cover,
@@ -77,7 +78,7 @@ class _VideoWidgetState extends State<VideoWidget> {
                         ),
                       )
                     : Container(
-                        height: 300,
+                        height: pageHyt * 0.3,
                         width: MediaQuery.of(context).size.width,
                         child: AspectRatio(
                           aspectRatio: ctrl.value.aspectRatio,

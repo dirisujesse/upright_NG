@@ -11,30 +11,27 @@ description: Corruption Reporting.
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
+
 version: 7.2.4+1
 
 environment:
-  sdk: ">=2.1.0 <3.0.0"
+  sdk: ">=2.2.2 <3.0.0"
 
 dependencies:
-  dots_indicator: ^0.0.4
   flutter:
     sdk: flutter
-  # flutter_ffmpeg:
-  #   git:
-  #     url: git://github.com/tanersener/flutter-ffmpeg.git
-  #     ref: development
-  #     path: packages/flutter_ffmpeg_https-gpl_lts
-  flutter_sound: ^1.3.7
+  auto_size_text: ^2.1.0
   flutter_luban: ^0.1.6+1
-  flutter_webview_plugin: ^0.3.1
-  # flutter_video_compress: ^0.1.8
-  http: ^0.12.0+1
+  flutter_parsed_text: ^1.1.1
+  flutter_sound: ^1.4.2
+  flutter_svg: ^0.13.1
+  flutter_webview_plugin: 0.3.1
+  dio: ^2.1.16
   image_picker: ^0.5.0+9
+  intl: ^0.15.6
   lazy_load_scrollview: ^0.0.2
   line_icons: ^0.2.0
   location: ^2.3.0
-  mfsao: ^0.1.3
   path_provider: ^0.4.1
   percent_indicator: "^1.0.14"
   permission_handler: ^3.0.0
@@ -43,10 +40,12 @@ dependencies:
   states_rebuilder: ^0.1.4
   video_player: ^0.10.0+2
   cupertino_icons: ^0.1.2
+  url_launcher: ^5.1.2
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  mfsao: ^0.1.3
   flutter_launcher_icons: ^0.7.0
   build_runner: ^1.2.8
   json_annotation: ^2.0.0
@@ -57,27 +56,12 @@ flutter_icons:
   image_path_ios: "assets/images/logo.jpg"
   android: true
   ios: true
-#  adaptive_icon_background: "assets/images/christmas-background.png" # only available for Android 8.0 devices and above
-#  adaptive_icon_foreground: "assets/images/icon-foreground-432x432.png" # only available for Android 8.0 devices and above
 
 flutter:
   uses-material-design: true
 
   assets:
-    - assets/images/asset2.png
-    - assets/images/firslogo.png
-    - assets/images/leaksnglogo.png
-    - assets/images/logo.jpg
-    - assets/images/Logomin.jpg
-    - assets/images/pledge_white_md.png
-    - assets/images/repselflogo.png
-    - assets/images/tourguide01.jpg
-    - assets/images/tourguide02.jpg
-    - assets/images/tourguide03.jpg
-    - assets/images/voicesagainstcorruption_logo.png
-    - assets/images/waveform.png
-    - assets/images/well_done.png
-    - assets/images/vid.jpg
+    - assets/images/
 
   fonts:
     - family: PlayfairDisplay
@@ -87,4 +71,5 @@ flutter:
     - family: OpenSans
       fonts:
         - asset: assets/fonts/OpenSans-Regular.ttf
-          weight: 300
+        - asset: assets/fonts/OpenSans-Bold.ttf
+          weight: 900

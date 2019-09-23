@@ -31,3 +31,14 @@ const MaterialColor army = const MaterialColor(
     900: const Color(0xFF3D8B3744),
   },
 );
+
+const Color appGreen = Color(0xFF39B34A);
+const Color appWhite = Color(0xFFFFFFFF);
+const Color appYellow = Color(0xFFDFCE1B);
+const Color appBlack = Color(0xFF25333D);
+const Color appGrey = Color(0xFFe0e0e0);
+const Color appRed = Color(0xFFF05757);
+const Color appShadow = Color(0xFFE0E0E0);
+const Color appLightGrey = Color(0xFFF7F7F8);
+const Color appAsh = Color(0xFF717171);
+const Color formInputGreen = Color.fromRGBO(57, 179, 74, .11);

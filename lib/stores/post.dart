@@ -43,6 +43,7 @@ class PostBloc extends StatesRebuilder {
   List<dynamic> results = [];
   bool isLoading = false;
   bool isSubmitingPost = false;
+  bool isSubmitted = false;
   bool isLoadingPost = false;
   bool isLoadingComments = false;
   bool isFail = false;
@@ -52,8 +53,7 @@ class PostBloc extends StatesRebuilder {
   List<dynamic> comments;
   Post post;
   List<dynamic> posts = [];
-  List<dynamic> fposts = [];
-  List<dynamic> tposts = [];
+  List<dynamic> testimonials = [];
 
   static PostBloc getInstance() {
     if (instance == null) {
@@ -64,6 +64,7 @@ class PostBloc extends StatesRebuilder {
 
   Future<bool> addPost(Map<String, dynamic> postData, PostBloc instance) async {
     isSubmitingPost = true;
+    isSubmitted = false;
     rebuildStates(ids: ["postCreateState"]);
     if (instance.isImg &&
         instance.image != null &&
@@ -106,11 +107,13 @@ class PostBloc extends StatesRebuilder {
           if (!(val is int)) {
             print(val);
             isSubmitingPost = false;
+            isSubmitted = true;
             rebuildStates(ids: ["postCreateState"]);
             return Future.value(true);
           } else {
             print(val);
             isSubmitingPost = false;
+            isSubmitted = false;
             rebuildStates(ids: ["postCreateState"]);
             return Future.value(false);
           }
@@ -119,6 +122,7 @@ class PostBloc extends StatesRebuilder {
         (err) {
           print(err + " ");
           isSubmitingPost = false;
+          isSubmitted = false;
           rebuildStates(ids: ["postCreateState"]);
           return Future.value(false);
         },
@@ -177,23 +181,6 @@ class PostBloc extends StatesRebuilder {
       isLoadingPost = false;
       post = Post.fromJson(postCache[0]);
       rebuildStates(states: [state], ids: ["postDetState"]);
-    } else {
-      postCache = tposts.where((val) => val.id == id).toList();
-      if (postCache.length > 0) {
-        isLoadingPost = false;
-        post = Post.fromJson(postCache[0]);
-        rebuildStates(states: [state], ids: ["postDetState"]);
-      } else {
-        postCache = fposts.where((val) => val.id == id).toList();
-        if (postCache.length > 0) {
-          isLoadingPost = false;
-          post = Post.fromJson(postCache[0]);
-          rebuildStates(states: [state], ids: ["postDetState"]);
-        } else {
-          isLoadingPost = false;
-          rebuildStates(states: [state], ids: ["postDetState"]);
-        }
-      }
     }
   }
 
@@ -221,44 +208,49 @@ class PostBloc extends StatesRebuilder {
   }
 
   loadNew() {
-    isFetching = true;
-    rebuildStates(ids: ["recPostState"]);
-    recFeedsFetchSub = HttpService.getPostRange(posts.length, posts.length + 20)
-        .asStream()
-        .listen(
-      (val) {
-        if (!(val is int)) {
-          if (val.length > 0) {
-            posts.addAll(val);
-            rebuildStates(ids: ["recPostState"]);
+    if (posts != null && posts.length > 0) {
+      isFetching = true;
+      rebuildStates(ids: ["recPostState"]);
+      recFeedsFetchSub =
+          HttpService.getPostRange(posts.length, posts.length + 20)
+              .asStream()
+              .listen(
+        (val) {
+          if (!(val is int)) {
+            if (val.length > 0) {
+              posts.addAll(val);
+              rebuildStates(ids: ["recPostState"]);
+            }
           }
-        }
-        isFetching = false;
-        rebuildStates(ids: ["recPostState"]);
-      },
-      onError: (err) {
-        print(err);
-        isFetching = false;
-        rebuildStates(ids: ["recPostState"]);
-      },
-    );
+          isFetching = false;
+          rebuildStates(ids: ["recPostState"]);
+        },
+        onError: (err) {
+          print(err);
+          isFetching = false;
+          rebuildStates(ids: ["recPostState"]);
+        },
+      );
+    }
   }
 
-  getFeed(State state) {
+  getFeed(State state, [bool disallowIfLoading = false]) {
+    if (disallowIfLoading && (isLoading == true)) {
+      print(isLoading);
+      return;
+    }
     isLoading = true;
     rebuildStates(states: [state]);
     feedsPageInitSub = Future.wait([
       HttpService.getPosts(),
-      HttpService.getFeaturedPosts(),
-      HttpService.getTrendingPosts()
+      HttpService.getTestimonials(),
     ]).asStream().listen(
       (val) {
         if (val.length > 0) {
           isLoading = false;
           failed = false;
           posts = val[0] is int ? [] : val[0];
-          fposts = val[1] is int ? [] : val[1];
-          tposts = val[2] is int ? [] : val[2];
+          testimonials = val[1] is int ? [] : val[1];
           rebuildStates(states: [state]);
         } else {
           isLoading = false;
@@ -291,6 +283,7 @@ class PostBloc extends StatesRebuilder {
           }
           return Future.value(false);
         }
+        return Future.value(true);
       }).catchError((onError) => Future.value(false)),
     );
   }
@@ -335,6 +328,7 @@ class PostBloc extends StatesRebuilder {
     if (commentsSub != null) {
       commentsSub.cancel();
     }
+    comments = null;
   }
 
   activateRecord(TargetPlatform platform) {
@@ -355,7 +349,8 @@ class PostBloc extends StatesRebuilder {
     isRecording = false;
     showRecWidget = false;
     audioPath = null;
-    rebuildStates(ids: ["postMediaState", "postRecBtnState"]);
+    isSubmitingPost = false;
+    isSubmitted = false;
   }
 
   Future recAudio(TargetPlatform platform) async {

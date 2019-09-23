@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'upright_search.dart';
+import 'package:auto_size_text/auto_size_text.dart';
 
 PreferredSizeWidget appBarDefault(
     {@required String title, @required BuildContext context, Color bgCol = Colors.white, Color txtCol = Colors.black,}) {
@@ -17,7 +18,7 @@ PreferredSizeWidget appBarDefault(
         );
       },
     ),
-    title: Text(
+    title: AutoSizeText(
       title.toUpperCase(),
       style: TextStyle(
         color: txtCol,
@@ -26,7 +27,7 @@ PreferredSizeWidget appBarDefault(
       ),
     ),
     backgroundColor: bgCol,
-    elevation: 0.5,
+    elevation: 0,
     centerTitle: true,
     actions: <Widget>[
       IconButton(

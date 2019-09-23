@@ -10,7 +10,7 @@ class LocalStorage {
   static DatabaseFactory dbFactory = databaseFactoryIo;
 
   static Future<String> get _fsPath async {
-    final basePath = await fs.getTemporaryDirectory();
+    final basePath = await fs.getApplicationDocumentsDirectory();
     return basePath.path;
   }
 

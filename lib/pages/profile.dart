@@ -1,352 +1,364 @@
+import 'dart:async';
+
+import 'package:Upright_NG/components/page_scaffold.dart';
+import 'package:Upright_NG/stores/post.dart';
+import 'package:Upright_NG/styles/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:intl/intl.dart';
 import 'package:states_rebuilder/states_rebuilder.dart';
-import 'package:line_icons/line_icons.dart';
 
-import '../components/form_style.dart';
 import '../components/app_activity_indicator.dart';
 import '../stores/user.dart';
+import 'package:auto_size_text/auto_size_text.dart';
 
 final usrData = UserBloc.getInstance();
+final postData = PostBloc.getInstance();
 
 class ProfilePage extends StatefulWidget {
   _ProfilePageState createState() => _ProfilePageState();
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  final GlobalKey<FormState> formKey = GlobalKey<FormState>();
-  TextEditingController nameCtrl;
-  TextEditingController mailCtrl;
-  TextEditingController cityCtrl;
-  TextEditingController stateCtrl;
-  TextEditingController countryCtrl;
+  @override
+  Widget build(BuildContext context) {
+    return PageScaffold(
+      activeRoute: 3,
+      child: CustomScrollView(
+        slivers: <Widget>[
+          SliverAppBar(
+            title: Text(
+              "Profile",
+              style: Theme.of(context).textTheme.title,
+            ),
+            centerTitle: true,
+            leading: BackButton(
+              color: Colors.black,
+            ),
+            actions: <Widget>[
+              FlatButton(
+                child: Text("My Gifts"),
+                onPressed: () {
+                  Navigator.of(context).pushNamed("/gifts");
+                },
+                textColor: Colors.grey,
+                padding: EdgeInsets.all(5),
+              )
+            ],
+            pinned: true,
+            elevation: 0,
+          ),
+          SliverList(
+            delegate: SliverChildListDelegate(
+              [
+                Align(
+                  alignment: Alignment.topLeft,
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 20),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisSize: MainAxisSize.min,
+                      children: <Widget>[
+                        Icon(
+                          Icons.star,
+                          size: 15,
+                          color: appYellow,
+                        ),
+                        Text(
+                          "?",
+                          style: TextStyle(color: Colors.grey),
+                        )
+                      ],
+                    ),
+                  ),
+                ),
+                UserAvatar(),
+                SizedBox(
+                  height: 10,
+                ),
+                Wrap(
+                  alignment: WrapAlignment.center,
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  children: <Widget>[
+                    AutoSizeText(
+                      usrData.activeUser.username,
+                      textAlign: TextAlign.center,
+                      style: Theme.of(context)
+                          .textTheme
+                          .body1
+                          .copyWith(fontSize: 30.0, color: appBlack),
+                    ),
+                    SizedBox(
+                      width: usrData.activeUser.isMember ?? false ? 5 : 0,
+                    ),
+                    StateBuilder(
+                      blocs: [usrData],
+                      stateID: "memberState1",
+                      builder: (_) {
+                        if (usrData.activeUser.isMember ?? false) {
+                          return Image.asset("assets/images/verified.png");
+                        }
+                        return SizedBox();
+                      },
+                    )
+                  ],
+                ),
+                AutoSizeText(
+                  "${usrData.activeUser.state ?? "Login"}, ${usrData.activeUser.country ?? "to show location"}",
+                  style: TextStyle(color: Colors.grey),
+                  textAlign: TextAlign.center,
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                usrData.isLoggedIn
+                    ? StateBuilder(
+                        initState: (state) {
+                          Timer(Duration(seconds: 1),
+                              () => usrData.getUserStat(state));
+                        },
+                        builder: (_) {
+                          final count = usrData.usrStat ?? {"posts": 0};
+                          return Column(
+                            children: <Widget>[
+                              RatingWidget(postCount: count["posts"]),
+                              SizedBox(
+                                height: 25,
+                              ),
+                              usrData.isLoadingStat
+                                  ? Center(
+                                      child: const AppSpinner(),
+                                    )
+                                  : usrData.usrStat != null
+                                      ? const StatsWidget()
+                                      : Center(
+                                          child: Column(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.center,
+                                            children: <Widget>[
+                                              const StatsWidget(),
+                                              FlatButton(
+                                                padding: EdgeInsets.all(5),
+                                                child: AutoSizeText(
+                                                  "User stat retrieval fetch failed, retry",
+                                                  style: TextStyle(
+                                                    color: Color(0xFF007CBB),
+                                                  ),
+                                                ),
+                                                onPressed: () =>
+                                                    usrData.getUserStat(this),
+                                              )
+                                            ],
+                                          ),
+                                        )
+                            ],
+                          );
+                        },
+                      )
+                    : SizedBox(),
+              ],
+            ),
+          ),
+          usrData.isLoggedIn ?? false
+              ? SliverPadding(
+                  padding: EdgeInsets.only(top: 30),
+                  sliver: SliverList(
+                    delegate: SliverChildListDelegate(
+                      [
+                        Padding(
+                          padding: EdgeInsets.only(
+                            left: 16,
+                            right: 16,
+                            bottom: 16,
+                          ),
+                          child: Table(
+                            children: [
+                              TableRow(
+                                children: [
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    children: <Widget>[
+                                      Container(
+                                        height: 13,
+                                        width: 13,
+                                        decoration: BoxDecoration(
+                                          shape: BoxShape.circle,
+                                          color: appGreen,
+                                        ),
+                                      ),
+                                      SizedBox(
+                                        width: 10,
+                                      ),
+                                      Text(
+                                        "Feeds",
+                                        style: TextStyle(fontSize: 18),
+                                      )
+                                    ],
+                                  ),
+                                  Text(
+                                    DateFormat.yMMMEd().format(DateTime.now()),
+                                    textAlign: TextAlign.end,
+                                  )
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                        Builder(
+                          builder: (context) {
+                            final size = MediaQuery.of(context).size;
+                            if (postData.posts != null &&
+                                postData.posts.length > 0) {
+                              final posts = postData.posts;
+                              return Container(
+                                constraints: BoxConstraints(
+                                  maxHeight: size.height * 0.3,
+                                  maxWidth: size.width,
+                                ),
+                                child: ListView.builder(
+                                  itemCount:
+                                      posts.length > 5 ? 5 : posts.length,
+                                  scrollDirection: Axis.horizontal,
+                                  itemBuilder: (context, idx) {
+                                    return GestureDetector(
+                                      onTap: () => Navigator.pushNamed(context,
+                                          '/post/${posts[idx]["id"]}/${posts[idx]["title"]}',
+                                          arguments: posts[idx]),
+                                      child: Container(
+                                        width: size.width * 0.8,
+                                        margin: EdgeInsets.only(right: 20),
+                                        color: appShadow,
+                                        child: posts[idx]["image"]
+                                                .endsWith(".m4a")
+                                            ? Image.asset(
+                                                "assets/images/waveform.png",
+                                                fit: BoxFit.cover,
+                                              )
+                                            : posts[idx]["image"]
+                                                    .endsWith(".mp4")
+                                                ? Image.asset(
+                                                    "assets/images/vid.jpg",
+                                                    fit: BoxFit.cover,
+                                                  )
+                                                : posts[idx]["image"]
+                                                        .endsWith("Logo.jpg")
+                                                    ? Image.asset(
+                                                        "assets/images/Logomin.jpg",
+                                                        fit: BoxFit.cover,
+                                                      )
+                                                    : Image.network(
+                                                        posts[idx]["image"],
+                                                        fit: BoxFit.cover,
+                                                      ),
+                                      ),
+                                    );
+                                  },
+                                ),
+                              );
+                            } else {
+                              return Center(
+                                child: Column(
+                                  children: <Widget>[
+                                    Icon(
+                                      Icons.cloud_off,
+                                      size: 40,
+                                    ),
+                                    Text(
+                                        "No feed, check your internet connection"),
+                                  ],
+                                ),
+                              );
+                            }
+                          },
+                        )
+                      ],
+                    ),
+                  ),
+                )
+              : SliverPadding(
+                  padding: EdgeInsets.symmetric(horizontal: 30),
+                  sliver: SliverList(
+                    delegate: SliverChildListDelegate([
+                      SizedBox(
+                        height: 20,
+                      ),
+                      Text(
+                        "Sign in to view profile",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(color: Colors.grey, fontWeight: FontWeight.bold),
+                      ),
+                      SizedBox(
+                        height: 5,
+                      ),
+                      RaisedButton(
+                        child: Text("Sign In"),
+                        onPressed: () => Navigator.of(context)
+                            .pushReplacementNamed("/login"),
+                      )
+                    ]),
+                  ),
+                )
+        ],
+      ),
+    );
+  }
+}
 
-  void initState() {
-    super.initState();
-    if (usrData.isEdit) {
-      usrData.toggleEdit(this);
+class RatingWidget extends StatelessWidget {
+  final int postCount;
+  RatingWidget({this.postCount});
+
+  Widget _ratingContainer({int star = 0, String rank = ""}) {
+    rank = rank == "" ? "Reporter" : "$rank Reporter";
+    return Wrap(
+      alignment: WrapAlignment.center,
+      crossAxisAlignment: WrapCrossAlignment.center,
+      children: <Widget>[
+        Wrap(
+          crossAxisAlignment: WrapCrossAlignment.center,
+          children: List.generate(5, (idx) {
+            return Icon(
+              Icons.star,
+              color: star > idx ? appYellow : appGrey,
+              size: 20,
+            );
+          }),
+        ),
+        SizedBox(
+          width: 10,
+        ),
+        AutoSizeText(
+          rank,
+          style: TextStyle(color: Colors.grey),
+        )
+      ],
+    );
+  }
+
+  Widget _ratingRoutine() {
+    if (postCount >= 10 && postCount < 20) {
+      return _ratingContainer(star: 1, rank: "Bronze");
+    } else if (postCount >= 20 && postCount < 30) {
+      return _ratingContainer(star: 2, rank: "Silver");
+    } else if (postCount >= 30 && postCount < 40) {
+      return _ratingContainer(star: 3, rank: "Gold");
+    } else if (postCount >= 40 && postCount < 50) {
+      return _ratingContainer(star: 4, rank: "Platinum");
+    } else if (postCount >= 50) {
+      return _ratingContainer(star: 5, rank: "Diamond");
+    } else {
+      return _ratingContainer();
     }
-    final user = usrData.activeUser;
-    nameCtrl = TextEditingController(text: user.name ?? "");
-    mailCtrl = TextEditingController(text: user.email ?? "");
-    cityCtrl = TextEditingController(text: user.city ?? "");
-    stateCtrl = TextEditingController(text: user.state ?? "");
-    countryCtrl = TextEditingController(text: user.country ?? "");
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      floatingActionButton: StateBuilder(
-        stateID: "profState",
-        blocs: [usrData],
-        builder: (_) {
-          if (usrData.isLoadingStat || usrData.isUpdating) {
-            return CircularProgressIndicator();
-          }
-          return FloatingActionButton(
-            child: Icon(usrData.isEdit ? Icons.close : Icons.edit),
-            onPressed: () => usrData.toggleEdit(this),
-          );
-        },
-      ),
-      body: StateBuilder(
-        initState: (state) => usrData.getUserStat(state),
-        builder: (_) {
-          return CustomScrollView(
-            slivers: <Widget>[
-              SliverAppBar(
-                backgroundColor: Color(0xFF4D4E4E),
-                leading: IconButton(
-                  icon: Icon(
-                    Theme.of(context).platform == TargetPlatform.iOS
-                        ? CupertinoIcons.back
-                        : Icons.arrow_back,
-                    color: Colors.white,
-                  ),
-                  onPressed: () => Navigator.pop(context),
-                ),
-                expandedHeight: 250.0,
-                pinned: true,
-                flexibleSpace: FlexibleSpaceBar(
-                  centerTitle: true,
-                  title: Text(
-                    usrData.activeUser.name,
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 20.0,
-                      fontFamily: 'PlayfairDisplay',
-                    ),
-                  ),
-                  background: Hero(
-                    tag: usrData.activeUser.name,
-                    child: Container(
-                      decoration: BoxDecoration(color: Color(0xFF4D4E4E)),
-                      child: Center(
-                        child: CircleAvatar(
-                          radius: 80,
-                          backgroundImage:
-                              NetworkImage(usrData.activeUser.avatar),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              Builder(
-                builder: (context) {
-                  if (usrData.isEdit) {
-                    return SliverList(
-                      delegate: SliverChildListDelegate([
-                        Container(
-                          alignment: FractionalOffset.center,
-                          padding: EdgeInsets.all(10.0),
-                          child: Form(
-                            key: formKey,
-                            child: SingleChildScrollView(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: <Widget>[
-                                  TextFormField(
-                                    decoration: InputDecoration(
-                                      labelStyle: TextStyle(
-                                          color: Color(0xFFCCCCCC),
-                                          fontSize: 18.0),
-                                      enabledBorder: formBrdr,
-                                      focusedBorder: formActiveBrdr,
-                                      labelText: 'Name',
-                                      filled: false,
-                                    ),
-                                    controller: nameCtrl,
-                                    style: TextStyle(
-                                        color: Colors.black, fontSize: 20.0),
-                                  ),
-                                  SizedBox(
-                                    height: 10.0,
-                                  ),
-                                  TextFormField(
-                                    decoration: InputDecoration(
-                                      labelStyle: TextStyle(
-                                          color: Color(0xFFCCCCCC),
-                                          fontSize: 18.0),
-                                      enabledBorder: formBrdr,
-                                      focusedBorder: formActiveBrdr,
-                                      errorBorder: errBrdr,
-                                      focusedErrorBorder: errBrdr,
-                                      labelText: 'Email',
-                                      filled: false,
-                                    ),
-                                    validator: (String val) {
-                                      if (val.isEmpty ||
-                                          !RegExp(r'\b[\w\d\W\D]+(?:@(?:[\w\d\W\D]+(?:\.(?:[\w\d\W\D]+))))\b')
-                                              .hasMatch(val)) {
-                                        return 'Email must be valid e.g username@mailprovider.com';
-                                      }
-                                    },
-                                    controller: mailCtrl,
-                                    style: TextStyle(
-                                        color: Colors.black, fontSize: 20.0),
-                                    keyboardType: TextInputType.emailAddress,
-                                  ),
-                                  SizedBox(
-                                    height: 10.0,
-                                  ),
-                                  TextFormField(
-                                    decoration: InputDecoration(
-                                      labelStyle: TextStyle(
-                                          color: Color(0xFFCCCCCC),
-                                          fontSize: 18.0),
-                                      enabledBorder: formBrdr,
-                                      focusedBorder: formActiveBrdr,
-                                      labelText: 'City',
-                                      filled: false,
-                                    ),
-                                    controller: cityCtrl,
-                                    style: TextStyle(
-                                        color: Colors.black, fontSize: 20.0),
-                                  ),
-                                  SizedBox(
-                                    height: 10.0,
-                                  ),
-                                  TextFormField(
-                                    decoration: InputDecoration(
-                                      labelStyle: TextStyle(
-                                          color: Color(0xFFCCCCCC),
-                                          fontSize: 18.0),
-                                      enabledBorder: formBrdr,
-                                      focusedBorder: formActiveBrdr,
-                                      labelText: 'State',
-                                      filled: false,
-                                    ),
-                                    controller: stateCtrl,
-                                    style: TextStyle(
-                                        color: Colors.black, fontSize: 20.0),
-                                  ),
-                                  SizedBox(
-                                    height: 10.0,
-                                  ),
-                                  TextFormField(
-                                    decoration: InputDecoration(
-                                      labelStyle: TextStyle(
-                                          color: Color(0xFFCCCCCC),
-                                          fontSize: 18.0),
-                                      enabledBorder: formBrdr,
-                                      focusedBorder: formActiveBrdr,
-                                      labelText: 'Country',
-                                      filled: false,
-                                    ),
-                                    controller: countryCtrl,
-                                    style: TextStyle(
-                                        color: Colors.black, fontSize: 20.0),
-                                  ),
-                                  RaisedButton(
-                                    onPressed: () {
-                                      if (usrData.isLoggedIn) {
-                                        if (formKey.currentState.validate()) {
-                                          formKey.currentState.save();
-                                          usrData.updateUser(this, {
-                                            "name": nameCtrl.text.trim(),
-                                            "email": mailCtrl.text.trim(),
-                                            "city": cityCtrl.text.trim(),
-                                            "state": stateCtrl.text.trim(),
-                                            "country": countryCtrl.text.trim(),
-                                            "id": usrData.activeUser.id
-                                          }).then((val) {
-                                            if (val) {
-                                              Scaffold.of(context).showSnackBar(
-                                                SnackBar(
-                                                  backgroundColor:
-                                                      Theme.of(context)
-                                                          .accentColor,
-                                                  content: Text(
-                                                    "Your Profile has been updated",
-                                                  ),
-                                                  action: SnackBarAction(
-                                                    textColor: Colors.white,
-                                                    label: "OK",
-                                                    onPressed: () => "",
-                                                  ),
-                                                ),
-                                              );
-                                            } else {
-                                              Scaffold.of(context).showSnackBar(
-                                                SnackBar(
-                                                  backgroundColor:
-                                                      Color(0xFF9B0D54),
-                                                  content: Text(
-                                                    "Sorry update failed, check that you have internet connection",
-                                                  ),
-                                                  action: SnackBarAction(
-                                                    textColor:
-                                                        Colors.blueAccent,
-                                                    label: "OK",
-                                                    onPressed: () => "",
-                                                  ),
-                                                ),
-                                              );
-                                            }
-                                          }).catchError((err) {
-                                            Scaffold.of(context).showSnackBar(
-                                              SnackBar(
-                                                backgroundColor:
-                                                    Color(0xFF9B0D54),
-                                                content: Text(
-                                                  "Sorry update failed, check that you have internet connection",
-                                                ),
-                                                action: SnackBarAction(
-                                                  textColor: Colors.blueAccent,
-                                                  label: "OK",
-                                                  onPressed: () => "",
-                                                ),
-                                              ),
-                                            );
-                                          });
-                                        } else {
-                                          Scaffold.of(context).showSnackBar(
-                                            SnackBar(
-                                              backgroundColor:
-                                                  Color(0xFF9B0D54),
-                                              content: Text(
-                                                "Your submission is invalid, provide valid entries",
-                                              ),
-                                              action: SnackBarAction(
-                                                textColor: Colors.blueAccent,
-                                                label: "OK",
-                                                onPressed: () => "",
-                                              ),
-                                            ),
-                                          );
-                                        }
-                                      } else {
-                                        Navigator.of(context)
-                                            .pushReplacementNamed('/login');
-                                      }
-                                    },
-                                    color: Color(0xFFE8C11C),
-                                    child: Text(
-                                      usrData.isLoggedIn ? "SUBMIT" : "LOGIN",
-                                      style:
-                                          TextStyle(color: Color(0xFF25333D)),
-                                    ),
-                                  )
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                      ]),
-                    );
-                  } else {
-                    if (usrData.isLoadingStat) {
-                      return SliverFillRemaining(
-                        child: Center(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: <Widget>[
-                              const AppSpinner(),
-                              Text("Loading User Stat")
-                            ],
-                          ),
-                        ),
-                      );
-                    } else {
-                      if (usrData.usrStat != null) {
-                        return const StatsWidget();
-                      } else {
-                        return SliverFillRemaining(
-                          child: Center(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: <Widget>[
-                                Icon(
-                                  LineIcons.warning,
-                                  size: 30.0,
-                                ),
-                                FlatButton(
-                                  child: Text(
-                                    "User stat retrieval fetch failed, retry",
-                                    style: TextStyle(
-                                      color: Color(0xFF007CBB),
-                                    ),
-                                  ),
-                                  onPressed: () => usrData.getUserStat(this),
-                                )
-                              ],
-                            ),
-                          ),
-                        );
-                      }
-                    }
-                  }
-                },
-              ),
-            ],
-          );
-        },
-      ),
-    );
+    return _ratingRoutine();
   }
 }
 
@@ -354,96 +366,207 @@ class StatsWidget extends StatelessWidget {
   const StatsWidget();
   @override
   Widget build(BuildContext context) {
-    return SliverGrid.count(
-      crossAxisSpacing: 2.0,
-      mainAxisSpacing: 2.0,
-      crossAxisCount: 2,
+    return Wrap(
+      alignment: WrapAlignment.center,
+      crossAxisAlignment: WrapCrossAlignment.center,
       children: [
         Container(
-          margin: EdgeInsets.all(10.0),
+          margin: EdgeInsets.all(5.0),
+          padding: EdgeInsets.symmetric(vertical: 10, horizontal: 30),
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(5.0),
-            color: Color(0xFFE8C11C),
+            borderRadius: BorderRadius.circular(20.0),
+            color: appGreen,
           ),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
-              Text(
-                usrData.usrStat["posts"].toString() ?? "0",
-                style: TextStyle(fontSize: 50.0),
+              AutoSizeText(
+                usrData.usrStat != null
+                    ? usrData.usrStat["posts"] != null
+                        ? usrData.usrStat["posts"].toString()
+                        : "0"
+                    : "0",
+                style: Theme.of(context).textTheme.body2.copyWith(
+                      color: appWhite,
+                    ),
               ),
-              Text(
-                "POSTS",
-                style: TextStyle(fontSize: 16.0),
+              AutoSizeText(
+                "Posts",
+                style:
+                    Theme.of(context).textTheme.body1.copyWith(color: appWhite),
               ),
             ],
           ),
         ),
         Container(
-          margin: EdgeInsets.all(10.0),
+          margin: EdgeInsets.all(5.0),
+          padding: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(5.0),
-            color: Color(0xFFE8C11C),
+            borderRadius: BorderRadius.circular(20.0),
+            color: appGreen,
           ),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
-              Text(
-                usrData.usrStat["comments"].toString() ?? "0",
-                style: TextStyle(fontSize: 50.0),
+              AutoSizeText(
+                usrData.usrStat != null
+                    ? usrData.usrStat["comments"] != null
+                        ? usrData.usrStat["comments"].toString()
+                        : "0"
+                    : "0",
+                style:
+                    Theme.of(context).textTheme.body2.copyWith(color: appWhite),
               ),
-              Text(
-                "COMMENTS",
-                style: TextStyle(fontSize: 16.0),
+              AutoSizeText(
+                "Comments",
+                style:
+                    Theme.of(context).textTheme.body1.copyWith(color: appWhite),
               ),
             ],
           ),
         ),
         Container(
-          margin: EdgeInsets.all(10.0),
+          margin: EdgeInsets.all(5.0),
+          padding: EdgeInsets.symmetric(vertical: 10, horizontal: 30),
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(5.0),
-            color: Color(0xFFE8C11C),
+            borderRadius: BorderRadius.circular(20.0),
+            color: appGreen,
           ),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
-              Text(
-                usrData.usrStat["upvotes"].toString() ?? "0",
-                style: TextStyle(fontSize: 50.0),
+              AutoSizeText(
+                usrData.usrStat != null
+                    ? usrData.usrStat["points"] != null
+                        ? usrData.usrStat["points"].toString()
+                        : "0"
+                    : "0",
+                style:
+                    Theme.of(context).textTheme.body2.copyWith(color: appWhite),
               ),
-              Text(
-                "UPVOTES",
-                style: TextStyle(fontSize: 16.0),
-              ),
-            ],
-          ),
-        ),
-        Container(
-          margin: EdgeInsets.all(10.0),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(5.0),
-            color: Color(0xFFE8C11C),
-          ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: <Widget>[
-              Text(
-                usrData.usrStat["downvotes"].toString() ?? "0",
-                style: TextStyle(fontSize: 50.0),
-              ),
-              Text(
-                "DOWNVOTES",
-                style: TextStyle(fontSize: 16.0),
+              AutoSizeText(
+                "Points",
+                style:
+                    Theme.of(context).textTheme.body1.copyWith(color: appWhite),
               ),
             ],
           ),
         ),
       ],
+    );
+  }
+}
+
+class UserAvatar extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Builder(
+      builder: (context) {
+        return Container(
+          child: Center(
+            child: Stack(
+              alignment: Alignment.center,
+              children: <Widget>[
+                StateBuilder(
+                  stateID: "avatarState1",
+                  blocs: [usrData],
+                  builder: (_) {
+                    return CircleAvatar(
+                      radius: 100,
+                      backgroundImage: usrData.tempAvatar != null
+                          ? FileImage(usrData.tempAvatar)
+                          : NetworkImage(
+                              usrData.activeUser.avatar,
+                            ),
+                      backgroundColor: appGreen,
+                    );
+                  },
+                ),
+                Positioned(
+                  bottom: 10,
+                  right: 10,
+                  child: usrData.isLoggedIn
+                      ? GestureDetector(
+                          child: Container(
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: appWhite.withOpacity(0.95),
+                            ),
+                            padding: EdgeInsets.all(10),
+                            child: Center(
+                              child: Icon(
+                                Icons.add_a_photo,
+                                color: appGreen,
+                                size: 30,
+                              ),
+                            ),
+                          ),
+                          onTap: () {
+                            if (!usrData.isChangingAvatar) {
+                              usrData.getImage(
+                                  Theme.of(context).platform, true);
+                            }
+                            // Scaffold.of(context).showBottomSheet(
+                            //   (context) {
+                            //     return FractionallySizedBox(
+                            //       heightFactor: 0.15,
+                            //       child: Row(
+                            //         crossAxisAlignment: CrossAxisAlignment.stretch,
+                            //         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            //         children: <Widget>[
+                            //           FlatButton.icon(
+                            //             icon: Icon(Icons.photo_library),
+                            //             label: Text("Open Gallery"),
+                            //             textColor: appBlack,
+                            //             onPressed: () {
+                            //               usrData.getImage(Theme.of(context).platform, true);
+                            //             },
+                            //           ),
+                            //           FlatButton.icon(
+                            //             icon: Icon(Icons.camera),
+                            //             label: Text("Take Photo"),
+                            //             textColor: appBlack,
+                            //             onPressed: () {
+                            //               usrData.getImage(Theme.of(context).platform, false);
+                            //             },
+                            //           ),
+                            //         ],
+                            //       ),
+                            //     );
+                            //   },
+                            //   backgroundColor: appWhite,
+                            //   elevation: 2
+                            // );
+                          },
+                        )
+                      : SizedBox(),
+                ),
+                Positioned.fill(
+                  child: StateBuilder(
+                    stateID: "avatarState",
+                    blocs: [usrData],
+                    builder: (_) {
+                      return Container(
+                        color: usrData.isChangingAvatar
+                            ? Colors.white.withOpacity(0.8)
+                            : null,
+                        child: Center(
+                          child: usrData.isChangingAvatar
+                              ? AppSpinner()
+                              : SizedBox(),
+                        ),
+                      );
+                    },
+                  ),
+                )
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 }
