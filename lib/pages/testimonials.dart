@@ -1,5 +1,6 @@
 import 'package:Upright_NG/components/page_scaffold.dart';
 import 'package:Upright_NG/components/parsed_text.dart';
+import 'package:Upright_NG/components/ratings.dart';
 import 'package:Upright_NG/styles/colors.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
@@ -120,6 +121,7 @@ class TestimonialPage extends StatelessWidget {
                                 image: NetworkImage(
                                   post["author"]["avatar"],
                                 ),
+                                fit: BoxFit.fill,
                               ),
                             ),
                           ),
@@ -130,6 +132,11 @@ class TestimonialPage extends StatelessWidget {
                                 .textTheme
                                 .headline
                                 .copyWith(fontSize: 20),
+                          ),
+                          subtitle: RatingWidget(
+                            postCount: post["author"]["postCount"] ?? 0,
+                            alignment: WrapAlignment.start,
+                            showTitle: false,
                           ),
                         ),
                         Expanded(

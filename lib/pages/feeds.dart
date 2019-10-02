@@ -2,6 +2,7 @@ import 'package:Upright_NG/components/app_banner.dart';
 import 'package:Upright_NG/components/feed_grid.dart';
 import 'package:Upright_NG/components/page_scaffold.dart';
 import 'package:Upright_NG/components/parsed_text.dart';
+import 'package:Upright_NG/components/ratings.dart';
 import 'package:Upright_NG/delegates/header_delegate.dart';
 import 'package:Upright_NG/pages/post_create.dart';
 import 'package:Upright_NG/styles/colors.dart';
@@ -61,150 +62,193 @@ class FeedsPageState extends State<FeedsPage> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    return ValueListenableBuilder(
-      valueListenable: activePage,
-      builder: (context, page, child) {
-        return PageScaffold(
-          navWithinHome: switchTabs,
-          activeRoute: page,
-          floatingActionButton: page == 0
-              ? Container(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: <Widget>[
-                      FloatingActionButton(
-                        backgroundColor: Colors.white,
-                        child: Icon(
-                          Icons.refresh,
-                          color: Theme.of(context).accentColor,
-                        ),
-                        onPressed: () => postBloc.getFeed(this, true),
-                        heroTag: "refresh",
-                      ),
-                      SizedBox(
-                        height: 10.0,
-                      ),
-                      FloatingActionButton(
-                        child: Icon(Icons.add),
-                        onPressed: () => switchTabs(1),
-                        heroTag: "addpost",
-                      ),
-                    ],
-                  ),
-                )
-              : null,
-          child: StateBuilder(
-            initState: (state) => postData.getFeed(state),
-            blocs: [postBloc],
-            builder: (_) {
-              return NestedScrollView(
-                controller: scrlCntrl,
-                headerSliverBuilder:
-                    (BuildContext context, bool boxIsScrolled) {
-                  return [
-                    SliverAppBar(
-                      floating: true,
-                      pinned: true,
-                      backgroundColor: Color(0xFF467D4D),
-                      leading: IconButton(
-                        icon: Icon(
-                          Icons.menu,
-                          color: Colors.white,
-                          size: 30.0,
-                        ),
-                        onPressed: () => Scaffold.of(context).openDrawer(),
-                      ),
-                      actions: <Widget>[
-                        IconButton(
-                          icon: Icon(
-                            Icons.search,
-                            color: Colors.white,
-                            size: 30.0,
-                          ),
-                          onPressed: () {
-                            showSearch(
-                                context: context,
-                                delegate: UprightSearchDelegate());
-                          },
-                        ),
-                      ],
-                      expandedHeight: MediaQuery.of(context).size.height * 0.3,
-                      flexibleSpace: const AppBanner(),
-                    ),
-                    SliverPersistentHeader(
-                      floating: false,
-                      pinned: true,
-                      delegate: UprightSliverAppBarDelegate(
-                        child: TabBar(
-                          controller: tabCntrl,
-                          tabs: <Widget>[
-                            Tab(
-                              child: AutoSizeText(
-                                "Feed",
+    return Builder(
+      builder: (context) {
+        return WillPopScope(
+          onWillPop: () {
+            return Future.value(true);
+            // final navState = Navigator.of(context);
+            // if (navState.canPop()) {
+            //   return Future.value(true);
+            // } else {
+            //   // Future<bool> pop;
+            //   return showDialog(
+            //     context: context,
+            //     builder: (context) {
+            //       return AlertDialog(
+            //         title: Text("Do you really want to quit?"),
+            //         actions: <Widget>[
+            //           FlatButton(
+            //             child: Text("Yes"),
+            //             onPressed: () => Future.value(true),
+            //           ),
+            //           RaisedButton(
+            //             child: Text("Yes"),
+            //             onPressed: () {
+            //               Navigator.of(context).pop();
+            //               return Future.value(false);
+            //             },
+            //           ),
+            //         ],
+            //       );
+            //     },
+            //   );
+            //   // return pop;
+            // }
+          },
+          child: ValueListenableBuilder(
+            valueListenable: activePage,
+            builder: (context, page, child) {
+              return PageScaffold(
+                navWithinHome: switchTabs,
+                activeRoute: page,
+                floatingActionButton: page == 0
+                    ? Container(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: <Widget>[
+                            FloatingActionButton(
+                              backgroundColor: Colors.white,
+                              child: Icon(
+                                Icons.refresh,
+                                color: Theme.of(context).accentColor,
                               ),
+                              onPressed: () => postBloc.getFeed(this, true),
+                              heroTag: "refresh",
                             ),
-                            Tab(
-                              child: AutoSizeText(
-                                "Report",
-                              ),
-                            )
+                            SizedBox(
+                              height: 10.0,
+                            ),
+                            FloatingActionButton(
+                              child: Icon(Icons.add),
+                              onPressed: () => switchTabs(1),
+                              heroTag: "addpost",
+                            ),
                           ],
                         ),
-                      ),
-                    )
-                  ];
-                },
-                body: TabBarView(
-                  controller: tabCntrl,
-                  children: <Widget>[
-                    postData.isLoading
-                        ? Center(
-                            child: const AppSpinner(),
-                          )
-                        : postData.failed
-                            ? Center(
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: <Widget>[
-                                    Icon(
-                                      LineIcons.frown_o,
-                                      size: 100.0,
-                                    ),
-                                    AutoSizeText(
-                                        "Oops data fetch failed, check your internet connection"),
-                                  ],
+                      )
+                    : null,
+                child: StateBuilder(
+                  initState: (state) => postData.getFeed(state),
+                  blocs: [postBloc],
+                  builder: (_) {
+                    return NestedScrollView(
+                      controller: scrlCntrl,
+                      headerSliverBuilder:
+                          (BuildContext context, bool boxIsScrolled) {
+                        return [
+                          SliverAppBar(
+                            floating: true,
+                            pinned: true,
+                            backgroundColor: Color(0xFF467D4D),
+                            leading: IconButton(
+                              icon: Icon(
+                                Icons.menu,
+                                color: Colors.white,
+                                size: 30.0,
+                              ),
+                              onPressed: () =>
+                                  Scaffold.of(context).openDrawer(),
+                            ),
+                            actions: <Widget>[
+                              IconButton(
+                                icon: Icon(
+                                  Icons.search,
+                                  color: Colors.white,
+                                  size: 30.0,
                                 ),
-                              )
-                            : StateBuilder(
-                                stateID: "recPostState",
-                                blocs: [postData],
-                                builder: (_) {
-                                  return LazyLoadScrollView(
-                                    child: CustomScrollView(
-                                      slivers: <Widget>[
-                                        SliverList(
-                                          delegate: SliverChildListDelegate(
-                                            [
-                                              Carousel(
-                                                  posts: postData.testimonials),
-                                            ],
-                                          ),
-                                        ),
-                                        Feeds(
-                                          isRecent: true,
-                                          posts: postData.posts,
-                                        )
-                                      ],
-                                    ),
-                                    onEndOfPage: () => postData.loadNew(),
-                                  );
+                                onPressed: () {
+                                  showSearch(
+                                      context: context,
+                                      delegate: UprightSearchDelegate());
                                 },
                               ),
-                    PostCreatePage(
-                      isAnon: widget.isAnon,
-                    ),
-                  ],
+                            ],
+                            expandedHeight:
+                                MediaQuery.of(context).size.height * 0.3,
+                            flexibleSpace: const AppBanner(),
+                          ),
+                          SliverPersistentHeader(
+                            floating: false,
+                            pinned: true,
+                            delegate: UprightSliverAppBarDelegate(
+                              child: TabBar(
+                                controller: tabCntrl,
+                                tabs: <Widget>[
+                                  Tab(
+                                    child: AutoSizeText(
+                                      "Feed",
+                                    ),
+                                  ),
+                                  Tab(
+                                    child: AutoSizeText(
+                                      "Report",
+                                    ),
+                                  )
+                                ],
+                              ),
+                            ),
+                          )
+                        ];
+                      },
+                      body: TabBarView(
+                        controller: tabCntrl,
+                        children: <Widget>[
+                          postData.isLoading
+                              ? Center(
+                                  child: const AppSpinner(),
+                                )
+                              : postData.failed
+                                  ? Center(
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        children: <Widget>[
+                                          Icon(
+                                            LineIcons.frown_o,
+                                            size: 100.0,
+                                          ),
+                                          AutoSizeText(
+                                              "Oops data fetch failed, check your internet connection"),
+                                        ],
+                                      ),
+                                    )
+                                  : StateBuilder(
+                                      stateID: "recPostState",
+                                      blocs: [postData],
+                                      builder: (_) {
+                                        return LazyLoadScrollView(
+                                          child: CustomScrollView(
+                                            slivers: <Widget>[
+                                              SliverList(
+                                                delegate:
+                                                    SliverChildListDelegate(
+                                                  [
+                                                    Carousel(
+                                                        posts: postData
+                                                            .testimonials),
+                                                  ],
+                                                ),
+                                              ),
+                                              Feeds(
+                                                isRecent: true,
+                                                posts: postData.posts,
+                                              )
+                                            ],
+                                          ),
+                                          onEndOfPage: () => postData.loadNew(),
+                                        );
+                                      },
+                                    ),
+                          PostCreatePage(
+                            isAnon: widget.isAnon,
+                          ),
+                        ],
+                      ),
+                    );
+                  },
                 ),
               );
             },
@@ -224,6 +268,7 @@ class Carousel extends StatelessWidget {
   Widget build(BuildContext context) {
     if (posts != null && posts.length > 0) {
       return Container(
+        padding: EdgeInsets.only(bottom: 10.0),
         height: 250,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -232,7 +277,7 @@ class Carousel extends StatelessWidget {
               child: AutoSizeText(
                 "Testimonials",
                 style:
-                    Theme.of(context).textTheme.headline.copyWith(fontSize: 25),
+                    Theme.of(context).textTheme.headline.copyWith(fontSize: 20),
               ),
               padding: EdgeInsets.only(
                 top: 10.0,
@@ -243,18 +288,17 @@ class Carousel extends StatelessWidget {
             Expanded(
               child: SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
+                padding: EdgeInsets.only(left: 10),
                 child: Row(
                   children: posts.map((post) {
                     return GestureDetector(
-                      onTap: () => Navigator.pushNamed(
-                          context, '/testimonials',
+                      onTap: () => Navigator.pushNamed(context, '/testimonials',
                           arguments: posts),
                       child: Container(
                         margin: EdgeInsets.only(
                           right: 20.0,
                           top: 10.0,
                           bottom: 10.0,
-                          // left: 10.0,
                         ),
                         width: 300,
                         padding: EdgeInsets.symmetric(
@@ -271,8 +315,6 @@ class Carousel extends StatelessWidget {
                                 spreadRadius: 3,
                               )
                             ]),
-                        // shape: RoundedRectangleBorder(
-                        //     borderRadius: BorderRadius.circular(15),),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: <Widget>[
@@ -288,6 +330,7 @@ class Carousel extends StatelessWidget {
                                     image: NetworkImage(
                                       post["author"]["avatar"],
                                     ),
+                                    fit: BoxFit.fill,
                                   ),
                                 ),
                               ),
@@ -299,17 +342,20 @@ class Carousel extends StatelessWidget {
                                     .headline
                                     .copyWith(fontSize: 20),
                               ),
+                              subtitle: RatingWidget(
+                                postCount: post["author"]["postCount"] ?? 0,
+                                alignment: WrapAlignment.start,
+                                showTitle: false,
+                              ),
                             ),
                             Expanded(
-                                child: SingleChildScrollView(
-                              child: UprightParsedText(
-                                text: post["content"],
-                                maxLines: post["content"].toString().length,
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .body1
+                              child: SingleChildScrollView(
+                                child: UprightParsedText(
+                                    text: post["content"],
+                                    maxLines: post["content"].toString().length,
+                                    style: Theme.of(context).textTheme.body1),
                               ),
-                            ))
+                            )
                           ],
                         ),
                       ),

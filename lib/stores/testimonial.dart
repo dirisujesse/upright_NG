@@ -111,13 +111,17 @@ class TestimonialBloc extends StatesRebuilder {
       HttpService.addTestimonial(testimonialData).then(
         (val) {
           if (!(val is int)) {
-            print(val);
             isSubmitingTestimonial = false;
             isSubmitted = true;
+            final hasAuthor = val is Map<String, dynamic> &&
+                val.containsKey("author") &&
+                val["author"] is Map<String, dynamic> &&
+                val["author"].containsKey("points");
+            usrData.updatePoints(
+                points: hasAuthor ? val["author"]["points"] : 0);
             rebuildStates(ids: ["testimonialCreateState"]);
             return Future.value(true);
           } else {
-            print(val);
             isSubmitingTestimonial = false;
             isSubmitted = false;
             rebuildStates(ids: ["testimonialCreateState"]);
@@ -126,7 +130,6 @@ class TestimonialBloc extends StatesRebuilder {
         },
       ).catchError(
         (err) {
-          print(err + " ");
           isSubmitingTestimonial = false;
           isSubmitted = false;
           rebuildStates(ids: ["testimonialCreateState"]);
@@ -258,7 +261,6 @@ class TestimonialBloc extends StatesRebuilder {
           image;
 
       if (imageData != null) {
-        print("ok");
         isAud = false;
         isVid = false;
         image = imageData;
@@ -288,7 +290,6 @@ class TestimonialBloc extends StatesRebuilder {
           ? ((permitCam == PermissionStatus.granted) &&
               (permitCam == PermissionStatus.granted))
           : false;
-      print("checking permissions");
     }
     if (isPermitted != null && isPermitted == true) {
       reset();

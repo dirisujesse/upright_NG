@@ -18,7 +18,7 @@ class User {
   String city;
   String state;
   String country;
-  String avatar = 'https://www.gravatar.com/avatar';
+  String avatar = 'https://res.cloudinary.com/jesse-dirisu/image/upload/v1569184517/Mask_Group_4_A12_Group_18_pattern.png';
   List<Post> posts;
   int postCount;
   int points = 0;
@@ -37,9 +37,9 @@ class User {
     this.state,
     this.country,
     this.avatar,
-    this.posts,
+    this.posts = const[],
     this.postCount,
-    this.comments,
+    this.comments = const[],
     this.telephone,
     this.email,
     this.isMember,

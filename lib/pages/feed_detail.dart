@@ -195,8 +195,8 @@ class _FeedPageState extends State<FeedPage> {
               return [
                 SliverAppBar(
                   leading: BackButton(
-                    // color: Colors.black,
-                  ),
+                      // color: Colors.black,
+                      ),
                   pinned: true,
                   elevation: 0,
                   expandedHeight: MediaQuery.of(context).size.height * 0.35,
@@ -283,12 +283,12 @@ class _FeedPageState extends State<FeedPage> {
               ];
             },
             body: Container(
-              padding: EdgeInsets.only(
-                left: 30.0,
-                right: 30.0,
-              ),
               height: MediaQuery.of(context).size.height,
               child: SingleChildScrollView(
+                padding: EdgeInsets.only(
+                  left: 30.0,
+                  right: 30.0,
+                ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: <Widget>[
@@ -338,7 +338,10 @@ class _FeedPageState extends State<FeedPage> {
                     ),
                     UprightParsedText(
                       text: widget.post.body,
-                      style: Theme.of(context).textTheme.body1,
+                      style: Theme.of(context)
+                          .textTheme
+                          .body1
+                          .copyWith(fontSize: 18),
                     ),
                     SizedBox(
                       height: 20.0,
@@ -387,28 +390,24 @@ class _FeedPageState extends State<FeedPage> {
                                       formKey.currentState.save();
                                       Scaffold.of(context).showSnackBar(
                                         SnackBar(
-                                          content:
-                                              AutoSizeText("Submitting your comment"),
-                                          action: SnackBarAction(
-                                            label: "OK",
-                                            onPressed: () {},
-                                          ),
+                                          backgroundColor: appGreen,
+                                          content: AutoSizeText(
+                                              "Submitting your comment"),
                                         ),
                                       );
                                       postData
                                           .addComment(comntCtrl.text)
                                           .then((val) {
                                         if (val) {
-                                          comntCtrl.clear();
                                           Scaffold.of(context).showSnackBar(
                                             SnackBar(
-                                              backgroundColor:
-                                                  Theme.of(context).accentColor,
+                                              backgroundColor: appGreen,
                                               content: AutoSizeText(
                                                 "Comment was successfully submitted",
                                               ),
                                             ),
                                           );
+                                          comntCtrl.clear();
                                         } else {
                                           Scaffold.of(context).showSnackBar(
                                             SnackBar(
@@ -492,7 +491,9 @@ class CommentsList extends StatelessWidget {
                       itemCount: comments.length,
                       itemBuilder: (context, idx) {
                         return Container(
-                          constraints: BoxConstraints(maxWidth: wide * 0.9,),
+                          constraints: BoxConstraints(
+                            maxWidth: wide * 0.9,
+                          ),
                           padding: EdgeInsets.all(10.0),
                           margin: EdgeInsets.only(bottom: 10.0),
                           decoration: BoxDecoration(
@@ -534,14 +535,14 @@ class CommentsList extends StatelessWidget {
                                     ),
                                   ),
                                   AutoSizeText(
-                                      comments[idx]["body"],
-                                      textAlign: TextAlign.start,
-                                      softWrap: true,
-                                      style: TextStyle(
-                                        fontSize: 14.0,
-                                        color: Colors.white,
-                                      ),
+                                    comments[idx]["body"],
+                                    textAlign: TextAlign.start,
+                                    softWrap: true,
+                                    style: TextStyle(
+                                      fontSize: 14.0,
+                                      color: Colors.white,
                                     ),
+                                  ),
                                 ],
                               ),
                             ],

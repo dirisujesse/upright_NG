@@ -30,12 +30,12 @@ class FeedGrid extends StatelessWidget {
                   ((tileIdx - 1) / gridCount).toString().endsWith("0")
               : tileIdx % 2 == 0;
           if (condition) {
-            return Container(
-              color: Color.fromRGBO(0, 0, 0, 0.6),
-              child: GestureDetector(
-                onTap: () => Navigator.pushNamed(
-                    context, '/post/${posts[idx]["id"]}/${posts[idx]["title"]}',
-                    arguments: posts[idx]),
+            return GestureDetector(
+              onTap: () => Navigator.pushNamed(
+                  context, '/post/${posts[idx]["id"]}/${posts[idx]["title"]}',
+                  arguments: posts[idx]),
+              child: Container(
+                color: Color.fromRGBO(0, 0, 0, 0.6),
                 child: Stack(
                   alignment: AlignmentDirectional.center,
                   fit: StackFit.expand,
@@ -144,13 +144,13 @@ class FeedGrid extends StatelessWidget {
               ),
             );
           } else {
-            return Container(
-              color: appLightGrey,
-              width: MediaQuery.of(context).size.width * 0.5,
-              child: GestureDetector(
-                onTap: () => Navigator.pushNamed(
-                    context, '/post/${posts[idx]["id"]}/${posts[idx]["title"]}',
-                    arguments: posts[idx]),
+            return GestureDetector(
+              onTap: () => Navigator.pushNamed(
+                  context, '/post/${posts[idx]["id"]}/${posts[idx]["title"]}',
+                  arguments: posts[idx]),
+              child: Container(
+                color: appLightGrey,
+                width: MediaQuery.of(context).size.width * 0.5,
                 child: Stack(
                   alignment: AlignmentDirectional.center,
                   fit: StackFit.expand,
@@ -159,8 +159,7 @@ class FeedGrid extends StatelessWidget {
                       padding: EdgeInsets.symmetric(
                         horizontal: 10.0,
                       ),
-                      child: Center(
-                        child: Column(
+                      child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
@@ -187,7 +186,6 @@ class FeedGrid extends StatelessWidget {
                             ),
                           ],
                         ),
-                      ),
                     ),
                     Positioned(
                       bottom: 20.0,

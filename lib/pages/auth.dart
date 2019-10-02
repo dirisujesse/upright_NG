@@ -43,7 +43,7 @@ class AuthPage extends StatelessWidget {
 
   goHome({isSignUp = false}) {
     if (!isMembership && isSignUp) {
-      return Navigator.of(ctx).pushReplacement(
+      return Navigator.of(ctx).pushAndRemoveUntil(
         MaterialPageRoute(
           builder: (ctx) {
             return PledgePage(
@@ -52,9 +52,10 @@ class AuthPage extends StatelessWidget {
             );
           },
         ),
+        (routes) => false
       );
     }
-    Navigator.of(ctx).pushReplacementNamed(isSignUp ? '/pledge' : '/home');
+    Navigator.of(ctx).pushNamedAndRemoveUntil(isSignUp ? '/pledge' : '/home', (routes) => false);
   }
 
   @override

@@ -87,7 +87,7 @@ class HttpService {
   static Future<dynamic> getPosts() async {
     try {
       var req = await http.get(
-        "/post?featured=false&limit=50&sort=createdAt%20DESC",
+        "/post?featured=false&limit=50&sort=createdAt%20DESC&populate=author",
         cancelToken: cancelToken,
       );
       if (req.statusCode > 201) {
@@ -103,7 +103,7 @@ class HttpService {
   static Future<dynamic> getPostRange(int skip, int limit) async {
     try {
       var req = await http.get(
-        "/post?featured=false&skip=$skip&limit=$limit&sort=createdAt%20DESC",
+        "/post?featured=false&skip=$skip&limit=$limit&sort=createdAt%20DESC&populate=author",
         cancelToken: cancelToken,
       );
       if (req.statusCode > 201) {
@@ -408,7 +408,7 @@ class HttpService {
         throw req.statusCode;
       }
       var res = req.data;
-      return res;
+      return res is List<dynamic> ? res[0] : res;
     } catch (e) {
       return 404;
     }

@@ -16,10 +16,15 @@ class StoreBloc extends StatesRebuilder {
   bool noGifts = false;
   bool makingOrder = false;
   UserBloc activeUser = UserBloc.getInstance();
-  Map<String, dynamic> pickupData = {"state": "Abuja", "address": "CCSI 16b, P.O.W Mafemi Crescent,Utako, Abuja, Mobile: 09022210504"};
+  Map<String, dynamic> pickupData = {
+    "state": "Abuja",
+    "address":
+        "CCSI 16b, P.O.W Mafemi Crescent,Utako, Abuja, Mobile: 09022210504"
+  };
 
   setAddress(String address, String state) async {
-    await LocalStorage.setItem("pickupAddress", {"address": address, "state": state});
+    await LocalStorage.setItem(
+        "pickupAddress", {"address": address, "state": state});
   }
 
   void pickupAddress() async {
@@ -49,6 +54,13 @@ class StoreBloc extends StatesRebuilder {
       } else {
         selectedProduct = null;
         makingOrder = false;
+        final hasPurchaser = val is Map<String, dynamic> &&
+            val.containsKey("purchaser") &&
+            val["purchaser"] is Map<String, dynamic> &&
+            val["purchaser"].containsKey("points");
+        activeUser.updatePoints(
+          points: hasPurchaser ? val["purchaser"]["points"] : 0,
+        );
         rebuildStates(ids: ["orderState"]);
       }
     }, onError: (err) {
@@ -57,12 +69,15 @@ class StoreBloc extends StatesRebuilder {
     });
   }
 
-  void setProducts({bool cache = true, State state, List<dynamic> val, bool isFreshFetch}) async {
+  void setProducts(
+      {bool cache = true,
+      State state,
+      List<dynamic> val,
+      bool isFreshFetch}) async {
     if (cache) {
       var data = await getFromCache(key: "products");
       data = !(data is bool) ? data : [];
-      products =
-          data == [] ? data : [];
+      products = data == [] ? data : [];
     } else {
       products = val;
     }
@@ -81,14 +96,17 @@ class StoreBloc extends StatesRebuilder {
     rebuildStates(ids: ["orderState", "storeState"]);
   }
 
-  void setGifts({bool cache = true, State state, List<dynamic> val, bool isFreshFetch}) async {
+  void setGifts(
+      {bool cache = true,
+      State state,
+      List<dynamic> val,
+      bool isFreshFetch}) async {
     noGifts = false;
     rebuildStates(states: [state], ids: ["cartState"]);
     if (cache) {
       var data = await getFromCache(key: "gifts");
       data = !(data is bool) ? data : [];
-      gifts =
-          data == [] ? data : [];
+      gifts = data == [] ? data : [];
     } else {
       gifts = val;
       noGifts = val.length <= 0;
@@ -108,7 +126,8 @@ class StoreBloc extends StatesRebuilder {
         if (val is int) {
           setProducts(cache: true, state: state, isFreshFetch: false);
         } else {
-          setProducts(cache: false, state: state, isFreshFetch: false, val: val);
+          setProducts(
+              cache: false, state: state, isFreshFetch: false, val: val);
         }
       },
       onError: (err) async {

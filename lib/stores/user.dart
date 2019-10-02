@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+// import 'package:image_cropper/image_cropper.dart';
 import 'package:path_provider/path_provider.dart' as fs;
 
 import 'package:flutter/material.dart';
@@ -25,10 +26,11 @@ class UserBloc extends StatesRebuilder {
   var activeUser = User(
     name: "Anonymous User",
     id: "5b3a2ddbdfecff00149ab29c",
-    email: "anonymous.user@mail.com",
+    email: "",
     username: "anonymous.user",
-    avatar: 'https://res.cloudinary.com/jesse-dirisu/image/upload/v1569184517/Mask_Group_4_A12_Group_18_pattern.png',
-    telephone: "+234 910 001 5617",
+    avatar:
+        'https://res.cloudinary.com/jesse-dirisu/image/upload/v1569184517/Mask_Group_4_A12_Group_18_pattern.png',
+    telephone: "",
     points: 0,
     isMember: false,
   );
@@ -56,6 +58,21 @@ class UserBloc extends StatesRebuilder {
     return instance;
   }
 
+  // Future<File> _cropImage(File imageFile) async {
+  //   try {
+  //     File croppedFile = await ImageCropper.cropImage(
+  //       sourcePath: imageFile.path,
+  //       ratioX: 1.0,
+  //       ratioY: 1.0,
+  //       maxWidth: 512,
+  //       maxHeight: 512,
+  //     );
+  //     return Future.value(croppedFile);
+  //   } catch (e) {
+  //     return Future.value(null);
+  //   }
+  // }
+
   toggleEdit(State state) {
     isEdit = !isEdit;
     rebuildStates(ids: ["profState"], states: [state]);
@@ -65,11 +82,12 @@ class UserBloc extends StatesRebuilder {
     setActiveUser({
       "name": "Anonymous User",
       "id": "5b3a2ddbdfecff00149ab29c",
-      "email": "anonymous.user@mail.com",
+      "email": "",
       "username": "anonymous.user",
-      "avatar": 'https://res.cloudinary.com/jesse-dirisu/image/upload/v1569184517/Mask_Group_4_A12_Group_18_pattern.png',
+      "avatar":
+          'https://res.cloudinary.com/jesse-dirisu/image/upload/v1569184517/Mask_Group_4_A12_Group_18_pattern.png',
       "points": 0,
-      "telephone": "+234 910 001 5617",
+      "telephone": "",
       "isMember": false,
     });
     Future.delayed(Duration(milliseconds: 300),
@@ -88,16 +106,22 @@ class UserBloc extends StatesRebuilder {
           }
           Navigator.pushReplacementNamed(context, "/home");
         }).catchError((err) {
-          print(err);
           Navigator.pushReplacementNamed(context, "/home");
         });
       } else {
         Navigator.pushReplacementNamed(context, "/welcome");
       }
     }).catchError((err) {
-      print(err);
       Navigator.pushReplacementNamed(context, "/welcome");
     });
+  }
+
+  void updatePoints({int points = 0}) {
+    if (points != 0) {
+      Map<String, dynamic> usrMap = activeUser.toJson();
+      usrMap.containsKey("points") ? usrMap.update("points", (val) => points) : usrMap.putIfAbsent("points", () => points);
+      setActiveUser(usrMap);
+    }
   }
 
   setActiveUser(Map<String, dynamic> usrData) {
@@ -105,17 +129,28 @@ class UserBloc extends StatesRebuilder {
       final data = User.fromJson(usrData);
       isLoggedIn = !(data.id == "5b3a2ddbdfecff00149ab29c");
       activeUser = data;
-      rebuildStates(ids: ["authState", "avatarState", "avatarState1", "memberState", "memberState1"]);
+      rebuildStates(ids: [
+        "authState",
+        "avatarState",
+        "avatarState1",
+        "memberState",
+        "memberState1"
+      ]);
     }).catchError((err) {
       final data = User.fromJson(usrData);
       isLoggedIn = !(data.id == "5b3a2ddbdfecff00149ab29c");
       activeUser = data;
-      rebuildStates(ids: ["authState", "avatarState", "avatarState1", "memberState", "memberState1"]);
+      rebuildStates(ids: [
+        "authState",
+        "avatarState",
+        "avatarState1",
+        "memberState",
+        "memberState1"
+      ]);
     });
   }
 
   Future<bool> updateUser(State state, Map<String, dynamic> data) {
-    print(data);
     isUpdating = true;
     rebuildStates(states: [state], ids: ["authState", "profState"]);
     return Future.value(
@@ -145,8 +180,8 @@ class UserBloc extends StatesRebuilder {
     return Future.value(
       HttpService.getStats(activeUser.id).then((val) {
         if (!(val is int) && val is Map<String, dynamic>) {
-          print(val);
           usrStat = val;
+          updatePoints(points: val["points"] ?? 0);
           isLoadingStat = false;
           rebuildStates(states: [state], ids: ["profState"]);
           return Future.value(true);
@@ -192,7 +227,8 @@ class UserBloc extends StatesRebuilder {
     );
   }
 
-  Future<bool> signUp(String username, String name, String password, bool isMember) {
+  Future<bool> signUp(
+      String username, String name, String password, bool isMember) {
     isLoading = true;
     loginFail = false;
     rebuildStates(ids: ["authFloatBtnState", "authRegState"]);
@@ -250,7 +286,6 @@ class UserBloc extends StatesRebuilder {
         rebuildStates(states: [state]);
       }
     }, onError: (err) {
-      print(err);
       isLoadingTopUsrs = false;
       loadingTopUsrsFail = true;
       msgTopUsrs =
@@ -269,7 +304,9 @@ class UserBloc extends StatesRebuilder {
     isUpdating = true;
     rebuildStates(ids: ["memberState", "memberState1"]);
     return Future.value(
-      HttpService.updateProfile({"isMember": true}, activeUser.id).then((val) {
+      HttpService.updateProfile(
+              {"isMember": true, "isMembership": true}, activeUser.id)
+          .then((val) {
         if (!(val is int)) {
           val = val is Map<String, dynamic> ? val : val[0];
           setActiveUser(val);
@@ -307,6 +344,7 @@ class UserBloc extends StatesRebuilder {
       var imageData = await ImagePicker.pickImage(
           source: isGal ? ImageSource.gallery : ImageSource.camera);
       if (imageData != null) {
+        // var croppedImg = await _cropImage(imageData);
         tempAvatar = imageData;
         isChangingAvatar = true;
         rebuildStates(ids: ["avatarState", "avatarState1"]);

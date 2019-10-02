@@ -135,7 +135,6 @@ class AppDrawer extends StatelessWidget {
                             ),
                             onPressed: () {
                               Navigator.pop(context);
-                              // Navigator.pushNamed(context, '/about');
                               showDialog(
                                   context: context,
                                   builder: (context) {

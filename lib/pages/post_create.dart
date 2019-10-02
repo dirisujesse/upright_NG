@@ -178,6 +178,7 @@ class PostCreatePageState extends State<PostCreatePage> {
           );
         }
       }).catchError((err) {
+        print(err);
         submitState.value = {"isSubmitting": false, "submitted": false};
         presentSnack(
           context,

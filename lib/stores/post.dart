@@ -84,34 +84,35 @@ class PostBloc extends StatesRebuilder {
       }
     }
 
-    // print(postData["img"].length);
     // if (instance.isVid &&
     //     instance.video != null &&
     //     (instance.video.lengthSync() / 1000000) > 2.0) {
-    //   print("${instance.video.lengthSync() / 1000000} mb");
     //   FlutterVideoCompress compressor = FlutterVideoCompress();
     //   final compFilePath = await compressor.compressVideo(path: instance.video.absolute.path);
     //   if (compFilePath != null) {
     //     final file = File(compFilePath);
-    //     print(file.lengthSync());
     //     postData["img"] = base64Encode(file.readAsBytesSync());
     //   } else {
     //     postData["img"] = "";
     //   }
     // }
 
-    // print(postData["img"].length);
     return Future.value(
       HttpService.addPost(postData).then(
         (val) {
           if (!(val is int)) {
-            print(val);
             isSubmitingPost = false;
             isSubmitted = true;
-            rebuildStates(ids: ["postCreateState"]);
+            final hasAuthor = val is Map<String, dynamic> && val.containsKey("author") && val["author"] is Map<String, dynamic> && val["author"].containsKey("points");
+            
+            usrData.updatePoints(points: hasAuthor ? val["author"]["points"] : 0);
+            if (!hasAuthor) {
+              val["author"] = usrData.activeUser.toJson();
+            }
+            posts.insert(0, val);
+            rebuildStates(ids: ["postCreateState", "recPostState"]);
             return Future.value(true);
           } else {
-            print(val);
             isSubmitingPost = false;
             isSubmitted = false;
             rebuildStates(ids: ["postCreateState"]);
@@ -120,7 +121,6 @@ class PostBloc extends StatesRebuilder {
         },
       ).catchError(
         (err) {
-          print(err + " ");
           isSubmitingPost = false;
           isSubmitted = false;
           rebuildStates(ids: ["postCreateState"]);
@@ -226,7 +226,6 @@ class PostBloc extends StatesRebuilder {
           rebuildStates(ids: ["recPostState"]);
         },
         onError: (err) {
-          print(err);
           isFetching = false;
           rebuildStates(ids: ["recPostState"]);
         },
@@ -236,7 +235,6 @@ class PostBloc extends StatesRebuilder {
 
   getFeed(State state, [bool disallowIfLoading = false]) {
     if (disallowIfLoading && (isLoading == true)) {
-      print(isLoading);
       return;
     }
     isLoading = true;
@@ -275,13 +273,12 @@ class PostBloc extends StatesRebuilder {
 
     return Future.value(
       HttpService.addComment(data).then((val) {
+        print(val);
         if (!(val is int)) {
-          if (comments != null) {
+            comments = comments ?? [];
             comments.add(val);
             rebuildStates(ids: ["postComState", "postComState1"]);
             return Future.value(true);
-          }
-          return Future.value(false);
         }
         return Future.value(true);
       }).catchError((onError) => Future.value(false)),
@@ -453,7 +450,6 @@ class PostBloc extends StatesRebuilder {
           image;
 
       if (imageData != null) {
-        print("ok");
         isAud = false;
         isVid = false;
         image = imageData;
@@ -483,11 +479,9 @@ class PostBloc extends StatesRebuilder {
           ? ((permitCam == PermissionStatus.granted) &&
               (permitCam == PermissionStatus.granted))
           : false;
-      print("checking permissions");
     }
     if (isPermitted != null && isPermitted == true) {
       reset();
-
       var vid = await ImagePicker.pickVideo(
               source: isGal ? ImageSource.gallery : ImageSource.camera) ??
           video;

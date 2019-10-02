@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:Upright_NG/components/page_scaffold.dart';
+import 'package:Upright_NG/components/ratings.dart';
 import 'package:Upright_NG/stores/post.dart';
 import 'package:Upright_NG/styles/colors.dart';
 import 'package:flutter/material.dart';
@@ -20,6 +21,135 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
+  void _displayStarExplanation({BuildContext context}) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return Scaffold(
+          backgroundColor: Color(0x00),
+          body: SafeArea(
+            child: Container(
+              alignment: Alignment.center,
+              margin: EdgeInsets.symmetric(
+                horizontal: MediaQuery.of(context).size.width * 0.05,
+                vertical: MediaQuery.of(context).size.height * 0.05,
+              ),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: appWhite,
+                  borderRadius: BorderRadius.circular(5.0),
+                ),
+                child: SingleChildScrollView(
+                  padding: EdgeInsets.symmetric(
+                    vertical: 20,
+                    horizontal: 10,
+                  ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: <Widget>[
+                      Text(
+                        "Rating System",
+                        style: Theme.of(context).textTheme.title,
+                      ),
+                      SizedBox(
+                        height: 5,
+                      ),
+                      Table(
+                        defaultVerticalAlignment:
+                            TableCellVerticalAlignment.middle,
+                        children: [
+                          TableRow(
+                            children: [
+                              RatingWidget(
+                                postCount: 0,
+                                showTitle: false,
+                                alignment: WrapAlignment.start,
+                              ),
+                              Text(
+                                "0 to 9 posts",
+                                textAlign: TextAlign.right,
+                              ),
+                            ],
+                          ),
+                          TableRow(
+                            children: [
+                              RatingWidget(
+                                postCount: 10,
+                                showTitle: false,
+                                alignment: WrapAlignment.start,
+                              ),
+                              Text(
+                                "10 to 19 posts",
+                                textAlign: TextAlign.right,
+                              ),
+                            ],
+                          ),
+                          TableRow(
+                            children: [
+                              RatingWidget(
+                                postCount: 20,
+                                showTitle: false,
+                                alignment: WrapAlignment.start,
+                              ),
+                              Text(
+                                "20 to 29 posts",
+                                textAlign: TextAlign.right,
+                              ),
+                            ],
+                          ),
+                          TableRow(
+                            children: [
+                              RatingWidget(
+                                postCount: 30,
+                                showTitle: false,
+                                alignment: WrapAlignment.start,
+                              ),
+                              Text(
+                                "30 to 39 posts",
+                                textAlign: TextAlign.right,
+                              ),
+                            ],
+                          ),
+                          TableRow(
+                            children: [
+                              RatingWidget(
+                                postCount: 40,
+                                showTitle: false,
+                                alignment: WrapAlignment.start,
+                              ),
+                              Text(
+                                "40 to 49 posts",
+                                textAlign: TextAlign.right,
+                              ),
+                            ],
+                          ),
+                          TableRow(
+                            children: [
+                              RatingWidget(
+                                postCount: 50,
+                                showTitle: false,
+                                alignment: WrapAlignment.start,
+                              ),
+                              Text(
+                                "50 or more posts",
+                                textAlign: TextAlign.right,
+                              ),
+                            ],
+                          ),
+                        ],
+                      )
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return PageScaffold(
@@ -27,14 +157,12 @@ class _ProfilePageState extends State<ProfilePage> {
       child: CustomScrollView(
         slivers: <Widget>[
           SliverAppBar(
+            iconTheme: IconThemeData(color: appBlack),
             title: Text(
               "Profile",
               style: Theme.of(context).textTheme.title,
             ),
             centerTitle: true,
-            leading: BackButton(
-              color: Colors.black,
-            ),
             actions: <Widget>[
               FlatButton(
                 child: Text("My Gifts"),
@@ -52,27 +180,29 @@ class _ProfilePageState extends State<ProfilePage> {
             delegate: SliverChildListDelegate(
               [
                 Align(
-                  alignment: Alignment.topLeft,
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 20),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisSize: MainAxisSize.min,
-                      children: <Widget>[
-                        Icon(
-                          Icons.star,
-                          size: 15,
-                          color: appYellow,
+                    alignment: Alignment.topLeft,
+                    child: GestureDetector(
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 20),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisSize: MainAxisSize.min,
+                          children: <Widget>[
+                            Icon(
+                              Icons.star,
+                              size: 15,
+                              color: appYellow,
+                            ),
+                            Text(
+                              "?",
+                              style: TextStyle(color: Colors.grey),
+                            )
+                          ],
                         ),
-                        Text(
-                          "?",
-                          style: TextStyle(color: Colors.grey),
-                        )
-                      ],
-                    ),
-                  ),
-                ),
+                      ),
+                      onTap: () => _displayStarExplanation(context: context),
+                    )),
                 UserAvatar(),
                 SizedBox(
                   height: 10,
@@ -290,7 +420,8 @@ class _ProfilePageState extends State<ProfilePage> {
                       Text(
                         "Sign in to view profile",
                         textAlign: TextAlign.center,
-                        style: TextStyle(color: Colors.grey, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            color: Colors.grey, fontWeight: FontWeight.bold),
                       ),
                       SizedBox(
                         height: 5,
@@ -306,59 +437,6 @@ class _ProfilePageState extends State<ProfilePage> {
         ],
       ),
     );
-  }
-}
-
-class RatingWidget extends StatelessWidget {
-  final int postCount;
-  RatingWidget({this.postCount});
-
-  Widget _ratingContainer({int star = 0, String rank = ""}) {
-    rank = rank == "" ? "Reporter" : "$rank Reporter";
-    return Wrap(
-      alignment: WrapAlignment.center,
-      crossAxisAlignment: WrapCrossAlignment.center,
-      children: <Widget>[
-        Wrap(
-          crossAxisAlignment: WrapCrossAlignment.center,
-          children: List.generate(5, (idx) {
-            return Icon(
-              Icons.star,
-              color: star > idx ? appYellow : appGrey,
-              size: 20,
-            );
-          }),
-        ),
-        SizedBox(
-          width: 10,
-        ),
-        AutoSizeText(
-          rank,
-          style: TextStyle(color: Colors.grey),
-        )
-      ],
-    );
-  }
-
-  Widget _ratingRoutine() {
-    if (postCount >= 10 && postCount < 20) {
-      return _ratingContainer(star: 1, rank: "Bronze");
-    } else if (postCount >= 20 && postCount < 30) {
-      return _ratingContainer(star: 2, rank: "Silver");
-    } else if (postCount >= 30 && postCount < 40) {
-      return _ratingContainer(star: 3, rank: "Gold");
-    } else if (postCount >= 40 && postCount < 50) {
-      return _ratingContainer(star: 4, rank: "Platinum");
-    } else if (postCount >= 50) {
-      return _ratingContainer(star: 5, rank: "Diamond");
-    } else {
-      return _ratingContainer();
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return _ratingRoutine();
   }
 }
 

@@ -28,7 +28,7 @@ Post _$PostFromJson(Map<String, dynamic> json) {
               e == null ? null : Comment.fromJson(e as Map<String, dynamic>))
           ?.toList(),
       fromTwitter: json['fromTwitter'] as bool,
-      subject: json['subject'] as List,
+      urls: json['urls'] as List,
       image: json['image'] as String);
 }
 
@@ -48,6 +48,6 @@ Map<String, dynamic> _$PostToJson(Post instance) => <String, dynamic>{
       'loc': instance.loc,
       'comments': instance.comments,
       'fromTwitter': instance.fromTwitter,
-      'subject': instance.subject,
+      'urls': instance.urls,
       'image': instance.image
     };

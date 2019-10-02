@@ -4,6 +4,7 @@ import 'package:Upright_NG/styles/colors.dart';
 import 'package:Upright_NG/styles/form_style.dart';
 import 'package:flutter/material.dart';
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:line_icons/line_icons.dart';
 import 'package:simple_share/simple_share.dart';
 import 'package:states_rebuilder/states_rebuilder.dart';
 
@@ -319,7 +320,7 @@ class _SettingsPageState extends State<SettingsPage> {
                                     decoration: underlineInputStyle.copyWith(
                                       // hintText: 'State',
                                       prefixIcon: Icon(
-                                        Icons.portrait,
+                                        LineIcons.transgender,
                                         size: 25,
                                         color: appGreen,
                                       ),

@@ -24,7 +24,7 @@ class Post {
   String loc;
   List<Comment> comments;
   bool fromTwitter;
-  List<dynamic> subject;
+  List<dynamic> urls;
   String image;
 
   Post({
@@ -43,7 +43,7 @@ class Post {
     this.loc,
     this.comments,
     this.fromTwitter,
-    this.subject,
+    this.urls,
     this.image = "https://4.bp.blogspot.com/-i_6lnKy8NU4/WCRylC1DQrI/AAAAAAAANnk/kTX9v5v32XMHuJ70c8Ms_e3cZo5T18gywCLcB/s1600/default-thumbnail.png",
   });
 

@@ -278,12 +278,12 @@ class OnboardingPage extends StatelessWidget {
                                       height: 10,
                                       width: 70,
                                       decoration: BoxDecoration(
-                                          border: Border.all(
-                                            color: appWhite,
-                                            width: 1,
-                                          ),
-                                          borderRadius:
-                                              BorderRadius.circular(5)),
+                                        border: Border.all(
+                                          color: appWhite,
+                                          width: 1,
+                                        ),
+                                        borderRadius: BorderRadius.circular(5),
+                                      ),
                                     ),
                                   ],
                                 ),
@@ -292,7 +292,7 @@ class OnboardingPage extends StatelessWidget {
                                 ),
                                 Expanded(
                                   child: Image.asset(
-                                    "assets/images/profile.png",
+                                    "assets/images/profile.jpg",
                                     fit: BoxFit.cover,
                                   ),
                                   // AspectRatio(
