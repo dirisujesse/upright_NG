@@ -66,19 +66,20 @@ class PostBloc extends StatesRebuilder {
     isSubmitingPost = true;
     isSubmitted = false;
     rebuildStates(ids: ["postCreateState"]);
-    if (instance.isImg &&
-        instance.image != null &&
-        instance.image.lengthSync() > 100000) {
-      final tmpDir = await fs.getTemporaryDirectory();
-      CompressObject fileData = CompressObject(
-        imageFile: instance.image,
-        path: tmpDir.path,
-        // quality: 50,
-        // step: 4
-      );
-      final compFilePath = await Luban.compressImage(fileData);
-      if (compFilePath != null) {
-        postData["img"] = base64Encode(File(compFilePath).readAsBytesSync());
+    if (instance.isImg && instance.image != null) {
+      String compFilePath;
+      if (instance.image.lengthSync() > 100000) {
+        final tmpDir = await fs.getTemporaryDirectory();
+        CompressObject fileData = CompressObject(
+          imageFile: instance.image,
+          path: tmpDir.path,
+          // quality: 50,
+          // step: 4
+        );
+        compFilePath = await Luban.compressImage(fileData);
+      }
+      if (compFilePath != null || instance.image != null) {
+        postData["img"] = base64Encode(File(compFilePath ?? instance.image.path).readAsBytesSync());
       } else {
         postData["img"] = "";
       }
@@ -103,9 +104,13 @@ class PostBloc extends StatesRebuilder {
           if (!(val is int)) {
             isSubmitingPost = false;
             isSubmitted = true;
-            final hasAuthor = val is Map<String, dynamic> && val.containsKey("author") && val["author"] is Map<String, dynamic> && val["author"].containsKey("points");
-            
-            usrData.updatePoints(points: hasAuthor ? val["author"]["points"] : 0);
+            final hasAuthor = val is Map<String, dynamic> &&
+                val.containsKey("author") &&
+                val["author"] is Map<String, dynamic> &&
+                val["author"].containsKey("points");
+
+            usrData.updatePoints(
+                points: hasAuthor ? val["author"]["points"] : 0);
             if (!hasAuthor) {
               val["author"] = usrData.activeUser.toJson();
             }
@@ -275,10 +280,10 @@ class PostBloc extends StatesRebuilder {
       HttpService.addComment(data).then((val) {
         print(val);
         if (!(val is int)) {
-            comments = comments ?? [];
-            comments.add(val);
-            rebuildStates(ids: ["postComState", "postComState1"]);
-            return Future.value(true);
+          comments = comments ?? [];
+          comments.add(val);
+          rebuildStates(ids: ["postComState", "postComState1"]);
+          return Future.value(true);
         }
         return Future.value(true);
       }).catchError((onError) => Future.value(false)),
@@ -446,7 +451,10 @@ class PostBloc extends StatesRebuilder {
     if (isPermitted != null && isPermitted == true) {
       reset();
       var imageData = await ImagePicker.pickImage(
-              source: isGal ? ImageSource.gallery : ImageSource.camera) ??
+            source: isGal ? ImageSource.gallery : ImageSource.camera,
+            // maxHeight: 500,
+            // maxWidth: 500,
+          ) ??
           image;
 
       if (imageData != null) {
@@ -483,7 +491,8 @@ class PostBloc extends StatesRebuilder {
     if (isPermitted != null && isPermitted == true) {
       reset();
       var vid = await ImagePicker.pickVideo(
-              source: isGal ? ImageSource.gallery : ImageSource.camera) ??
+            source: isGal ? ImageSource.gallery : ImageSource.camera,
+          ) ??
           video;
 
       if (vid != null) {
