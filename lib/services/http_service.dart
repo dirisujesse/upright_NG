@@ -8,7 +8,7 @@ final http = Dio(
   BaseOptions(
     connectTimeout: 1000 * 20,
     receiveTimeout: 1000 * 20,
-    baseUrl: "https://uprightng.herokuapp.com",
+    baseUrl: "http://uprightapi.cloud",
   ),
 );
 

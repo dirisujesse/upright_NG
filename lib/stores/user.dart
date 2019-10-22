@@ -2,7 +2,8 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
-// import 'package:image_cropper/image_cropper.dart';
+import 'package:Upright_NG/styles/colors.dart';
+import 'package:image_cropper/image_cropper.dart';
 import 'package:path_provider/path_provider.dart' as fs;
 
 import 'package:flutter/material.dart';
@@ -58,20 +59,32 @@ class UserBloc extends StatesRebuilder {
     return instance;
   }
 
-  // Future<File> _cropImage(File imageFile) async {
-  //   try {
-  //     File croppedFile = await ImageCropper.cropImage(
-  //       sourcePath: imageFile.path,
-  //       ratioX: 1.0,
-  //       ratioY: 1.0,
-  //       maxWidth: 512,
-  //       maxHeight: 512,
-  //     );
-  //     return Future.value(croppedFile);
-  //   } catch (e) {
-  //     return Future.value(null);
-  //   }
-  // }
+  Future<File> _cropImage(File imageFile) async {
+    if (imageFile.existsSync()) {
+      return ImageCropper.cropImage(
+        sourcePath: imageFile.path,
+        aspectRatioPresets: [
+          CropAspectRatioPreset.square,
+          CropAspectRatioPreset.ratio3x2,
+          CropAspectRatioPreset.original,
+          CropAspectRatioPreset.ratio4x3,
+          CropAspectRatioPreset.ratio16x9,
+        ],
+        androidUiSettings: AndroidUiSettings(
+          toolbarTitle: 'Crop Profile Picture',
+          toolbarColor: appGreen,
+          toolbarWidgetColor: Colors.white,
+          initAspectRatio: CropAspectRatioPreset.original,
+          lockAspectRatio: false,
+        ),
+        cropStyle: CropStyle.rectangle,
+        iosUiSettings: IOSUiSettings(
+          minimumAspectRatio: 1.0,
+        ),
+      );
+    }
+    return Future.value(null);
+  }
 
   toggleEdit(State state) {
     isEdit = !isEdit;
@@ -119,7 +132,9 @@ class UserBloc extends StatesRebuilder {
   void updatePoints({int points = 0}) {
     if (points != 0) {
       Map<String, dynamic> usrMap = activeUser.toJson();
-      usrMap.containsKey("points") ? usrMap.update("points", (val) => points) : usrMap.putIfAbsent("points", () => points);
+      usrMap.containsKey("points")
+          ? usrMap.update("points", (val) => points)
+          : usrMap.putIfAbsent("points", () => points);
       setActiveUser(usrMap);
     }
   }
@@ -341,30 +356,49 @@ class UserBloc extends StatesRebuilder {
           : false;
     }
     if (isPermitted != null && isPermitted == true) {
-      var imageData = await ImagePicker.pickImage(
-          source: isGal ? ImageSource.gallery : ImageSource.camera);
-      if (imageData != null) {
-        // var croppedImg = await _cropImage(imageData);
-        tempAvatar = imageData;
-        isChangingAvatar = true;
-        rebuildStates(ids: ["avatarState", "avatarState1"]);
-        final tmpDir = await fs.getTemporaryDirectory();
-        CompressObject fileData = CompressObject(
-          imageFile: imageData,
-          path: tmpDir.path,
-          // quality: 50,
-          // step: 4
-        );
-        final compFilePath = await Luban.compressImage(fileData);
-        if (compFilePath != null) {
-          changeAvatar(
-              avatar: base64Encode(File(compFilePath).readAsBytesSync()));
+      ImagePicker.pickImage(
+        source: isGal ? ImageSource.gallery : ImageSource.camera,
+        // maxHeight: 500,
+        // maxWidth: 500,
+      ).then((imageData) {
+        print(imageData);
+        imageData = imageData ?? null;
+        print(imageData.absolute.path);
+        if (imageData != null && imageData is File) {
+          print(imageData.absolute.path);
+          _cropImage(imageData.absolute).then((croppedImg) async {
+            print(croppedImg);
+            if (croppedImg != null) {
+              print(croppedImg.absolute.path);
+              tempAvatar = croppedImg ?? imageData;
+              isChangingAvatar = true;
+              rebuildStates(ids: ["avatarState", "avatarState1"]);
+              final tmpDir = await fs.getTemporaryDirectory();
+              CompressObject fileData = CompressObject(
+                imageFile: croppedImg ?? imageData,
+                path: tmpDir.path,
+              );
+              final compFilePath = await Luban.compressImage(fileData);
+              if (compFilePath != null) {
+                changeAvatar(
+                    avatar: base64Encode(File(compFilePath).readAsBytesSync()));
+              } else {
+                isChangingAvatar = false;
+                tempAvatar = null;
+                rebuildStates(ids: ["avatarState", "avatarState1"]);
+              }
+            } else {
+              isChangingAvatar = false;
+              tempAvatar = null;
+              rebuildStates(ids: ["avatarState", "avatarState1"]);
+            }
+          }).catchError((err) => print(err));
         } else {
           isChangingAvatar = false;
           tempAvatar = null;
           rebuildStates(ids: ["avatarState", "avatarState1"]);
         }
-      }
+      }).catchError((err) => print(err));
     }
   }
 

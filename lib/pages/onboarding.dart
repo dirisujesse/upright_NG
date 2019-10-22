@@ -385,24 +385,24 @@ class OnboardingPage extends StatelessWidget {
                                   alignment: WrapAlignment.center,
                                   crossAxisAlignment: WrapCrossAlignment.center,
                                   children: <Widget>[
-                                    FlatButton(
-                                      padding: EdgeInsets.all(0),
-                                      child: AutoSizeText("BECOME A MEMBER"),
-                                      textColor: appWhite,
-                                      onPressed: () {
-                                        goToAuth(context, true, true);
-                                      },
-                                    ),
-                                    SizedBox(
-                                      width: 10,
-                                    ),
-                                    AutoSizeText(
-                                      "-",
-                                      style: TextStyle(color: appWhite),
-                                    ),
-                                    SizedBox(
-                                      width: 0,
-                                    ),
+                                    // FlatButton(
+                                    //   padding: EdgeInsets.all(0),
+                                    //   child: AutoSizeText("BECOME A MEMBER"),
+                                    //   textColor: appWhite,
+                                    //   onPressed: () {
+                                    //     goToAuth(context, true, true);
+                                    //   },
+                                    // ),
+                                    // SizedBox(
+                                    //   width: 10,
+                                    // ),
+                                    // AutoSizeText(
+                                    //   "-",
+                                    //   style: TextStyle(color: appWhite),
+                                    // ),
+                                    // SizedBox(
+                                    //   width: 0,
+                                    // ),
                                     FlatButton(
                                       padding: EdgeInsets.all(0),
                                       child: AutoSizeText("SKIP"),
@@ -419,7 +419,7 @@ class OnboardingPage extends StatelessWidget {
                                       style: TextStyle(color: appWhite),
                                     ),
                                     SizedBox(
-                                      width: 0,
+                                      width: 5,
                                     ),
                                     FlatButton(
                                       padding: EdgeInsets.all(0),
